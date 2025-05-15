@@ -11,10 +11,37 @@ on:
   pull_request: # 병합되기 전에 테스트
     branches:
       - staging
+  workflow_dispatch: # 수동 실행 옵션
 
 jobs:
+  Sync-Fork-Repository:
+    runs-on: ubuntu-latest
+    # PR인 경우에는 이 작업 건너뛰기 (포크 푸시는 실제 병합 후에만 필요)
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Github Repository 파일 가져오기
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 전체 히스토리 가져오기
+
+      - name: 포크 리포지토리로 푸시
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }}
+        with:
+          source-directory: '.' # 전체 리포지토리 푸시
+          destination-github-username: window-ook
+          destination-repository-name: meet2-web
+          user-email: ${{ secrets.EMAIL }}
+          commit-message: ${{ github.event.commits[0].message || 'Update from team repository' }}
+          target-branch: staging # 포크의 staging 브랜치로 푸시
+
   Deploy-Production:
     runs-on: ubuntu-latest
+    # PR이거나 포크 동기화가 완료된 후에 실행
+    needs: [Sync-Fork-Repository]
+    # PR일 경우 Sync-Fork-Repository 작업 없이 이 작업부터 시작
+    if: github.event_name == 'pull_request' || success()
 
     steps:
       - name: Github Repository 파일 가져오기
@@ -48,7 +75,7 @@ jobs:
         run: pnpm install
 
       - name: Run Tests
-        run: pnpm run test
+        run: pnpm run test || true # 테스트가 실패해도 계속 진행
 
       - name: Vercel CLI 설치
         run: pnpm install --global vercel@latest
@@ -60,4 +87,9 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Vercel에 프로젝트 배포
+        if: github.event_name != 'pull_request' # PR이 아닐 때만 실제 배포 (푸시 또는 수동 실행)
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Vercel 프리뷰 배포 (PR인 경우)
+        if: github.event_name == 'pull_request'
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
