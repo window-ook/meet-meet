@@ -11,13 +11,9 @@ export default function Navbar() {
     const { token, signout } = useContext(AuthContext);
 
     useEffect(() => {
-        setUserName(
-          JSON.parse(
-            localStorage.getItem('user_name') ?? JSON.stringify('유저')
-          )
-        );
-      }, []);
-      
+        setUserName(localStorage.getItem('user_name') ?? '유저');
+    }, []);
+
     return (
         <nav
             className="sticky top-0 z-50 w-full h-[3.75rem] py-8 px-5 lg:px-20 bg-white border-b-2 border-gray-300 flex justify-between text-xs md:text-base font-bold"
