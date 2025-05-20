@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import ProfileCard from "../../../components/mypage/ProfileCard"
 import Image from "next/image";
@@ -51,11 +52,11 @@ export default function MyPage() {
                                     <div className="flex gap-2 py-2">
                                         <div>
                                             {/*scheduled.svg*/}
-                                            <img src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
+                                            <Image src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
                                         </div>
                                         <div>
                                             {/*sonfirmed.svg*/}
-                                            <img src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
+                                            <Image src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
                                         </div>
                                     </div>
                                         <div className="flex">
@@ -65,7 +66,7 @@ export default function MyPage() {
                                         </div>
                                         <span className="flex items-center space-x-2">
                                             <span>1월 7일 . 17:30</span>
-                                            <img src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
+                                            <Image src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
                                             <span>20/20</span>
                                         </span>
                                         <div className="py-2">
@@ -86,11 +87,11 @@ export default function MyPage() {
                                     <div className="flex gap-2 py-2">
                                         <div>
                                             {/*scheduled.svg*/}
-                                            <img src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
+                                            <Image src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
                                         </div>
                                         <div>
                                             {/*sonfirmed.svg*/}
-                                            <img src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
+                                            <Image src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
                                         </div>
                                     </div>
                                     <div className="flex">
@@ -100,7 +101,7 @@ export default function MyPage() {
                                     </div>
                                     <span className="flex items-center space-x-2">
                                         <span>1월 7일 . 17:30</span>
-                                        <img src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
+                                        <Image src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
                                         <span>20/20</span>
                                     </span>
                                     <div className="py-2">
@@ -121,11 +122,11 @@ export default function MyPage() {
                                     <div className="flex gap-2 py-2">
                                         <div>
                                             {/*scheduled.svg*/}
-                                            <img src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
+                                            <Image src="/icons/scheduled.svg" alt="이용예정" width={72} height={120} />
                                         </div>
                                         <div>
                                             {/*sonfirmed.svg*/}
-                                            <img src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
+                                            <Image src="/icons/confirmed.svg" alt="개설확정" width={90} height={120} />
                                         </div>
                                     </div>
                                     <div className="flex">
@@ -135,7 +136,7 @@ export default function MyPage() {
                                     </div>
                                     <span className="flex items-center space-x-2">
                                         <span>1월 7일 . 17:30</span>
-                                        <img src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
+                                        <Image src="/icons/user.svg" alt="유저" width={20} height={20} className="inline-block" />
                                         <span>20/20</span>
                                     </span>
                                     <div className="py-2">
