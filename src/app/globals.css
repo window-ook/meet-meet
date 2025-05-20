@@ -7,6 +7,13 @@
   /* 브레이크 포인트 */
   --breakpoint-sm: 375px;
   --breakpoint-md: 744px;
+  --breakpoint-lg: 1100px;
+
+  /* 폰트 */
+  --font-pretendard: var(--font-pretendard);
+
+  /* 폰트 사이즈 */
+  --text-2xs: 0.5rem;
 
   /* 컬러 */
   --color-white: oklch(1 0 0);
@@ -44,8 +51,26 @@
   --color-red-900: oklch(0.400 0.265 27.0);
   --color-red-950: oklch(0.350 0.265 27.0);
 
-  /* 폰트 */
-  --font-pretendard: var(--font-pretendard);
+  --color-global-text: var(--color-gray-900);
+
+  /* 전 페이지 공통 UI */
+  /* ---- 해당 버튼: 모임 만들기, 참여하기, 공유하기, 모달 '확인', 로그인, 회원가입 '확인' */
+  --color-button: var(--color-main-500);
+  --color-button-text: var(--color-white);
+  --color-button-disabled: var(--color-gray-400);
+  --color-button-hover: var(--color-main-600);
+
+  /* ---- 달램핏, 워케이션 대분류 버튼 텍스트 */
+  --color-button-categories-active: var(--color-gray-900);
+  --color-button-categories: var(--color-gray-400);
+
+  /* ---- 달램핏 소분류 버튼 텍스트, 배경색 */
+  --color-button-type-text: var(--color-white);
+  --color-button-type-bg: var(--color-gray-900);
+
+  /* --- 페이지별 헤딩 */
+  --color-heading: var(--color-gray-900);
+  --color-heading-description: var(--color-gray-700);
 }
 
 @theme inline {

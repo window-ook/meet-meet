@@ -1,15 +1,21 @@
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isSubmitting: boolean;
-    isPasswordMatch?: boolean;
     text: string;
+    isPasswordMatch?: boolean;
+    props: {
+        name?: string;
+        email: string;
+        companyName?: string;
+        password: string;
+    }
 }
 
-export default function SubmitButton({ isSubmitting, isPasswordMatch, text }: SubmitButtonProps) {
+export default function SubmitButton({ isSubmitting, isPasswordMatch, text, props }: SubmitButtonProps) {
     return (
         <button
             type="submit"
-            disabled={isSubmitting || !isPasswordMatch}
-            className={`w-full rounded-lg ${isSubmitting || !isPasswordMatch ? 'bg-gray-400' : 'bg-main-300'} px-5 py-2.5 text-center text font-bold text-white cursor-pointer transition-all duration-300 ease-in-out`}
+            disabled={isSubmitting || !isPasswordMatch || props?.name === '' || props?.email === '' || props?.companyName === '' || props?.password === ''}
+            className={`w-full rounded-lg ${isSubmitting || !isPasswordMatch || props?.name === '' || props?.email === '' || props?.companyName === '' || props?.password === '' ? 'bg-button-disabled' : 'bg-button hover:bg-button-hover'} px-5 py-2.5 text-center text font-bold text-white cursor-pointer transition-all duration-300 ease-in-out`}
         >
             {text}
         </button>

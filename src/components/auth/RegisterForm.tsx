@@ -39,6 +39,9 @@ export default function RegisterForm() {
         resolver: zodResolver(signupFormSchema),
     });
 
+    const name = watch('name');
+    const email = watch('email');
+    const companyName = watch('companyName');
     const password = watch('password');
 
     const onSubmit = async (data: SignupFormSchemaType) => {
@@ -139,6 +142,7 @@ export default function RegisterForm() {
                     isSubmitting={isSubmitting}
                     isPasswordMatch={isPasswordMatch}
                     text="확인"
+                    props={{ name, email, companyName, password }}
                 />
                 <FormFooter
                     route="/login"

@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${pretendard.variable} font-pretendard`}
+        className={`${pretendard.variable} font-pretendard text-global-text`}
       >
         <Providers>
           <Navbar />

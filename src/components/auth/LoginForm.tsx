@@ -26,6 +26,7 @@ export default function LoginForm() {
 
     const {
         register,
+        watch,
         handleSubmit,
         formState: { errors, isSubmitting, isSubmitted },
     } = useForm<SigninFormSchemaType>({
@@ -35,6 +36,9 @@ export default function LoginForm() {
             password: '12312!2a',
         },
     });
+
+    const email = watch('email');
+    const password = watch('password');
 
     const onSubmit = async (data: SigninFormSchemaType) => {
         setErrorResponseMessage(null);
@@ -86,6 +90,7 @@ export default function LoginForm() {
                     isSubmitting={isSubmitting}
                     isPasswordMatch={true}
                     text="로그인"
+                    props={{ email, password }}
                 />
                 <FormFooter
                     route="/register"
