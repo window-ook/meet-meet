@@ -1,12 +1,28 @@
 "use client"
 
+
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Image from "next/image";
+
+
+// 모임 목록 인터페이스
+interface Gathering {
+    id: string;
+    name: string;
+    image: string;
+    location: string;
+    type: string;
+    participantCount: number;
+    capacity: number;
+    dateTime: string;
+}
+
 
 export default function GatheringsList() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [gatherings, setGatherings] = useState([]);
+    const [gatherings, setGatherings] = useState<Gathering[]>([]);
     
     // react query로 변경
     const fetchGatherings = async () => {
@@ -20,7 +36,7 @@ export default function GatheringsList() {
             });
             
             setGatherings(response.data);
-        } catch (err) {
+        } catch {
             setError('모임 목록을 불러오는 중 오류가 발생했습니다.');
         } finally {
             setLoading(false);
@@ -30,6 +46,7 @@ export default function GatheringsList() {
     useEffect(() => {
         fetchGatherings();
     }, []);
+
 
     return (
         <div className="w-full flex flex-col justify-start gap-5">
@@ -48,10 +65,10 @@ export default function GatheringsList() {
             )}
             
             {/* 모임 목록 */}
-            {!loading && !error && gatherings.map((gathering: any, index: number) => (
+            {!loading && !error && gatherings.map((gathering: Gathering, index: number) => (
                 <div key={gathering.id || index} className="w-full min-h-[100px] flex flex-col justify-start p-4 border-2 border-blue-500 rounded-lg">
                     <h1 className="text-lg font-semibold">{gathering.name || `모임 ${index + 1}`}</h1>
-                    <img src={gathering.image} alt="모임 이미지" className="w-[100px] h-[100px] rounded-lg" />
+                    <Image src={gathering.image} alt="모임 이미지" className="rounded-lg" width={100} height={100}/>
                     <p className="text-gray-600">위치: {gathering.location}</p>
                     <p className="text-gray-600">종류: {gathering.type}</p>
                     <p className="text-gray-600">참여자: {gathering.participantCount}/{gathering.capacity}명</p>
