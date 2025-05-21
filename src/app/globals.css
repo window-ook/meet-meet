@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  padding: 0;
+}
+
 @theme {
   /* 브레이크 포인트 */
   --breakpoint-sm: 375px;
