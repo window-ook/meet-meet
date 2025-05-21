@@ -1,12 +1,23 @@
 'use client';
 
 import { useContext } from 'react';
+import { usePathname } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Navbar() {
     const { token, signout, userName } = useContext(AuthContext);
+
+    const pathname = usePathname();
+
+    const navLinks = [
+        { href: '/gatherings', label: '모임찾기' },
+        { href: '/saved', label: '찜한 모임' },
+        { href: '/reviews', label: '모든 리뷰' },
+    ]
 
     return (
         <nav
@@ -22,16 +33,31 @@ export default function Navbar() {
                         className='w-[3rem] h-[3rem] md:w-[6rem] md:h-[6rem] pointer-events-none'
                     />
                 </Link>
-                <Link href="/gatherings" className='hover:opacity-50 duration-300 ease-in-out'>모임찾기</Link>
-                <Link href='/saved' className='hover:opacity-50 duration-300 ease-in-out'>찜한 모임</Link>
-                <Link href='/reviews' className='hover:opacity-50 duration-300 ease-in-out'>모든 리뷰</Link>
+                {navLinks.map(link => {
+                    return (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`hover:opacity-50 duration-300 ease-in-out ${pathname.includes(link.href) ? 'text-main-600' : ''}`}
+                        >
+                            {link.label}
+                        </Link>
+                    )
+                })}
             </section>
             <section className='flex items-center'>
                 {token && (
-                    <div className='flex items-center gap-2'>
-                        <span className='font-bold text-main-600'>{userName}</span>
-                        <button onClick={() => signout()} className='cursor-pointer hover:opacity-50 duration-300 ease-in-out'>로그아웃</button>
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <Image src='/images/default_profile_image.svg' alt='profile image' width={32} height={32} className='rounded-full cursor-pointer' />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-[9rem] mt-2 p-2 border-2 border-gray-300 rounded-md bg-white flex flex-col gap-2'>
+                            <DropdownMenuLabel className='text-main-500'>{userName}</DropdownMenuLabel>
+                            <DropdownMenuSeparator className='h-[0.1rem] bg-gray-300' />
+                            <DropdownMenuItem ><Link href='/mypage'>마이페이지</Link></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => signout()} className='cursor-pointer'>로그아웃</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 )}
                 {!token && <Link href='/login' className='hover:opacity-50 duration-300 ease-in-out'>로그인</Link>}
             </section>
