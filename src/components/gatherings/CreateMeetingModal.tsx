@@ -78,6 +78,13 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
     // 폼 제출 핸들러
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // 로그인
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('로그인이 필요한 서비스입니다.');
+            return;
+        }
         
         // 필수 필드 검증
         if (!formData.name || !formData.location || !meetingDate) {
@@ -105,9 +112,8 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
             setIsSubmitting(true);
             setError(null);
             
-            // localStorage에서 토큰 가져오기 - 'token' 키 사용
+            // 토큰 가져오기
             const token = localStorage.getItem('token');
-            console.log(token);
             
             if (!token) {
                 throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
@@ -208,7 +214,7 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
                             name="location"
                             value={formData.location}
                             onChange={handleInputChange}
-                            className="w-full h-[44px] rounded-lg bg-gray-50 py-2 px-4 text-semibold appearance-none bg-[url('/images/polygon_down.svg')] bg-[length:13px_13px] bg-[right_16px_center] bg-no-repeat"
+                            className="w-full h-[44px] rounded-lg bg-gray-50 py-2 px-4 text-semibold appearance-none bg-[url('/icons/polygon_down.svg')] bg-[length:13px_13px] bg-[right_16px_center] bg-no-repeat"
                         >
                             <option value="">장소를 선택해주세요</option>
                             <option value="을지로3가">을지로3가</option>
