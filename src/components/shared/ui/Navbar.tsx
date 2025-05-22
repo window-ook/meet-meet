@@ -20,47 +20,47 @@ export default function Navbar() {
     ]
 
     return (
-        <nav
-            className="sticky top-0 z-50 w-full h-[3.75rem] py-8 px-5 lg:px-20 bg-white border-b-2 border-gray-300 flex justify-between text-xs md:text-base font-bold"
-        >
-            <section className='flex gap-4 items-center'>
-                <Link href="/gatherings">
-                    <Image
-                        src="/images/logo.avif"
-                        alt="logo image"
-                        width={100}
-                        height={100}
-                        className='w-[3rem] h-[3rem] md:w-[6rem] md:h-[6rem] pointer-events-none'
-                    />
-                </Link>
-                {navLinks.map(link => {
-                    return (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`hover:opacity-50 duration-300 ease-in-out ${pathname.includes(link.href) ? 'text-main-600' : ''}`}
-                        >
-                            {link.label}
-                        </Link>
-                    )
-                })}
-            </section>
-            <section className='flex items-center'>
-                {token && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Image src='/images/default_profile_image.svg' alt='profile image' width={32} height={32} className='rounded-full cursor-pointer' />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className='w-[9rem] mt-2 p-2 border-2 border-gray-300 rounded-md bg-white flex flex-col gap-2'>
-                            <DropdownMenuLabel className='text-main-500'>{userName}</DropdownMenuLabel>
-                            <DropdownMenuSeparator className='h-[0.1rem] bg-gray-300' />
-                            <DropdownMenuItem ><Link href='/mypage'>마이페이지</Link></DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => signout()} className='cursor-pointer'>로그아웃</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
-                {!token && <Link href='/login' className='hover:opacity-50 duration-300 ease-in-out'>로그인</Link>}
-            </section>
+        <nav className="sticky z-50 top-0 w-full bg-white border-b-2 border-gray-300 text-xs md:text-base font-bold">
+            <div className="max-w-screen-lg mx-auto h-[3.75rem] py-8 px-5 flex justify-between items-center">
+                <section className='flex gap-4 items-center'>
+                    <Link href="/gatherings">
+                        <Image
+                            src="/images/logo.avif"
+                            alt="logo image"
+                            width={100}
+                            height={100}
+                            className='w-[3rem] h-[3rem] md:w-[6rem] md:h-[6rem] pointer-events-none'
+                        />
+                    </Link>
+                    {navLinks.map(link => {
+                        return (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`hover:opacity-50 duration-300 ease-in-out ${pathname.includes(link.href) ? 'text-main-600' : ''}`}
+                            >
+                                {link.label}
+                            </Link>
+                        )
+                    })}
+                </section>
+                <section className='flex items-center'>
+                    {token && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Image src='/images/default_profile_image.svg' alt='profile image' width={32} height={32} className='rounded-full cursor-pointer' />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='w-[9rem] mt-2 p-2 border-2 border-gray-300 rounded-md bg-white flex flex-col gap-2'>
+                                <DropdownMenuLabel className='text-main-500'>{userName}</DropdownMenuLabel>
+                                <DropdownMenuSeparator className='h-[0.1rem] bg-gray-300' />
+                                <DropdownMenuItem ><Link href='/mypage'>마이페이지</Link></DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => signout()} className='cursor-pointer'>로그아웃</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                    {!token && <Link href='/login' className='hover:opacity-50 duration-300 ease-in-out'>로그인</Link>}
+                </section>
+            </div>
         </nav>
     );
 }
