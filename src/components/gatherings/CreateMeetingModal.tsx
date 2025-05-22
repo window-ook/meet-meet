@@ -146,16 +146,17 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
             // 성공 시 모달 닫기
             onClose();
             window.location.reload();
-        } catch (error: any) {
+        } catch (error) {
             console.error('API 요청 중 오류 발생:', error);
-            
-            // axios 에러 처리
-            if (error.response) {
-                setError(error.response.data.message || '모임 생성 중 오류가 발생했습니다.');
-            } else if (error.request) {
+
+            if(axios.isAxiosError(error)) {
+                if (error.response) {
+                    setError(error.response.data.message || '모임 생성 중 오류가 발생했습니다.');
+                } else if (error.request) {
                 setError('서버에 연결할 수 없습니다.');
             } else {
-                setError(error.message || '모임 생성 중 오류가 발생했습니다.');
+                    setError(error.message || '모임 생성 중 오류가 발생했습니다.');
+                }
             }
         } finally {
             setIsSubmitting(false);

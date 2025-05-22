@@ -8,9 +8,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "sprint-fe-project.s3.ap-northeast-2.amazonaws.com",
+      }
     ],
   },
-  webpack(config, { isServer }) {
+  webpack(config, { isServer: _isServer }) {
     // SVGR 로더 추가: .svg 파일을 React 컴포넌트로 사용할 수 있게 처리
     config.module.rules.push({
       test: /\.svg$/,

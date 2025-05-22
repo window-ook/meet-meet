@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  padding: 0;
+}
+
 @theme {
   /* 브레이크 포인트 */
   --breakpoint-sm: 375px;
@@ -180,6 +184,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer components {
+  .contents-container {
+    @apply max-w-screen-lg h-screen mx-auto px-20 pt-8 flex flex-col gap-4 bg-neutral-50;
+  }
 }
 
 @layer base {

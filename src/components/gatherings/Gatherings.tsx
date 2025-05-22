@@ -3,6 +3,7 @@
 import { useState } from "react";
 import CreateMeetingModal from "@/components/gatherings/CreateMeetingModal";
 import GatheringsList from "@/components/gatherings/GatheringsList";
+import Image from "next/image";
 
 export default function Page() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function Page() {
             {/* 모임 목록 헤더 */}
             <div className="w-full flex flex-col">
                 <div className=" w-full pt-10 flex flex-row justify-between items-center">
-                    <img src="/images/logo.avif" alt="logo" width={70} height={70} className="rounded-full border-2 border-black mr-1"/>
+                    <Image src="/images/logo.avif" alt="logo" width={70} height={70} className="rounded-full border-2 border-black mr-1"/>
                     <div className="w-full flex flex-col justify-start px-2">
                         <p className=" text-[#374151] text-sm font-medium mb-2">함께 할 사람이 없나요</p>
                         <p className=" text-gray-900 text-lg font-semibold">지금 모임에 참여해보세요</p>
