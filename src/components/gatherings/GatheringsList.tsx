@@ -2,10 +2,11 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import axios from "axios";
 import Image from "next/image";
 import { Gathering } from "@/lib/types/gatherings";
+import { getSavedGatherings, setSavedGatherings } from "@/lib/api/gatherings";
+import { useRouter } from "next/navigation";
 
 
 // 모임 목록 컴포넌트 속성
@@ -27,17 +28,6 @@ const fetchGatheringsPaginated = async (page: number, limit: number) => {
     return response.data || [];
 };
 
-// 찜목록 조회
-const getSavedGatherings = (): string[] => {
-    if (typeof window === 'undefined') return [];
-    return JSON.parse(localStorage.getItem('savedGatherings') || '[]');
-};
-
-// 찜목록 저장
-const setSavedGatherings = (ids: string[]): void => {
-    localStorage.setItem('savedGatherings', JSON.stringify(ids));
-};
-
 // 모임 목록 컴포넌트
 export default function GatheringsList({ 
     gatherings: propGatherings = [], 
@@ -45,7 +35,8 @@ export default function GatheringsList({
 }: GatheringsListProps) {
     const queryClient = useQueryClient();
     const observerRef = useRef<IntersectionObserver | null>(null);
-    
+    const router = useRouter();
+
     // 무한스크롤 활성화 상태
     const [infiniteScrollEnabled, setInfiniteScrollEnabled] = useState(false);
     
@@ -117,7 +108,7 @@ export default function GatheringsList({
             }
         }, {
             threshold: 0.1,
-            rootMargin: '50px'
+            rootMargin: '5px'
         });
         
         if (node) observerRef.current.observe(node);
@@ -157,16 +148,16 @@ export default function GatheringsList({
     };
 
     // 날짜 형식 변환
-    const formatDate = (dateTime: string) => {
+    function formatDate(dateTime: string) {
         const date = new Date(dateTime);
-        return date.toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour12: false });
-    };
+        return date.toISOString().split('T')[0];
+    }
 
     // 시간 형식 변환
-    const formatTime = (dateTime: string) => {
+    function formatTime(dateTime: string) {
         const date = new Date(dateTime);
-        return date.toLocaleString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
-    };
+        return date.toISOString().split('T')[1].slice(0, 5);
+    }
 
     const finalGatherings = hasSSRData ? allGatherings : []; // SSR 데이터 있으면 모든 데이터 표시, 없으면 빈 배열
     const isInitialLoading = !hasSSRData; // SSR 데이터 없으면 로딩 표시
@@ -181,17 +172,20 @@ export default function GatheringsList({
                 
                 return (
                     <section
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => router.push(`/gatherings/detail/${gathering.id}`)}
                         key={`${gathering.teamId || 'unknown'}-${gathering.id}`}
                         ref={isLastItem && hasSSRData && fetchFromApi ? lastItemRef : undefined}
-                        className="w-full sm:h-[156px] flex flex-col sm:flex-row justify-start border-1 border-gray-100 rounded-lg"
+                        className="w-full sm:h-[156px] flex flex-col sm:flex-row justify-start border-1 border-gray-100 rounded-lg bg-white"
                     >
-                        {/* 이미지 - 모바일에서는 위쪽에 위치 */}
+                        {/* 이미지 */}
                         <div className="w-full sm:w-1/2 h-[200px] sm:h-full relative">
                             <Image 
                                 src={gathering.image} 
                                 alt="모임 이미지"
                                 fill
-                                className="rounded-t-lg sm:rounded-l-lg sm:rounded-t-none object-cover"  
+                                className="rounded-t-lg sm:rounded-l-lg sm:rounded-t-none object-cover pointer-events-none"
                                 priority={index === 0}
                                 sizes="(max-width: 768px) 100vw, 50vw"
                             />
@@ -201,7 +195,7 @@ export default function GatheringsList({
                             </div>
                         </div>
 
-                        {/* 텍스트 정보와 버튼 - 모바일에서는 아래쪽에 위치 */}
+                        {/* 텍스트 정보와 버튼 */}
                         <div className="w-full sm:w-1/2 flex flex-col sm:flex-row">
                             {/* 텍스트 정보 */}
                             <div className="flex-1 flex flex-col p-4">

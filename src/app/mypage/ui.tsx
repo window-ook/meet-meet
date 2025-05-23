@@ -10,6 +10,19 @@ import Meeting from "@/components/mypage/MyMeetingList";
 import MyReviewList from "@/components/mypage/MyReviewList";
 import CreatedMeetingList from "@/components/mypage/CreatedMeetingList";
 
+interface MeetingData {
+    id: string;
+    name: string;
+    image: string;
+    location: string;
+    type: string;
+    participantCount: number;
+    capacity: number;
+    dateTime: string;
+    isCompleted?: boolean;
+    isReviewed?: boolean;
+  }
+
 export default function MyPageUI() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [isClient, setIsClient] = useState(false); 
@@ -21,7 +34,7 @@ export default function MyPageUI() {
     setIsClient(true); 
   }, []);
 
-  const fetchJoinedMeetings = async () => {
+  const fetchJoinedMeetings = async (): Promise<MeetingData[]> => {
     if (!token) throw new Error("토큰 없음");
     const { data } = await axios.get(`/api/gatherings/joined?${queries}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -33,7 +46,7 @@ export default function MyPageUI() {
     data: meetings = [],
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<MeetingData[], Error>({
     queryKey: ["joinedMeetings", queries],
     queryFn: fetchJoinedMeetings,
     enabled: isClient && selectedTab === 0 && !!token, 
@@ -82,7 +95,7 @@ export default function MyPageUI() {
                     )}
                     {!isLoading &&
                     !error &&
-                    meetings.map((meeting: any) => (
+                    meetings.map((meeting) => (
                         <Meeting key={meeting.id} data={meeting} />
                     ))}
                     {!isLoading && !error && meetings.length === 0 && (
