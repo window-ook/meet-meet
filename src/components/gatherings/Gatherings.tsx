@@ -19,7 +19,7 @@ export default function Gatherings({ initialGatherings = [] }: PageProps) {
     return (
         <>
         {isModalOpen && <CreateMeetingModal onClose={closeModal} />}
-        <div className="flex flex-col lg:w-6xl h-full px-5 m-auto border">
+        <div className="w-full">
             {/* 모임 목록 헤더 */}
             <div className="w-full flex flex-col">
                 <div className=" w-full pt-10 flex flex-row justify-between items-center">

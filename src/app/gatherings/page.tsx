@@ -43,5 +43,9 @@ async function getInitialGatherings(): Promise<Gathering[]> {
 export default async function GatheringsPage() {
     const initialGatherings = await getInitialGatherings();
     
-    return <Gatherings initialGatherings={initialGatherings} />;
+    return (
+        <div className="contents-container">
+            <Gatherings initialGatherings={initialGatherings} />
+        </div>
+    );
 }
