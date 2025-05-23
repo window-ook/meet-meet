@@ -6,9 +6,11 @@ import Image from "next/image";
 
 
 
-export default function MyPage() {
+export default function CreatedMeetingUI() {
     const [selectedTab, setSelectedTab] = useState(0);
+    
     return (
+        <>
         <div className="bg-gray-50 min-h-screen">
             {/* My Page Section */}
             <div className="bg-gray-50 min-h-screen">
@@ -149,5 +151,6 @@ export default function MyPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
