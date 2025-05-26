@@ -11,6 +11,7 @@ type AuthContextType = {
     signin: (email: string, password: string) => Promise<void>;
     signout: () => Promise<void>;
     userName: string;
+    userId: number;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,7 +20,8 @@ export const AuthContext = createContext<AuthContextType>({
     signup: async () => { },
     signin: async () => { },
     signout: async () => { },
-    userName: ''
+    userName: '',
+    userId: 0
 });
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -27,6 +29,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [previousPath, setPreviousPath] = useState<string>('/');
     const [userName, setUserName] = useState('');
+    const [userId, setUserId] = useState(0);
 
     const router = useRouter();
     const pathname = usePathname();
@@ -79,6 +82,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         localStorage.removeItem('token');
         localStorage.removeItem('user_name');
         localStorage.removeItem('user_id');
+        localStorage.removeItem('user_email');
         localStorage.removeItem('user_company_name');
         localStorage.removeItem('user_image');
         setToken(null);
@@ -97,10 +101,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         initAuth();
     }, []);
 
-    // 유저 이름 감지
+    // 유저 이름, 유저 아이디 감지
     useEffect(() => {
         const userName = localStorage.getItem('user_name');
         if (userName) setUserName(userName);
+        const userId = localStorage.getItem('user_id');
+        if (userId) setUserId(Number(userId));
     }, []);
 
     useEffect(() => {
@@ -117,8 +123,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }, [isLoading, token, pathname, router, previousPath]);
 
     return (
-        <AuthContext.Provider value={{ token, setToken, signup, signin, signout, userName }}>
+        <AuthContext value={{ token, setToken, signup, signin, signout, userName, userId }}>
             {children}
-        </AuthContext.Provider>
+        </AuthContext>
     );
 }
