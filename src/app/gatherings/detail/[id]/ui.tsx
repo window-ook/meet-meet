@@ -1,12 +1,11 @@
 'use client';
 
-import { use, useContext, useState } from 'react';
+import { use, useContext, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
-import { Heart, Check } from "lucide-react"
+import { Heart, Check, UserRoundCheck } from "lucide-react"
 import { PageProps } from '@/types/pageprops';
-import { useSavedGatherings } from '@/components/gatherings/shared/hooks/useSavedGatherings';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useGatheringDetail from '@/hooks/gathering/useGatheringDetail';
 import useGatheringJoinChecking from '@/hooks/gathering/useGatheringJoinChecking';
@@ -15,6 +14,7 @@ import useLeaveGathering from '@/hooks/gathering/useLeaveGathering';
 import useCancelGathering from '@/hooks/gathering/useCancelGathering';
 import Image from 'next/image';
 import CheckLoginModal from '@/components/shared/ui/CheckingModal';
+import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';
 
 interface Participant {
     teamId: number;
@@ -41,9 +41,8 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-    const { detail, participants, isLoading: detailLoading, retchIsSaved } = useGatheringDetail(Number(id));
+    const { detail, participants, isLoading: detailLoading } = useGatheringDetail(Number(id));
     const { data: isParticipated, } = useGatheringJoinChecking(Number(id), token);
-    const { toggleSaved, savedIds } = useSavedGatherings();
     const { joinGathering } = useJoinGathering(token);
     const { leaveGathering } = useLeaveGathering(token);
     const { cancelGathering } = useCancelGathering(token);
@@ -58,16 +57,10 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
         setDeleteModalOpen(false);
     };
 
-
-    const handleToggleSaveGathering = () => {
-        toggleSaved(id);
-        retchIsSaved.mutate();
-    }
-
-    const percent =
-        detail?.participantCount
-            ? Math.min((detail.participantCount / 20) * 100, 100)
-            : 0;
+    const percent = useMemo(() => {
+        if (!detail?.participantCount || !detail?.capacity) return 0;
+        return Math.min((detail.participantCount / detail.capacity) * 100, 100);
+    }, [detail?.participantCount, detail?.capacity]);
 
     return (
         <>
@@ -111,12 +104,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                                 </div>
                             </div>
                             {/* RIGHT 찜하기 버튼 */}
-                            <button
-                                type="button"
-                                onClick={handleToggleSaveGathering}
-                                className="w-[2.5rem] h-[2.5rem] border-2 border-gray-300 rounded-full flex items-center justify-center text-main-500 cursor-pointer">
-                                {savedIds.includes(id) ? <Heart className="w-5 h-5 fill-main-500 text-main-500" /> : <Heart className="w-5 h-5" />}
-                            </button>
+                            <SaveToggleButton gatheringId={id} />
                         </div>
                         <div className="w-full border-t-2 border-dotted border-gray-300"></div>
                         {/* 하단 */}
@@ -124,8 +112,11 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                             {/* 모집정원, 개설확정 */}
                             <div className="flex justify-between text-sm">
                                 <div className="flex items-center gap-2">
-                                    <span>모집 정원 {detail?.participantCount}명</span>
-                                    {/* 정원들의 프로필 이미지 */}
+                                    <div className='flex items-center gap-1'>
+                                        <UserRoundCheck className='w-4 h-4 text-main-500' />
+                                        <span>{detail?.participantCount}명 참여 중</span>
+                                    </div>
+                                    {/* 참여자들의 프로필 이미지 */}
                                     <TooltipProvider>
                                         <div className="flex items-center">
                                             {participants?.slice(0, 4).map((participant: Participant, i: number) => (
@@ -146,7 +137,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                                                         </span>
                                                     </div>
                                                 </TooltipTrigger>
-                                                <TooltipContent side="top" align="center" className="flex gap-1 bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
+                                                <TooltipContent side="top" align="center" className="flex gap-1 bg-white border border-button rounded-lg p-2 shadow-lg">
                                                     {participants?.slice(4).length > 0 ? (
                                                         participants?.slice(4).map((participant: Participant, i: number) => (
                                                             <Image
@@ -181,8 +172,8 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                             </div>
                             {/* 최소인원, 최대인원 */}
                             <div className="flex justify-between text-sm">
-                                <span>최소인원 5명</span>
-                                <span>최대인원 20명</span>
+                                <span>최소 5명</span>
+                                <span>최대 {detail?.capacity}명</span>
                             </div>
                         </div>
                     </article>

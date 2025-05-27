@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react";
+import { Gathering } from "@/types/gatherings";
 import CreateMeetingModal from "@/components/gatherings/CreateMeetingModal";
 import GatheringsList from "@/components/gatherings/GatheringsList";
 import Image from "next/image";
-import { Gathering } from "@/types/gatherings";
 
 interface PageProps {
     initialGatherings?: Gathering[];

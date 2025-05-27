@@ -1,11 +1,13 @@
 "use client"
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useInfiniteGatherings } from "@/components/gatherings/shared/hooks/useInfiniteGatherings";
+import { useInfiniteGatherings } from "@/hooks/gathering/useInfiniteGatherings";
 import { Gathering, GatheringsListProps } from "@/types/gatherings"; // 경로 변경
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format'; // format 함수 import
-import SaveToggleButton from "@/components/gatherings/shared/SaveToggleButton";
+import { UserRoundCheck } from "lucide-react"
+import Image from "next/image";
+import SaveToggleButton from "@/components/gatherings/shared/ui/SaveToggleButton";
+import JoinedCountsProgressBar from './shared/ui/JoinedCountsProgressBar';
 
 // 모임 목록 컴포넌트
 export default function GatheringsList({
@@ -16,7 +18,7 @@ export default function GatheringsList({
 
     // SSR 데이터 확인
     const hasSSRData = propGatherings.length > 0;
-    
+
     // 무한스크롤 쿼리 
     const {
         infiniteGatherings,
@@ -40,13 +42,13 @@ export default function GatheringsList({
     })();
 
     // 최종 모임 목록
-    const finalGatherings = fetchFromApi 
+    const finalGatherings = fetchFromApi
         ? (hasSSRData ? allGatherings : [])  // 메인 페이지: SSR + 무한스크롤
         : propGatherings;                    // 찜목록: 전달받은 데이터 그대로
-    
+
     const isInitialLoading = fetchFromApi && !hasSSRData;
 
-    
+
     return (
         <div className="w-full flex flex-col justify-start gap-5">
             {/* 모임 목록 */}
@@ -64,8 +66,8 @@ export default function GatheringsList({
                     >
                         {/* 이미지 영역 */}
                         <div className="w-full md:w-80 h-48 md:h-40 relative flex-shrink-0">
-                            <Image 
-                                src={gathering.image} 
+                            <Image
+                                src={gathering.image}
                                 alt="모임 이미지"
                                 fill
                                 className="rounded-t-lg md:rounded-l-lg md:rounded-t-none object-cover pointer-events-none"
@@ -88,7 +90,7 @@ export default function GatheringsList({
                                 {/* 제목과 위치 */}
                                 <div className="flex flex-row md:justify-between gap-3">
                                     <div className="flex-1 flex flex-row gap-2 items-center">
-                                    <h1 className="text-lg font-semibold text-gray-900 -mt-6">{gathering.name}</h1>
+                                        <h1 className="text-lg font-semibold text-gray-900 -mt-6">{gathering.name}</h1>
                                         <div className="hidden sm:block w-[2px] h-[16px] bg-gray-900 -mt-6"></div>
                                         <p className="text-gray-700 text-sm font-medium -mt-6">{gathering.location}</p>
                                     </div>
@@ -114,18 +116,13 @@ export default function GatheringsList({
                             <div className="flex flex-row items-center justify-between">
                                 {/* 참여 인원 */}
                                 <div className="flex items-center gap-2">
-                                    <Image 
-                                        src={"/icons/person.svg"} 
-                                        alt="인원 수" 
-                                        width={16} 
-                                        height={16} 
-                                        className="text-gray-500"
-                                    />
+                                    <UserRoundCheck className='w-4 h-4 text-main-500' />
                                     <span className="text-gray-700 text-sm font-medium">
                                         {gathering.participantCount}/{gathering.capacity}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className='w-full px-2'>
+                                    <JoinedCountsProgressBar participantCount={gathering.participantCount} capacity={gathering.capacity} />
                                 </div>
                             </div>
                         </div>

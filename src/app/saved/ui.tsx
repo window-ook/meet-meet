@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Heart } from 'lucide-react';
 import { Gathering } from "@/types/gatherings";
 import { AuthContext } from '@/providers/AuthProvider';
-import { useSavedGatherings } from "@/components/gatherings/shared/hooks/useSavedGatherings";
+import { useSavedGatherings } from "@/hooks/gathering/useSavedGatherings";
 import { formatDate, formatTime, getTimeRemaining } from "@/components/shared/utils/format";
 import axios from 'axios';
 
@@ -25,7 +25,7 @@ export default function LikedMeetingsPage() {
   const { token } = useContext(AuthContext);
   const { savedIds: likedList, toggleSaved } = useSavedGatherings();
 
-    
+
   // 🔁 category + type 통합 상태
   const [filter, setFilter] = useState({
     category: Category.DALLAEMFIT,
@@ -109,7 +109,7 @@ export default function LikedMeetingsPage() {
           {filter.category === 'DALLAEMFIT' && (
             <div className="w-full flex flex-col justify-start py-5 border-b-2 border-gray-200">
               <div className="flex flex-row items-center gap-2">
-                { Object.values(DallaemfitType).map((type) => (
+                {Object.values(DallaemfitType).map((type) => (
                   <button
                     key={type}
                     onClick={() => handleTypeChange(type)}
@@ -121,8 +121,8 @@ export default function LikedMeetingsPage() {
                     {type === DallaemfitType.ALL
                       ? '전체'
                       : type === DallaemfitType.OFFICE_STRETCHING
-                      ? '오피스 스트레칭'
-                      : '마인드풀'}
+                        ? '오피스 스트레칭'
+                        : '마인드풀'}
                   </button>
                 ))}
               </div>
@@ -137,9 +137,9 @@ export default function LikedMeetingsPage() {
           const isLiked = likedList.includes(String(gathering.id));
 
           const percent = gathering.participantCount
-          ? Math.min((gathering.participantCount / gathering.capacity) * 100, 100)
-          : 0;
-          
+            ? Math.min((gathering.participantCount / gathering.capacity) * 100, 100)
+            : 0;
+
           return (
             <div key={gathering.id} className="border rounded-lg overflow-hidden shadow-sm flex flex-col md:flex-row">
               {/* 이미지 영역 */}
@@ -174,14 +174,14 @@ export default function LikedMeetingsPage() {
                     <Heart fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" className="w-4 h-4" />
                   </button>
                 </div>
-                 {/* 날짜 시간 */}
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <span>{formatDate(gathering?.dateTime || 'OOOO-OO-OO')}</span>
-                    <span>·</span>
-                    <span>{formatTime(gathering?.dateTime || 'OO:OO')}</span>
-                    </div>
-                    {/* 여백 */}
-                    <div className='w-full h-[3rem]'></div>
+                {/* 날짜 시간 */}
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <span>{formatDate(gathering?.dateTime || 'OOOO-OO-OO')}</span>
+                  <span>·</span>
+                  <span>{formatTime(gathering?.dateTime || 'OO:OO')}</span>
+                </div>
+                {/* 여백 */}
+                <div className='w-full h-[3rem]'></div>
                 <div>
                   <div className="flex items-center gap-1 text-sm font-medium mb-1 text-main-300">
                     <Image src={"/icons/person.svg"} alt="인원 수" width={16} height={16} style={{ width: '19px', height: '19px' }} />
