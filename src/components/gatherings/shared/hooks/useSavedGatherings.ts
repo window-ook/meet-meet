@@ -24,7 +24,7 @@ export const useSavedGatherings = () => {
             const currentSaved = getSavedGatherings();
             const newSaved = currentSaved.includes(gatheringId)
                 ? currentSaved.filter(id => id !== gatheringId)
-                : [...currentSaved, gatheringId];
+                : currentSaved.concat(gatheringId);
             
             setSavedGatherings(newSaved);
             return Promise.resolve(newSaved);
