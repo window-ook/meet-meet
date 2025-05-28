@@ -55,17 +55,17 @@ export default function SelectionService({
     const services = [
         {
           id: 'OFFICE_STRETCHING',
-          title: '달램핏',
-          subtitle: '오피스 스트레칭'
+          title: '북적북적',
+          subtitle: '엔터테인먼트'
         },
         {
           id: 'MINDFULNESS',
-          title: '달램핏',
-          subtitle: '마인드풀니스'
+          title: '북적북적',
+          subtitle: '액티비티'
         },
         {
           id: 'WORKATION',
-          title: '워케이션',
+          title: '도란도란',
           subtitle: null
         }
     ];
