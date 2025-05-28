@@ -97,7 +97,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setToken(null);
         setUserId(0);
         setUserName('');
-        queryClient.invalidateQueries({ queryKey: ['gatheringCheckJoin'] });
+        queryClient.invalidateQueries({ queryKey: ['checkGatheringJoined'] });
         await axios.post('/api/auth/signout');
     }
 

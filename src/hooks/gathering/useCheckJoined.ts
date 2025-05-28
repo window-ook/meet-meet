@@ -30,7 +30,7 @@ export const useCheckJoined = (
 
     const { data, isLoading, isError } = useQuery({
         enabled: !!id && !!token,
-        queryKey: ['gatheringCheckJoin', id],
+        queryKey: ['checkJoinded', id],
         queryFn: () => fetchJoinChecking(),
         refetchOnWindowFocus: false,
         refetchOnMount: false,
