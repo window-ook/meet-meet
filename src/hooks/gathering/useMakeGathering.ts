@@ -8,9 +8,9 @@ export default function useMakeGathering(token: string | null) {
     const queryClient = useQueryClient();
 
     const makeGathering = useMutation({
-        mutationFn: async () => {
+        mutationFn: async (formData: FormData) => {
             if (!token) throw new Error('로그인이 필요합니다.');
-            const response = await axios.delete(`/api/gatherings`, { headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.post(`/api/gatherings`, formData, { headers: { Authorization: `Bearer ${token}` } });
             return response.data;
         },
         onSuccess: () => {

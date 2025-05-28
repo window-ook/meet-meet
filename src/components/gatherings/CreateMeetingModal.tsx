@@ -2,12 +2,15 @@
 
 import { XIcon } from "lucide-react";
 import SelectionService from "./SelectionService";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import { AuthContext } from '@/providers/AuthProvider';
+import useMakeGathering from '@/hooks/gathering/useMakeGathering';
 
 export default function CreateMeetingModal({ onClose }: { onClose: () => void }) {
+    const { token } = useContext(AuthContext);
+    const { makeGathering } = useMakeGathering(token); // isLoading 제거
 
     // 폼 데이터 상태 관리
     const [formData, setFormData] = useState({
@@ -29,9 +32,10 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
     // 마감 날짜
     const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
 
-    // 제출 상태 관리
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // 에러 상태 관리
     const [error, setError] = useState<string | null>(null);
+    // 제출 상태 관리 (기존 방식 유지)
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 입력 필드 변경 핸들러
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,7 +66,6 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
 
     // 파일 추가 버튼 클릭 핸들러
     const handleFileButtonClick = () => {
-        // 숨겨진 파일 입력 요소 클릭
         fileInputRef.current?.click();
     };
 
@@ -71,7 +74,7 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
         const files = e.target.files;
 
         if (files && files.length > 0) {
-            const file = files[0]; // 첫 번째 파일만 사용
+            const file = files[0];
 
             const maxSize = 5 * 1024 * 1024; // 5MB
             if (file.size > maxSize) {
@@ -82,12 +85,12 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
             // 이미지 타입 검증
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/avif', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
-                setError("이미지 파일 타입이 맞지않습니다.jpg, png, gif, svg, avi, webp 파일만 가능합니다.");
+                setError("이미지 파일 타입이 맞지않습니다. jpg, png, gif, svg, avif, webp 파일만 가능합니다.");
                 return;
             }
 
-            setFileName(file.name); // 파일명 상태 업데이트
-            setImageFile(file); // 파일 객체 저장
+            setFileName(file.name);
+            setImageFile(file);
             setError(null);
         }
     };
@@ -96,8 +99,7 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 로그인
-        const token = localStorage.getItem('token');
+        // 토큰 체크
         if (!token) {
             setError('로그인이 필요한 서비스입니다.');
             return;
@@ -125,66 +127,49 @@ export default function CreateMeetingModal({ onClose }: { onClose: () => void })
             return;
         }
 
-        try {
-            setIsSubmitting(true);
-            setError(null);
+        setIsSubmitting(true); // 로딩 시작
+        setError(null);
 
-            // 토큰 가져오기
-            const token = localStorage.getItem('token');
+        // FormData 객체 생성
+        const apiFormData = new FormData();
+        apiFormData.append('name', formData.name);
+        apiFormData.append('location', formData.location);
+        apiFormData.append('type', formData.type);
+        apiFormData.append('capacity', formData.capacity.toString());
 
-            if (!token) {
-                throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
-            }
+        // 날짜 포맷팅 (ISO 형식 YYYY-MM-DDTHH:MM:SS)
+        if (meetingDate) {
+            apiFormData.append('dateTime', meetingDate.toISOString());
+        }
 
-            // FormData 객체 생성
-            const apiFormData = new FormData();
-            apiFormData.append('name', formData.name);
-            apiFormData.append('location', formData.location);
-            apiFormData.append('type', formData.type);
-            apiFormData.append('capacity', formData.capacity.toString());
+        if (deadlineDate) {
+            apiFormData.append('registrationEnd', deadlineDate.toISOString());
+        }
 
-            // 날짜 포맷팅 (ISO 형식 YYYY-MM-DDTHH:MM:SS)
-            if (meetingDate) {
-                apiFormData.append('dateTime', meetingDate.toISOString());
-            }
+        // 이미지 파일 추가
+        if (imageFile) {
+            apiFormData.append('image', imageFile);
+        }
 
-            if (deadlineDate) {
-                apiFormData.append('registrationEnd', deadlineDate.toISOString());
-            }
-
-            // 이미지 파일 추가
-            if (imageFile) {
-                apiFormData.append('image', imageFile);
-            }
-
-            // 이 부분을 useMakeGathering으로 대체하기
-            const response = await axios.post('/api/gatherings', apiFormData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            console.log(response);
-
-            // 성공 시 모달 닫기
-            onClose();
-            window.location.reload();
-        } catch (error) {
-            console.error('API 요청 중 오류 발생:', error);
-
-            if (axios.isAxiosError(error)) {
-                if (error.response) {
-                    setError(error.response.data.message || '모임 생성 중 오류가 발생했습니다.');
-                } else if (error.request) {
-                    setError('서버에 연결할 수 없습니다.');
+        // 모임 생성 요청
+        makeGathering(apiFormData, {
+            onSuccess: () => {
+                setIsSubmitting(false);
+                onClose();
+            },
+            onError: (error: any) => {
+                console.error('모임 생성 실패:', error);
+                setIsSubmitting(false);
+                
+                if (error?.response?.data?.message) {
+                    setError(error.response.data.message);
+                } else if (error?.message) {
+                    setError(error.message);
                 } else {
-                    setError(error.message || '모임 생성 중 오류가 발생했습니다.');
+                    setError('모임 생성 중 오류가 발생했습니다.');
                 }
             }
-        } finally {
-            setIsSubmitting(false);
-        }
+        });
     };
 
     return (
