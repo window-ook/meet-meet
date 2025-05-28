@@ -2,11 +2,11 @@
 
 import { AuthContext } from '@/providers/AuthProvider';
 import { useState, useRef, useEffect, useContext } from "react";
+import { useCreateGathering } from '@/hooks/gathering/useCreateGathering';
 import { XIcon } from "lucide-react";
 import SelectionService from "./SelectionService";
 import DatePicker from "react-datepicker";
 import axios from "axios";
-import useMakeGathering from '@/hooks/gathering/useCreateGathering';
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function CreateGatheringDialog({ onClose }: { onClose: () => void }) {
@@ -39,7 +39,7 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
 
     const { token } = useContext(AuthContext);
 
-    const { makeGathering } = useMakeGathering(token);
+    const { createGathering } = useCreateGathering(token);
 
     // 입력 필드 변경 핸들러
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -166,9 +166,8 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
             }
 
             // 모임 생성
-            const response = makeGathering(apiFormData);
-            console.log(response);
-            onClose();
+            const response = createGathering(apiFormData);
+            if (response!) onClose();
         } catch (error) {
             console.error('API 요청 중 오류 발생:', error);
 

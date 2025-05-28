@@ -8,10 +8,10 @@ import axios from 'axios';
  * @param id
  * @returns {data(boolean 타입), isLoading, isError}
  */
-export default function useGatheringJoinCheckingQuery(
+export const useCheckJoined = (
     id: number,
     token: string | null
-) {
+) => {
     const searchParams = useSearchParams();
     const queries = searchParams.toString();
 

@@ -6,9 +6,9 @@ import axios from 'axios';
  * @param id
  * @returns {data, isLoading, isError}
  */
-export default function useGatheringDetail(
+export const useFetchGatheringDetail = (
     id: number
-) {
+) => {
     const queryClient = useQueryClient();
 
     const fetchGatheringDetail = async (id: number) => {

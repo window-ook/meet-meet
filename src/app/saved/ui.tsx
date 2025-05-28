@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Heart } from 'lucide-react';
 import { Gathering } from "@/types/gatherings";
 import { AuthContext } from '@/providers/AuthProvider';
-import { useSavedGatherings } from "@/hooks/gathering/useSavedGatherings";
+import { useSavedGatherings } from "@/hooks/gathering/useToggleSavedGatherings";
 import { formatDate, formatTime, getTimeRemaining } from "@/components/shared/utils/format";
 import axios from 'axios';
 

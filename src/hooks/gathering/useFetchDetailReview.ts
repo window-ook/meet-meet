@@ -6,9 +6,9 @@ import axios from 'axios';
  * @param id
  * @returns {data, isLoading, isError}
  */
-export default function useGatheringReviewQuery(
+export const useGatheringReviewQuery = (
     id: number
-) {
+) => {
     const fetchGatheringReviews = async (id: number) => {
         try {
             const response = await axios.get(`/api/gatherings/detail/reviews?id=${id}`);

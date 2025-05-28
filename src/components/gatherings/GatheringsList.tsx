@@ -1,7 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useInfiniteGatherings } from "@/hooks/gathering/useInfiniteGatherings";
+import { useFetchInfiniteGatherings } from "@/hooks/gathering/useFetchInfiniteGatherings";
+import { useGatheringsStore } from '@/store/gatheringsStore';
 import { Gathering, GatheringsListProps } from "@/types/gatherings"; // 경로 변경
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format'; // format 함수 import
 import { UserRoundCheck } from "lucide-react"
@@ -9,30 +10,30 @@ import Image from "next/image";
 import SaveToggleButton from "@/components/gatherings/shared/ui/SaveToggleButton";
 import JoinedCountsProgressBar from './shared/ui/JoinedCountsProgressBar';
 
-// 모임 목록 컴포넌트
 export default function GatheringsList({
-    gatherings: propGatherings = [],
-    fetchFromApi = true
+    fetchFromApi = true,
 }: GatheringsListProps) {
     const router = useRouter();
 
-    // SSR 데이터 확인
-    const hasSSRData = propGatherings.length > 0;
+    // 전역 상태: SSR 모임 목록
+    const ssrGatherings = useGatheringsStore((s) => s.gatherings);
 
-    // 무한스크롤 쿼리 
+    // SSR 모임 목록 확인
+    const hasSSRData = ssrGatherings.length > 0;
+
     const {
         infiniteGatherings,
         lastItemRef,
         isFetchingNextPage,
         infiniteScrollEnabled,
-    } = useInfiniteGatherings({
+    } = useFetchInfiniteGatherings({
         enabled: fetchFromApi,
         hasSSRData,
     });
 
     // 전체 모임 데이터 합치기
-    const allGatherings = (() => {
-        const gatherings = [...propGatherings];
+    const mergedGatherings = (() => {
+        const gatherings = [...ssrGatherings];
 
         if (hasSSRData && fetchFromApi && infiniteScrollEnabled) {
             gatherings.push(...infiniteGatherings);
@@ -43,11 +44,10 @@ export default function GatheringsList({
 
     // 최종 모임 목록
     const finalGatherings = fetchFromApi
-        ? (hasSSRData ? allGatherings : [])  // 메인 페이지: SSR + 무한스크롤
-        : propGatherings;                    // 찜목록: 전달받은 데이터 그대로
+        ? (hasSSRData ? mergedGatherings : [])  // 메인 페이지: SSR + 무한스크롤
+        : ssrGatherings;                    // 찜목록: 전달받은 데이터 그대로
 
     const isInitialLoading = fetchFromApi && !hasSSRData;
-
 
     return (
         <div className="w-full flex flex-col justify-start gap-5">

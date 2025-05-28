@@ -1,5 +1,5 @@
-import Gatherings from "@/components/gatherings/gatherings";
 import { Gathering } from "@/types/gatherings";
+import Gatherings from "@/components/gatherings/gatherings";
 
 async function getInitialGatherings(): Promise<Gathering[]> {
     try {
@@ -13,7 +13,7 @@ async function getInitialGatherings(): Promise<Gathering[]> {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('SSR API 실패:', {
+            console.error('모임 목록 데이터 SSR 실패:', {
                 status: response.status,
                 statusText: response.statusText,
                 body: errorText
@@ -23,10 +23,7 @@ async function getInitialGatherings(): Promise<Gathering[]> {
 
         const data = await response.json();
 
-        // console.log(data);
-
         if (Array.isArray(data)) {
-            // console.log('SSR 데이터:', data.length, '개');
             return data;
         } else {
             console.warn('응답이 배열이 아닙니다:', data);

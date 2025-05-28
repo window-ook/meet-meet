@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchGatheringsPaginated } from '@/components/gatherings/shared/utils/fetch';
 import { AuthContext } from '@/providers/AuthProvider';
 
-interface UseInfiniteGatheringsProps {
+interface UseFetchInfiniteGatheringsProps {
     enabled: boolean; // 무한스크롤 활성화 여부
     hasSSRData: boolean; // SSR 데이터 존재 여부
 }
@@ -14,7 +14,7 @@ interface UseInfiniteGatheringsProps {
  * @param hasSSRData SSR 데이터 존재 여부
  * @returns 
  */
-export const useInfiniteGatherings = ({ enabled, hasSSRData }: UseInfiniteGatheringsProps) => {
+export const useFetchInfiniteGatherings = ({ enabled, hasSSRData }: UseFetchInfiniteGatheringsProps) => {
     const { token } = useContext(AuthContext);
     const observerRef = useRef<IntersectionObserver | null>(null);
     const [infiniteScrollEnabled, setInfiniteScrollEnabled] = useState(false);

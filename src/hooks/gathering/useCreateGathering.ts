@@ -1,10 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
-export default function useMakeGathering(token: string | null) {
+/**
+ * 모임 생성 훅
+ * @param token 토큰
+ * @returns {function} createGathering - 모임 생성 함수
+ */
+export const useCreateGathering = (token: string | null) => {
     const queryClient = useQueryClient();
 
-    const makeGathering = useMutation({
+    const createGathering = useMutation({
         mutationFn: async (formData: FormData) => {
             if (!token) throw new Error('로그인이 필요합니다.');
             const response = await axios.post(`/api/gatherings`, formData, {
@@ -29,5 +34,5 @@ export default function useMakeGathering(token: string | null) {
         }
     });
 
-    return { makeGathering: makeGathering.mutate }
+    return { createGathering: createGathering.mutate }
 }

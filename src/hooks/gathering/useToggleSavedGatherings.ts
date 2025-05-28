@@ -8,7 +8,7 @@ import { getSavedGatherings, setSavedGatherings } from "@/components/gatherings/
  * @returns {function} toggleSaved - 찜한 모임 토글 기능
  * @returns {boolean} isToggling - 찜한 모임 토글 기능 진행 중 여부
  */
-export const useSavedGatherings = () => {
+export const useToggleSavedGatherings = () => {
     const queryClient = useQueryClient();
 
     // 찜목록 조회

@@ -11,7 +11,7 @@ interface UseJoinGatheringProps {
 * @param onErrorCallback 에러 콜백 함수 (모달에 표시할 메세지를 전달 받음)
 * @returns {function} joinGathering - 모임 참가 함수
 */
-export default function useJoinGathering({ token, onErrorCallback }: UseJoinGatheringProps) {
+export const useJoinGathering = ({ token, onErrorCallback }: UseJoinGatheringProps) => {
     const queryClient = useQueryClient();
 
     const joinGathering = useMutation({

@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react';
-import { useSavedGatherings } from "@/hooks/gathering/useSavedGatherings";
+import { useToggleSavedGatherings } from "@/hooks/gathering/useToggleSavedGatherings";
 
 interface SaveToggleButtonProps {
     gatheringId: string;
@@ -19,7 +19,7 @@ export default function SaveToggleButton({
     gatheringId,
     className = ''
 }: SaveToggleButtonProps) {
-    const { savedIds, toggleSaved, isToggling } = useSavedGatherings();
+    const { savedIds, toggleSaved, isToggling } = useToggleSavedGatherings();
     const isSaved = savedIds.includes(gatheringId);
 
     return (

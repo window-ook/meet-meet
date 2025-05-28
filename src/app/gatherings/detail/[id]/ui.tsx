@@ -2,16 +2,16 @@
 
 import { use, useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useFetchGatheringDetail } from '@/hooks/gathering/useFetchGatheringDetail';
+import { useCheckJoined } from '@/hooks/gathering/useCheckJoined';
+import { useJoinGathering } from '@/hooks/gathering/useJoinGathering';
+import { useCancelGathering } from '@/hooks/gathering/useCancelGathering';
+import { useLeaveGathering } from '@/hooks/gathering/useLeaveGathering';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
 import { Heart, Check, UserRoundCheck } from "lucide-react"
 import { PageProps } from '@/types/pageProps';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import useFetchGatheringDetail from '@/hooks/gathering/useFetchGatheringDetail';
-import useCheckJoined from '@/hooks/gathering/useCheckJoined';
-import useJoinGathering from '@/hooks/gathering/useJoinGathering';
-import useLeaveGathering from '@/hooks/gathering/useLeaveGathering';
-import useCancelGathering from '@/hooks/gathering/useCancelGathering';
 import Image from 'next/image';
 import CheckingModal from '@/components/shared/ui/ConfirmDialog';
 import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';

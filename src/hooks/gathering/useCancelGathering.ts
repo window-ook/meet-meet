@@ -1,3 +1,4 @@
+import { useGatheringsStore } from '@/store/gatheringsStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -11,16 +12,18 @@ interface UseCancelGatheringProps {
 * @param onErrorCallback 에러 콜백 함수 (모달에 표시할 메세지를 전달 받음)
 * @returns {function} cancelGathering - 모임 삭제 함수
 */
-export default function useCancelGathering({ token, onErrorCallback }: UseCancelGatheringProps) {
+export const useCancelGathering = ({ token, onErrorCallback }: UseCancelGatheringProps) => {
     const queryClient = useQueryClient();
+    const removeGathering = useGatheringsStore((s) => s.removeGathering);
 
     const cancelGathering = useMutation({
         mutationFn: async (id: number) => {
             if (!token) throw new Error('로그인이 필요합니다.');
-            const response = await axios.put(`/api/gatherings/cancel?id=${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
-            return response.data;
+            await axios.put(`/api/gatherings/cancel?id=${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            return id;
         },
-        onSuccess: () => {
+        onSuccess: (id) => {
+            removeGathering(id);
             queryClient.invalidateQueries({ queryKey: ['gatherings', 'infinite'] });
             alert('모임을 삭제했습니다.');
         },

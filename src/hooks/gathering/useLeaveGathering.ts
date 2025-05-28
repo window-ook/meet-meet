@@ -11,7 +11,7 @@ interface UseLeaveGatheringProps {
 * @param onErrorCallback 에러 콜백 함수 (모달에 표시할 메세지를 전달 받음)
 * @returns {function} leaveGathering - 모임 참여 취소 함수
 */
-export default function useLeaveGathering({ token, onErrorCallback }: UseLeaveGatheringProps) {
+export const useLeaveGathering = ({ token, onErrorCallback }: UseLeaveGatheringProps) => {
     const queryClient = useQueryClient();
 
     const leaveGathering = useMutation({
