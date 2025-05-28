@@ -2,16 +2,23 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 /** 
- * 모임 리뷰 목록 조회 커스텀 훅
- * @param id
+ * 모임 리뷰 목록 조회 훅
+ * @param gatheringId
+ * @param limit
+ * @param offset
+ * @method GET
  * @returns {data, isLoading, isError}
  */
-export const useGatheringReviewQuery = (
-    id: number
+export const useFetchDetailReview = (
+    gatheringId: number,
+    limit: number,
+    offset: number
 ) => {
-    const fetchGatheringReviews = async (id: number) => {
+    const fetchGatheringReviews = async () => {
         try {
-            const response = await axios.get(`/api/gatherings/detail/reviews?id=${id}`);
+            const response = await axios.get(`/api/gatherings/detail/reviews`, {
+                params: { gatheringId, limit, offset }
+            });
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -22,9 +29,9 @@ export const useGatheringReviewQuery = (
     }
 
     const { data, isLoading, isError } = useQuery({
-        enabled: !!id,
-        queryKey: ['gatheringDetailReviews', id],
-        queryFn: () => fetchGatheringReviews(id),
+        enabled: !!gatheringId,
+        queryKey: ['gatheringReviews', gatheringId],
+        queryFn: fetchGatheringReviews,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         refetchOnReconnect: false,

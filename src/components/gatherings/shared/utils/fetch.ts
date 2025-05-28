@@ -8,15 +8,14 @@ import { Gathering } from "@/types/gatherings";
  * @returns {Promise<Array>} 모임 목록 배열
  */
 export const fetchGatheringsPaginated = async (page: number, limit: number, token: string) => {
-    
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URI}/api/gatherings`, {
+    const response = await axios.get(`/api/gatherings`, {
         params: {
             offset: (page - 1) * limit,
             limit,
         },
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     });
-    
+
     return response.data || [];
 };
 
