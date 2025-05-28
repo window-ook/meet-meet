@@ -22,7 +22,7 @@ export const useLeaveGathering = ({ token, onErrorCallback }: UseLeaveGatheringP
         },
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ['gatheringDetail', id] });
-            queryClient.invalidateQueries({ queryKey: ['gatheringCheckJoin', id] });
+            queryClient.invalidateQueries({ queryKey: ['checkGatheringJoined'] });
             alert('참여 취소했습니다.');
         },
         onError: (error) => {

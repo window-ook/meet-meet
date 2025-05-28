@@ -2,15 +2,16 @@
 
 import { AuthContext } from '@/providers/AuthProvider';
 import { useState, useRef, useEffect, useContext } from "react";
+import { useCreateGathering } from '@/hooks/gathering/useCreateGathering';
 import { XIcon } from "lucide-react";
 import SelectionService from "./SelectionService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import useMakeGathering from '@/hooks/gathering/useMakeGathering';
+import axios from 'axios';
 
 export default function CreateGatheringDialog({ onClose }: { onClose: () => void }) {
     const { token } = useContext(AuthContext);
-    const { makeGathering } = useMakeGathering(token); // isLoading 제거
+    const { createGathering } = useCreateGathering(token); // isLoading 제거
 
     // 폼 데이터 상태 관리
     const [formData, setFormData] = useState({
@@ -157,22 +158,23 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
         }
 
         // 모임 생성 요청
-        makeGathering(apiFormData, {
+        createGathering(apiFormData, {
             onSuccess: () => {
                 alert('모임 생성 완료');
                 setIsSubmitting(false);
                 onClose();
             },
-            onError: (error: any) => {
+            onError: (error: unknown) => {
                 console.error('모임 생성 실패:', error);
                 setIsSubmitting(false);
-                
-                if (error?.response?.data?.message) {
-                    setError(error.response.data.message);
-                } else if (error?.message) {
-                    setError(error.message);
+
+                if (axios.isAxiosError(error)) {
+                    const serverError = error?.response?.data?.error;
+                    alert(serverError?.message || '에러가 발생했습니다.');
+                } else if (error instanceof Error) {
+                    alert(error.message);
                 } else {
-                    setError('모임 생성 중 오류가 발생했습니다.');
+                    alert('알 수 없는 에러가 발생했습니다.');
                 }
             }
         });

@@ -24,7 +24,7 @@ export const useJoinGathering = ({ token, onErrorCallback }: UseJoinGatheringPro
         },
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ['gatheringDetail', id] });
-            queryClient.invalidateQueries({ queryKey: ['gatheringCheckJoin', id] });
+            queryClient.invalidateQueries({ queryKey: ['checkGatheringJoined'] });
             queryClient.invalidateQueries({ queryKey: ["joinedMeetings", token] });
             alert('참여 완료했습니다.');
         },

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 /** 
- * 모임 상세 조회 커스텀 훅
+ * 모임 상세 조회 훅
  * @param id
  * @returns {data, isLoading, isError}
  */

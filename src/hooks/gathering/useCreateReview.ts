@@ -24,6 +24,7 @@ export const useCreateReview = ({ token, onErrorCallback }: UseJoinGatheringProp
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["myReviewGatherings", token] });
+            queryClient.invalidateQueries({ queryKey: ["gatheringReviews"] });
             alert('리뷰 작성 완료')
         },
         onError: (error) => {

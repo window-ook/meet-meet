@@ -3,6 +3,7 @@
 import { use, useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFetchGatheringDetail } from '@/hooks/gathering/useFetchGatheringDetail';
+import { useFetchDetailReview } from '@/hooks/gathering/useFetchDetailReview';
 import { useCheckJoined } from '@/hooks/gathering/useCheckJoined';
 import { useJoinGathering } from '@/hooks/gathering/useJoinGathering';
 import { useCancelGathering } from '@/hooks/gathering/useCancelGathering';
@@ -11,13 +12,15 @@ import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
 import { Heart, Check, UserRoundCheck } from "lucide-react"
 import { PageProps } from '@/types/pageProps';
+import { ReviewItem } from '@/types/reviews';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Image from 'next/image';
-import CheckingModal from '@/components/shared/ui/ConfirmDialog';
+import ConfirmDialog from '@/components/shared/ui/ConfirmDialog';
 import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';
 import JoinedCountsProgressBar from '@/components/gatherings/shared/ui/JoinedCountsProgressBar';
 import DetailInformationLoading from '@/components/gatherings/detail/DetailInformationLoading';
 import DetailThumbnailLoading from '@/components/gatherings/detail/DetailThumbnailLoading';
+import DetailReviewLoading from '@/components/gatherings/detail/DetailReviewLoading';
 
 interface Participant {
     teamId: number;
@@ -45,9 +48,16 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [errorModalOpen, setErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [page, setPage] = useState(1);
+
+    const limit = 4;
+    const offset = (page - 1) * limit;
 
     const { detail, participants, isLoading: detailLoading } = useFetchGatheringDetail(Number(id));
     const { data: isParticipated, } = useCheckJoined(Number(id), token);
+    const { data: reviews, isLoading: reviewsLoading } = useFetchDetailReview(Number(id), limit, offset);
+    const totalPages = reviews?.totalPages || 1;
+
     const { joinGathering } = useJoinGathering({
         token,
         onErrorCallback: (message) => {
@@ -87,9 +97,6 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                         <section className='flex flex-col sm:flex-row gap-4'>
                             <DetailThumbnailLoading />
                             <DetailInformationLoading />
-                        </section>
-                        <section className='flex flex-col sm:flex-row gap-4'>
-                            {/* <DetailReviewLoading /> */}
                         </section>
                     </>
                 ) : (
@@ -208,36 +215,54 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                 {/* 모임 리뷰 목록 */}
                 <section className='w-full h-full px-4 py-4 flex flex-col gap-4 bg-white rounded-lg'>
                     <h1 className='text-lg font-semibold'>다른 참여자들은 이렇게 느꼈어요!</h1>
-                    {/* 아이템 */}
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className='w-full border-dotted border-b-2 border-main-300 flex flex-col gap-2'>
-                            <div className='flex gap-1'>
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                    <Heart key={index} className="w-4 h-4 fill-main-500 text-main-500" />
-                                ))}
+                    {reviewsLoading ? (
+                        <DetailReviewLoading />
+                    ) : (
+                        reviews?.data?.map((review: ReviewItem) => (
+                            <div
+                                key={review?.id}
+                                className='w-full border-dotted border-b-2 border-main-300 flex flex-col gap-2'>
+                                <div className='flex gap-1'>
+                                    {Array.from({ length: review?.score }).map((_, index) => (
+                                        <Heart key={index} className="w-4 h-4 fill-main-500 text-main-500" />
+                                    ))}
+                                    {Array.from({ length: 5 - review?.score }).map((_, index) => (
+                                        <Heart key={index} className="w-4 h-4 fill-gray-300 text-gray-300" />
+                                    ))}
+                                </div>
+                                <p className='text-sm'>{review?.comment}</p>
+                                <div className='flex items-center gap-1 text-xs'>
+                                    <Image src={review?.User?.image || '/icons/default_profile_image.svg'} alt='프로필 이미지' width={32} height={32} className='rounded-full' />
+                                    <span>{review?.User?.name}</span>
+                                    <span>|</span>
+                                    <span>{formatDate(review?.createdAt || 'OOOO-OO-OO')}</span>
+                                </div>
+                                <div className='w-full h-1'></div>
                             </div>
-                            <p className='text-sm'>재밌는 모임이었어요! 다음에도 만나기로 했습니다 ㅋㅋㅋ</p>
-                            <div className='flex items-center gap-1 text-xs'>
-                                <Image src='/icons/default_profile_image.svg' alt='프로필 이미지' width={32} height={32} className='rounded-full' />
-                                <span>닉네임</span>
-                                <span>|</span>
-                                <span>2025.05.22</span>
-                            </div>
-                            <div className='w-full h-1'></div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                     {/* 페이지 컨버터 */}
-                    <div className="flex justify-center items-center gap-2">
-                        <button className="w-8 h-8 flex items-center justify-center text-gray-500 transition">〈</button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full border border-main-500 bg-main-500 text-white font-bold">1</button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-main-100 transition">2</button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-main-100 transition">3</button>
-                        <span className="mx-1 text-gray-400">...</span>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 hover:bg-main-100 transition">10</button>
-                        <button className="w-8 h-8 flex items-center justify-center text-gray-500 transition">〉</button>
-                    </div>
+                    {totalPages > 1 ? (
+                        <div className="flex justify-center items-center gap-2 mt-4">
+                            <button
+                                className="w-8 h-8 flex items-center justify-center text-gray-500 transition"
+                                disabled={page === 1}
+                                onClick={() => setPage(page - 1)}
+                            >〈</button>
+                            {Array.from({ length: totalPages }).map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    className={`w-8 h-8 flex items-center justify-center rounded-full border ${page === idx + 1 ? 'border-main-500 bg-main-500 text-white font-bold' : 'border-gray-300 bg-white text-gray-500 hover:bg-main-100 transition'}`}
+                                    onClick={() => setPage(idx + 1)}
+                                >{idx + 1}</button>
+                            ))}
+                            <button
+                                className="w-8 h-8 flex items-center justify-center text-gray-500 transition"
+                                disabled={page === totalPages}
+                                onClick={() => setPage(page + 1)}
+                            >〉</button>
+                        </div>
+                    ) : (<p className='p-20 mx-auto text-sm text-gray-500'>아직 리뷰가 없습니다.</p>)}
                 </section>
             </main >
             {/* 모임 참가 Footer */}
@@ -272,14 +297,14 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                     }
                 </div>
             </footer>
-            <CheckingModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} text='로그인이 필요합니다.' needLogin={true} />
-            <CheckingModal
+            <ConfirmDialog open={loginModalOpen} onClose={() => setLoginModalOpen(false)} text='로그인이 필요합니다.' needLogin={true} />
+            <ConfirmDialog
                 open={deleteModalOpen}
                 text="모임을 삭제 하시겠습니까?"
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleDeleteConfirm}
             />
-            <CheckingModal
+            <ConfirmDialog
                 open={errorModalOpen}
                 text={errorMessage}
                 onClose={() => setErrorModalOpen(false)}
