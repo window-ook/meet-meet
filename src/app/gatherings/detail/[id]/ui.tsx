@@ -11,9 +11,9 @@ import { useLeaveGathering } from '@/hooks/gathering/useLeaveGathering';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
 import { Heart, Check, UserRoundCheck } from "lucide-react"
-import { PageProps } from '@/types/pageProps';
 import { ReviewItem } from '@/types/reviews';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PageProps } from './page';
 import Image from 'next/image';
 import ConfirmDialog from '@/components/shared/ui/ConfirmDialog';
 import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';
