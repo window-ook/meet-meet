@@ -1,5 +1,5 @@
 import { Gathering } from "@/types/gatherings";
-import Gatherings from "@/components/gatherings/gatherings";
+import Gatherings from "@/components/gatherings/Gatherings";
 
 async function getInitialGatherings(): Promise<Gathering[]> {
     try {
