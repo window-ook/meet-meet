@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useContext } from 'react';
-import { useWriteReview } from '@/hooks/gathering/useWriteReview';
+import { useWriteReview } from '@/hooks/api/useWriteReview';
 import { AuthContext } from '@/providers/AuthProvider';
 
 interface ReviewDialogProps {

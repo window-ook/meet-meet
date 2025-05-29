@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react';
-import { useToggleSavedGatherings } from "@/hooks/gathering/useToggleSavedGatherings";
+import { useToggleSavedGatherings } from "@/hooks/api/useToggleSavedGatherings";
 
 interface SaveToggleButtonProps {
     gatheringId: string;

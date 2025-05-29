@@ -2,12 +2,12 @@
 
 import { use, useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFetchGatheringDetail } from '@/hooks/gathering/useFetchGatheringDetail';
-import { useFetchDetailReview } from '@/hooks/gathering/useFetchDetailReview';
-import { useCheckJoined } from '@/hooks/gathering/useCheckJoined';
-import { useJoinGathering } from '@/hooks/gathering/useJoinGathering';
-import { useCancelGathering } from '@/hooks/gathering/useCancelGathering';
-import { useLeaveGathering } from '@/hooks/gathering/useLeaveGathering';
+import { useFetchGatheringDetail } from '@/hooks/api/useFetchGatheringDetail';
+import { useFetchDetailReview } from '@/hooks/api/useFetchDetailReview';
+import { useCheckJoined } from '@/hooks/api/useCheckJoined';
+import { useJoinGathering } from '@/hooks/api/useJoinGathering';
+import { useCancelGathering } from '@/hooks/api/useCancelGathering';
+import { useLeaveGathering } from '@/hooks/api/useLeaveGathering';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
 import { Heart, Check, UserRoundCheck } from "lucide-react"

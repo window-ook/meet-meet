@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useFetchInfiniteGatherings } from "@/hooks/gathering/useFetchInfiniteGatherings";
+import { useFetchInfiniteGatherings } from "@/hooks/api/useFetchInfiniteGatherings";
 import { useGatheringsStore } from '@/store/gatheringsStore';
 import { Gathering, GatheringsListProps } from "@/types/gatherings";
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
@@ -92,11 +92,10 @@ export default function GatheringsList({
                                 sizes="(max-width: 768px) 100vw, 320px"
                             />
                             {/* 마감 시간 배지 */}
-                            <div className={`absolute top-3 left-3 rounded-lg px-3 py-1.5 flex items-center gap-1.5 shadow-sm ${
-                                expired 
-                                    ? 'bg-gray-600' 
+                            <div className={`absolute top-3 left-3 rounded-lg px-3 py-1.5 flex items-center gap-1.5 shadow-sm ${expired
+                                    ? 'bg-gray-600'
                                     : 'bg-main-600'
-                            }`}>
+                                }`}>
                                 <Image src={"/icons/Alarm.svg"} alt="시간" width={16} height={16} />
                                 <span className="text-sm font-medium text-white">
                                     {getTimeRemaining(gathering.registrationEnd)}
@@ -111,17 +110,14 @@ export default function GatheringsList({
                                 {/* 제목과 위치 */}
                                 <div className="flex flex-row md:justify-between gap-3">
                                     <div className="flex-1 flex flex-row gap-2 items-center">
-                                        <h1 className={`text-lg font-semibold -mt-6 ${
-                                            expired ? 'text-gray-500' : 'text-gray-900'
-                                        }`}>
+                                        <h1 className={`text-lg font-semibold -mt-6 ${expired ? 'text-gray-500' : 'text-gray-900'
+                                            }`}>
                                             {gathering.name}
                                         </h1>
-                                        <div className={`hidden sm:block w-[2px] h-[16px] -mt-6 ${
-                                            expired ? 'bg-gray-500' : 'bg-gray-900'
-                                        }`}></div>
-                                        <p className={`text-sm font-medium -mt-6 ${
-                                            expired ? 'text-gray-500' : 'text-gray-700'
-                                        }`}>
+                                        <div className={`hidden sm:block w-[2px] h-[16px] -mt-6 ${expired ? 'bg-gray-500' : 'bg-gray-900'
+                                            }`}></div>
+                                        <p className={`text-sm font-medium -mt-6 ${expired ? 'text-gray-500' : 'text-gray-700'
+                                            }`}>
                                             {gathering.location}
                                         </p>
                                     </div>
@@ -133,18 +129,16 @@ export default function GatheringsList({
                                 {/* 날짜와 시간 */}
                                 {gathering.dateTime && (
                                     <div className="flex flex-wrap gap-2 mb-3 -mt-3">
-                                        <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-md ${
-                                            expired 
-                                                ? 'bg-gray-400 text-white' 
+                                        <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-md ${expired
+                                                ? 'bg-gray-400 text-white'
                                                 : 'bg-main-500 text-white'
-                                        }`}>
+                                            }`}>
                                             {formatDate(gathering.dateTime)}
                                         </span>
-                                        <span className={`inline-flex items-center px-3 py-1 border-2 text-sm font-medium rounded-md ${
-                                            expired 
-                                                ? 'border-gray-400 text-gray-500' 
+                                        <span className={`inline-flex items-center px-3 py-1 border-2 text-sm font-medium rounded-md ${expired
+                                                ? 'border-gray-400 text-gray-500'
                                                 : 'border-main-500 text-main-600'
-                                        }`}>
+                                            }`}>
                                             {formatTime(gathering.dateTime)}
                                         </span>
                                     </div>
@@ -155,18 +149,16 @@ export default function GatheringsList({
                             <div className="flex flex-row items-center justify-between">
                                 {/* 참여 인원 */}
                                 <div className="flex items-center gap-2">
-                                    <UserRoundCheck className={`w-4 h-4 ${
-                                        expired ? 'text-gray-400' : 'text-main-500'
-                                    }`} />
-                                    <span className={`text-sm font-medium ${
-                                        expired ? 'text-gray-500' : 'text-gray-700'
-                                    }`}>
+                                    <UserRoundCheck className={`w-4 h-4 ${expired ? 'text-gray-400' : 'text-main-500'
+                                        }`} />
+                                    <span className={`text-sm font-medium ${expired ? 'text-gray-500' : 'text-gray-700'
+                                        }`}>
                                         {gathering.participantCount}/{gathering.capacity}
                                     </span>
                                 </div>
                                 <div className='w-full px-2'>
-                                    <JoinedCountsProgressBar 
-                                        participantCount={gathering.participantCount} 
+                                    <JoinedCountsProgressBar
+                                        participantCount={gathering.participantCount}
                                         capacity={gathering.capacity}
                                     />
                                 </div>
