@@ -242,7 +242,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                         ))
                     )}
                     {/* 페이지 컨버터 */}
-                    {totalPages > 1 ? (
+                    {totalPages >= 1 ? (
                         <div className="flex justify-center items-center gap-2 mt-4">
                             <button
                                 className="w-8 h-8 flex items-center justify-center text-gray-500 transition"
