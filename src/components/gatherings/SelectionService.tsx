@@ -22,7 +22,7 @@ const ServiceItem = ({ id, title, subtitle, isSelected, onSelect }: { id: string
                     />
                     <h1 className="text-gray-800 font-semibold text-sm md:text-base">{title}</h1>
                 </div>
-                {subtitle && <label htmlFor={id} className="cursor-pointer text-xs font-medium flex justify-center">{subtitle}</label>}
+                {subtitle && <label htmlFor={id} className="cursor-pointer text-xs font-medium flex">{subtitle}</label>}
             </div>
         </div>
     );

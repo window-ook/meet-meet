@@ -2,13 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useContext } from 'react';
-import Image from "next/image";
-import { Heart } from 'lucide-react';
 import { Gathering } from "@/types/gatherings";
-import { AuthContext } from '@/providers/AuthProvider';
 import { useToggleSavedGatherings } from "@/hooks/gathering/useToggleSavedGatherings";
-import { formatDate, formatTime, getTimeRemaining } from "@/components/shared/utils/format";
+import Image from "next/image";
 import GatheringsList from '@/components/gatherings/GatheringsList';
 import axios from 'axios';
 
@@ -23,18 +19,11 @@ export enum DallaemfitType {
   MINDFULNESS = 'MINDFULNESS',
 }
 
-
-export default function LikedMeetingsPage() {
-  const { token } = useContext(AuthContext);
-  const { savedIds: likedList, toggleSaved } = useToggleSavedGatherings();
-
-
 const DALLAEMFIT_LABEL: Record<DallaemfitType, string> = {
   ALL: '전체',
   OFFICE_STRETCHING: '오피스 스트레칭',
   MINDFULNESS: '마인드풀',
 };
-
 
 const ITEMS_PER_PAGE = 10;
 

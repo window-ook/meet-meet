@@ -59,14 +59,21 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
             type
         }));
     };
-
-    // 모달이 열릴 때 스크롤 방지 
+    // 모달이 열릴 때 스크롤 방지 및 레이아웃 시프트 방지
     useEffect(() => {
         const originalBodyOverFlow = document.body.style.overflow;
+        const originalBodyPaddingRight = document.body.style.paddingRight;
+        
+        // 스크롤바 너비 계산
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        
+        // 스크롤 방지 및 스크롤바 공간 보상
         document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
 
         return () => {
             document.body.style.overflow = originalBodyOverFlow;
+            document.body.style.paddingRight = originalBodyPaddingRight;
         };
     }, []);
 
