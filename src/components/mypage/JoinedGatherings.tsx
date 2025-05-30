@@ -51,15 +51,33 @@ export default function JoinedGatherings() {
     }
   });
 
-  if (!token) return <div className="text-main-500 flex h-[100px] w-full items-center justify-center">토큰 없음</div>;
-  if (isLoading) return <div className="flex h-[100px] w-full items-center justify-center">로딩 중...</div>;
-  if (error) return <div className="text-red-500">에러 발생: {error.message}</div>;
-  if (gatherings.length === 0) return <div className="text-gray-500">참석한 모임이 없습니다.</div>;
+  if (!token) {
+    return (
+      <div className="text-main-500 flex h-[100px] w-full items-center justify-center">
+        토큰 없음
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[100px] w-full items-center justify-center">
+        로딩 중...
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500">에러 발생: {error.message}</div>;
+  }
+
+  if (gatherings.length === 0) {
+    return <div className="text-gray-500">참석한 모임이 없습니다.</div>;
+  }
 
   return (
     <>
-      <main className='contents-container'>
-      <div className="flex w-full flex-col gap-5">
+      <main className="contents-container">
         {gatherings.map(data => (
           <div
             key={data.id}
@@ -85,29 +103,33 @@ export default function JoinedGatherings() {
             {data.dateTime && (
               <p className="text-gray-600">
                 날짜: {new Date(data.dateTime).toLocaleDateString()}
-                {data.isCompleted && <span className="text-green-600"> (종료됨)</span>}
+                {data.isCompleted && (
+                  <span className="text-green-600"> (종료됨)</span>
+                )}
               </p>
             )}
             {data.isReviewed && (
               <p className="text-sm text-violet-600">✅ 리뷰 작성 완료</p>
             )}
 
-            <button
-              className="max-w-36 h-[60%] py-1 px-2 bg-button-text text-button border-1 border-button rounded-lg cursor-pointer hover:opacity-60 transition duration-300 ease-in"
-              onClick={() => leaveGathering(Number(data.id))}
-            >
-              참여 취소하기
-            </button>
+            {/* 종료되지 않은 모임일 때만 참여 취소 버튼 표시 */}
+            {!data.isCompleted && (
+              <button
+                className="max-w-36 h-[60%] py-1 px-2 bg-button-text text-button border-1 border-button rounded-lg cursor-pointer hover:opacity-60 transition duration-300 ease-in"
+                onClick={() => leaveGathering(Number(data.id))}
+              >
+                참여 취소하기
+              </button>
+            )}
           </div>
         ))}
-      </div>
 
-      {/* ✅ ConfirmDialog 컴포넌트 적용 */}
-      <ConfirmDialog
-        open={errorModalOpen}
-        text={errorMessage}
-        onClose={() => setErrorModalOpen(false)}
-      />
+        {/* 에러 모달 */}
+        <ConfirmDialog
+          open={errorModalOpen}
+          text={errorMessage}
+          onClose={() => setErrorModalOpen(false)}
+        />
       </main>
     </>
   );
