@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useContext } from 'react';
-import { useCreateMyReview } from '@/hooks/gathering/useCreateMyReview';
+import { useCreateReview } from '@/hooks/api/useCreateReview';
 import { AuthContext } from '@/providers/AuthProvider';
 
 interface ReviewDialogProps {
@@ -20,7 +20,7 @@ export default function ReviewDialog({
   const [score, setScore] = useState(1);
   const [comment, setComment] = useState('');
   const { token } = useContext(AuthContext);
-  const { mutateCreateMyReview } = useCreateMyReview(onClose);
+  const { mutateCreateReview } = useCreateReview(onClose);
 
   const handleSubmit = () => {
     if (!token) {
@@ -28,7 +28,7 @@ export default function ReviewDialog({
       return;
     }
 
-    mutateCreateMyReview({
+    mutateCreateReview({
       gatheringId: reviewData.gatheringId,
       score,
       comment,

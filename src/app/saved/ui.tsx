@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Gathering } from "@/types/gatherings";
-import { useToggleSavedGatherings } from "@/hooks/gathering/useToggleSavedGatherings";
+import { useToggleSavedGatherings } from "@/hooks/api/useToggleSavedGatherings";
 import Image from "next/image";
 import GatheringsList from '@/components/gatherings/GatheringsList';
 import axios from 'axios';

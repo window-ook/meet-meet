@@ -59,7 +59,7 @@ export interface UserInfo {
  * @type currentPage: 현재 페이지
  * @type totalPages: 총 페이지 수
  */
-export interface Review {
+export interface Reviews {
     data: ReviewItem[];
     totalItemCount: number;
     currentPage: number;

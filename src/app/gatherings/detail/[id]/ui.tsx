@@ -1,19 +1,18 @@
 'use client';
 
-import { use, useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFetchGatheringDetail } from '@/hooks/gathering/useFetchGatheringDetail';
-import { useFetchDetailReview } from '@/hooks/gathering/useFetchDetailReview';
-import { useCheckJoined } from '@/hooks/gathering/useCheckJoined';
-import { useJoinGathering } from '@/hooks/gathering/useJoinGathering';
-import { useCancelGathering } from '@/hooks/gathering/useCancelGathering';
-import { useLeaveGathering } from '@/hooks/gathering/useLeaveGathering';
+import { useFetchGatheringDetail } from '@/hooks/api/useFetchGatheringDetail';
+import { useFetchDetailReview } from '@/hooks/api/useFetchDetailReview';
+import { useCheckJoined } from '@/hooks/api/useCheckJoined';
+import { useJoinGathering } from '@/hooks/api/useJoinGathering';
+import { useCancelGathering } from '@/hooks/api/useCancelGathering';
+import { useLeaveGathering } from '@/hooks/api/useLeaveGathering';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
 import { Heart, Check, UserRoundCheck } from "lucide-react"
-import { ReviewItem } from '@/types/reviews';
+import { ReviewItem, Reviews } from '@/types/reviews';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { PageProps } from './page';
 import Image from 'next/image';
 import ConfirmDialog from '@/components/shared/ui/ConfirmDialog';
 import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';
@@ -41,22 +40,29 @@ const handleCopyUrl = () => {
     navigator.clipboard.writeText(currentUrl)
 };
 
-export default function GatheringsDetailPageUI({ params }: PageProps) {
-    const { id } = use(params);
+const LIMIT = 4;
+
+export default function GatheringsDetailPageUI({ id, detailReviews }: { id: string, detailReviews: Reviews }) {
     const { token, userId, loginModalOpen, setLoginModalOpen } = useContext(AuthContext);
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [errorModalOpen, setErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(detailReviews?.currentPage ?? 1);
+    const [reviews, setReviews] = useState<ReviewItem[]>(detailReviews.data);
 
-    const limit = 4;
-    const offset = (page - 1) * limit;
+    const router = useRouter();
+
+    const offset = (page - 1) * LIMIT;
 
     const { detail, participants, isLoading: detailLoading } = useFetchGatheringDetail(Number(id));
     const { data: isParticipated, } = useCheckJoined(Number(id), token);
-    const { data: reviews, isLoading: reviewsLoading } = useFetchDetailReview(Number(id), limit, offset);
-    const totalPages = reviews?.totalPages || 1;
+    const { data: nextPageData, isLoading: reviewsLoading } = useFetchDetailReview(
+        Number(id),
+        LIMIT,
+        offset,
+        page > 1
+    );
 
     const { joinGathering } = useJoinGathering({
         token,
@@ -81,7 +87,11 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
         }
     });
 
-    const router = useRouter();
+    // 1페이지는 SSR 데이터만, 2페이지부터 useFetchDetailReview로 데이터 추가
+    useEffect(() => {
+        if (page === 1) return;
+        if (nextPageData) setReviews(detailReviews.data.concat(nextPageData.data));
+    }, [page, nextPageData, detailReviews.data]);
 
     const handleDeleteConfirm = () => {
         cancelGathering(Number(id));
@@ -118,7 +128,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                             />
                         </article>
                         {/* 모임 정보 */}
-                        <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] px-6 py-5 border-2 border-gray-300 bg-white rounded-lg flex flex-col justify-between gap-4'
+                        <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] px-6 py-5 border-2 border-gray-300 bg-white rounded-lg flex flex-col justify-between gap-4 overflow-hidden'
                         >
                             {/* 상단 */}
                             <div className='flex justify-between gap-8'>
@@ -126,13 +136,17 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                                 <div className='flex flex-col'>
                                     {/* 제목, 주소 */}
                                     <div className="flex flex-col min-w-0">
-                                        <h2 className="text-xl font-bold max-w-full">
-                                            {detail?.name}
+                                        <h2 className="text-xl font-bold max-w-full" title={detail?.name}>
+                                            {detail?.name
+                                                ? detail.name.length > 20
+                                                    ? detail.name.slice(0, 20) + '...'
+                                                    : detail.name
+                                                : ''}
                                         </h2>
                                         <span className="text-gray-500">{detail?.location || '장소'}</span>
                                     </div>
                                     {/* 날짜 시간 */}
-                                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                                    <div className="flex sm:hidden md:flex items-center gap-1 text-sm text-gray-500">
                                         <span>{formatDate(detail?.dateTime || 'OOOO-OO-OO')}</span>
                                         <span>·</span>
                                         <span>{formatTime(detail?.dateTime || 'OO:OO')}</span>
@@ -216,9 +230,9 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                 <section className='w-full h-full px-4 py-4 flex flex-col gap-4 bg-white rounded-lg'>
                     <h1 className='text-lg font-semibold'>다른 참여자들은 이렇게 느꼈어요!</h1>
                     {reviewsLoading ? (
-                        <DetailReviewLoading />
+                        <DetailReviewLoading width='w-full' height='h-32' />
                     ) : (
-                        reviews?.data?.map((review: ReviewItem) => (
+                        reviews?.map((review: ReviewItem) => (
                             <div
                                 key={review?.id}
                                 className='w-full border-dotted border-b-2 border-main-300 flex flex-col gap-2'>
@@ -232,7 +246,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                                 </div>
                                 <p className='text-sm'>{review?.comment}</p>
                                 <div className='flex items-center gap-1 text-xs'>
-                                    <Image src={review?.User?.image || '/icons/default_profile_image.svg'} alt='프로필 이미지' width={32} height={32} className='rounded-full' />
+                                    <Image src={review?.User?.image || '/icons/default_profile_image.svg'} alt='프로필 이미지' width={32} height={32} className='w-6 h-6 rounded-full' />
                                     <span>{review?.User?.name}</span>
                                     <span>|</span>
                                     <span>{formatDate(review?.createdAt || 'OOOO-OO-OO')}</span>
@@ -242,14 +256,14 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                         ))
                     )}
                     {/* 페이지 컨버터 */}
-                    {totalPages >= 1 ? (
+                    {detailReviews?.totalPages >= 1 ? (
                         <div className="flex justify-center items-center gap-2 mt-4">
                             <button
                                 className="w-8 h-8 flex items-center justify-center text-gray-500 transition"
                                 disabled={page === 1}
                                 onClick={() => setPage(page - 1)}
                             >〈</button>
-                            {Array.from({ length: totalPages }).map((_, idx) => (
+                            {Array.from({ length: detailReviews?.totalPages }).map((_, idx) => (
                                 <button
                                     key={idx}
                                     className={`w-8 h-8 flex items-center justify-center rounded-full border ${page === idx + 1 ? 'border-main-500 bg-main-500 text-white font-bold' : 'border-gray-300 bg-white text-gray-500 hover:bg-main-100 transition'}`}
@@ -258,7 +272,7 @@ export default function GatheringsDetailPageUI({ params }: PageProps) {
                             ))}
                             <button
                                 className="w-8 h-8 flex items-center justify-center text-gray-500 transition"
-                                disabled={page === totalPages}
+                                disabled={page === detailReviews?.totalPages}
                                 onClick={() => setPage(page + 1)}
                             >〉</button>
                         </div>

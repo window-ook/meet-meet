@@ -4,11 +4,11 @@ import Gatherings from "@/components/gatherings/Gatherings";
 async function getInitialGatherings(): Promise<Gathering[]> {
     try {
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URI}/api/gatherings?limit=10&offset=0`, {
+        const response = await fetch(`${process.env.API_URI_DEV}/gatherings?limit=10&offset=0`, {
             next: { revalidate: 60 },
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
         });
 
         if (!response.ok) {
