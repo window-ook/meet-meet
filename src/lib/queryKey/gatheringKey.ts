@@ -1,3 +1,4 @@
+// 쿼리키 팩토리 (리팩토링 예정)
 export const gatheringKeys = {
     all: ['gatherings', 'infinite'],
     created: (token: string | null) => ['createdGatherings', token],
