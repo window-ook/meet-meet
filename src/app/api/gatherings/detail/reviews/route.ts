@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
 /**
- * 모임 리뷰 목록 조회
+ * 리뷰 목록 조회
  * @param request 
  * @method GET
  * @returns 모임 리뷰 목록

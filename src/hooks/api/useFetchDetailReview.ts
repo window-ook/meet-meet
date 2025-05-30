@@ -14,7 +14,8 @@ import axios from 'axios';
 export const useFetchDetailReview = (
     gatheringId: number,
     limit: number,
-    offset: number
+    offset: number,
+    enabled: boolean
 ) => {
     const fetchGatheringReviews = async () => {
         try {
@@ -31,7 +32,7 @@ export const useFetchDetailReview = (
     }
 
     const { data, isLoading, isError } = useQuery({
-        enabled: !!gatheringId,
+        enabled: !!gatheringId && enabled,
         queryKey: ['gatheringReviews', gatheringId],
         queryFn: fetchGatheringReviews,
         refetchOnWindowFocus: false,

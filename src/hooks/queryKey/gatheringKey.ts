@@ -9,7 +9,7 @@ export const gatheringKeys = {
 
 // ['savedGatherings'] - 찜한 모임 목록
 
-// [’reviews’, ‘infinite’] - 모든 리뷰
+// ['allReviews', filter, selectedLocation, selectedDate, sortBy] - 모든 리뷰
 
 // ['gatheringDetail', id] 모임 상세
 // ['checkGatheringJoined'] 모임 상세 '참여 여부'

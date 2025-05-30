@@ -17,7 +17,7 @@ export default function DetailInformationLoading() {
                         <span className="text-gray-500">장소</span>
                     </div>
                     {/* 날짜 시간 */}
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                    <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
                         <span>DAY</span>
                         <span>·</span>
                         <span>TIME</span>

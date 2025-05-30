@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 
 import { Category } from '@/types/tabFilters';
 import { useToggleSavedGatherings } from '@/hooks/gathering/useToggleSavedGatherings';

@@ -2,7 +2,7 @@
 
 import { AuthContext } from '@/providers/AuthProvider';
 import { useState, useRef, useEffect, useContext } from "react";
-import { useCreateGathering } from '@/hooks/gathering/useCreateGathering';
+import { useCreateGathering } from '@/hooks/api/useCreateGathering';
 import { XIcon } from "lucide-react";
 import SelectionService from "./SelectionService";
 import DatePicker from "react-datepicker";
@@ -63,10 +63,10 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
     useEffect(() => {
         const originalBodyOverFlow = document.body.style.overflow;
         const originalBodyPaddingRight = document.body.style.paddingRight;
-        
+
         // 스크롤바 너비 계산
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        
+
         // 스크롤 방지 및 스크롤바 공간 보상
         document.body.style.overflow = 'hidden';
         document.body.style.paddingRight = `${scrollbarWidth}px`;
