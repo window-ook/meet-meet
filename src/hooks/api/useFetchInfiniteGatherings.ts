@@ -6,8 +6,8 @@ import { fetchGatheringsPaginated } from '@/components/gatherings/shared/utils/f
 import { AuthContext } from '@/providers/AuthProvider';
 
 interface UseFetchInfiniteGatheringsProps {
-    enabled: boolean; // 무한스크롤 활성화 여부
-    hasSSRData: boolean; // SSR 데이터 존재 여부
+    enabled: boolean;
+    hasSSRData: boolean;
 }
 
 /**

@@ -2,19 +2,15 @@
 
 import { useGatheringsStore } from '@/store/gatheringsStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { GatheringApiParams } from '@/types/gatheringApi';
 import axios from 'axios';
-
-interface UseCancelGatheringProps {
-    token: string | null;
-    onErrorCallback?: (msg: string) => void;
-}
 
 /** 모임 삭제 훅
 * @param token 토큰
 * @param onErrorCallback 에러 콜백 함수 (모달에 표시할 메세지를 전달 받음)
 * @returns {function} cancelGathering - 모임 삭제 함수
 */
-export const useCancelGathering = ({ token, onErrorCallback }: UseCancelGatheringProps) => {
+export const useCancelGathering = ({ token, onErrorCallback }: GatheringApiParams) => {
     const queryClient = useQueryClient();
     const removeGathering = useGatheringsStore((s) => s.removeGathering);
 

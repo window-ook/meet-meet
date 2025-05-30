@@ -17,7 +17,7 @@ export const useCheckJoined = (
     const searchParams = useSearchParams();
     const queries = searchParams.toString();
 
-    const fetchJoinChecking = async () => {
+    const fetchJoinedCheck = async () => {
         try {
             const response = await axios.get(`/api/gatherings/joined?${queries}`, { headers: { Authorization: `Bearer ${token}` } },);
             return response.data.some((gathering: JoinedGathering) => gathering.id === Number(id))
@@ -32,8 +32,8 @@ export const useCheckJoined = (
 
     const { data, isLoading, isError } = useQuery({
         enabled: !!id && !!token,
-        queryKey: ['checkJoinded', id],
-        queryFn: () => fetchJoinChecking(),
+        queryKey: ['checkGatheringJoined', id],
+        queryFn: () => fetchJoinedCheck(),
         refetchOnWindowFocus: false,
         refetchOnMount: false,
         refetchOnReconnect: false,

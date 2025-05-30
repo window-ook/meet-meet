@@ -4,13 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 import { Category } from '@/types/tabFilters';
-import { useToggleSavedGatherings } from '@/hooks/gathering/useToggleSavedGatherings';
+import { useToggleSavedGatherings } from '@/hooks/api/useToggleSavedGatherings';
 import { useGatheringsStore } from '@/store/gatheringsStore'; // ✅ Zustand import
 import GatheringsList from '@/components/gatherings/GatheringsList';
 import GatheringsCategoryTabs from '@/components/gatherings/shared/ui/GatheringsCategoryTabs';
 import GatheringsFilterTabs from '@/components/gatherings/shared/ui/GatheringsFilterTabs';
 import { filterGatherings } from '@/components/gatherings/shared/utils/filterGatherings';
-import { useTabFilter } from '@/hooks/gathering/useTabFilter';
+import { useTabFilter } from '@/hooks/api/useTabFilter';
 
 const ITEMS_PER_PAGE = 10;
 
