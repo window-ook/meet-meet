@@ -22,7 +22,8 @@ export const useCancelGathering = ({ token, onErrorCallback }: GatheringApiParam
         },
         onSuccess: (id) => {
             removeGathering(id);
-            queryClient.invalidateQueries({ queryKey: ['gatherings', 'infinite'] });
+            queryClient.invalidateQueries({ queryKey: ["gatherings", "infinite"] });
+            queryClient.invalidateQueries({ queryKey: ["createdGatherings", token] });
             alert('모임을 삭제했습니다.');
         },
         onError: (error) => {

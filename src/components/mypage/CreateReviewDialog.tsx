@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useContext } from 'react';
-import { useWriteReview } from '@/hooks/api/useWriteReview';
 import { AuthContext } from '@/providers/AuthProvider';
+import { useCreateReview } from '@/hooks/api/useCreateReview';
 
 interface ReviewDialogProps {
   reviewData: {
@@ -13,14 +13,16 @@ interface ReviewDialogProps {
   onClose: () => void;
 }
 
-export default function ReviewDialog({
+export default function CreateReviewDialog({
   reviewData,
   onClose,
 }: ReviewDialogProps) {
+  const { token } = useContext(AuthContext);
+
   const [score, setScore] = useState(1);
   const [comment, setComment] = useState('');
-  const { token } = useContext(AuthContext);
-  const { mutateWriteReview } = useWriteReview(onClose);
+
+  const { createReview } = useCreateReview(onClose);
 
   const handleSubmit = () => {
     if (!token) {
@@ -28,7 +30,7 @@ export default function ReviewDialog({
       return;
     }
 
-    mutateWriteReview({
+    createReview({
       gatheringId: reviewData.gatheringId,
       score,
       comment,
@@ -37,33 +39,37 @@ export default function ReviewDialog({
   };
 
   return (
-    <div className="bg-opacity-40 fixed inset-0 z-50 flex items-center justify-center bg-black">
-      <div className="w-full max-w-md rounded-md bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-semibold">리뷰 작성</h2>
-        <label className="mb-2 block">별점 (1~5):</label>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4">
+        <h2 className="text-xl font-semibold">리뷰 남기기</h2>
+        <label className="block">만족스러운 경험이었나요?</label>
         <input
           type="number"
           value={score}
           onChange={e => setScore(Number(e.target.value))}
-          className="mb-4 w-full border p-2"
+          className="w-full border p-2"
           min={1}
           max={5}
         />
 
-        <label className="mb-2 block">코멘트:</label>
+        <label className="block">경험에 대해 알려주세요!</label>
         <textarea
           value={comment}
           onChange={e => setComment(e.target.value)}
-          className="mb-4 w-full border p-2"
+          className="w-full border p-2"
         />
 
-        <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="rounded bg-gray-300 px-4 py-2">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full px-4 py-2 rounded-lg bg-gray-300 cursor-pointer">
             취소
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
-            className="rounded bg-blue-500 px-4 py-2 text-white"
+            className="w-full px-4 py-2 rounded-lg bg-blue-500 text-white cursor-pointer"
           >
             제출
           </button>
