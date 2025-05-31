@@ -43,7 +43,6 @@ export const useFetchInfiniteGatherings = ({ enabled, hasSSRData }: UseFetchInfi
         },
         initialPageParam: 2,
         enabled: infiniteScrollEnabled && enabled && hasSSRData,
-        refetchOnWindowFocus: false,
     });
 
     // Intersection Observer를 사용한 무한스크롤 트리거

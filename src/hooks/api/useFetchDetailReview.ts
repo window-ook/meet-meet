@@ -35,9 +35,6 @@ export const useFetchDetailReview = (
         enabled: !!gatheringId && enabled,
         queryKey: ['gatheringReviews', gatheringId],
         queryFn: fetchGatheringReviews,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
     })
 
     return { data, isLoading, isError }
