@@ -1,5 +1,5 @@
 import { Reviews } from '@/types/reviews';
-import GatheringsDetailUI from './ClientPage';
+import GatheringsDetailUI from '@/components/gatherings/gatheringDetail/GatheringDetailUI';
 
 export interface PageProps {
     params: { id: string };
