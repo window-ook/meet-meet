@@ -15,7 +15,6 @@ interface CreateReviewParams {
  * @param onSuccessCallback 
  * @returns {function} mutateCreateMyReview - 리뷰 생성 함수
  */
-
 export const useCreateReview = ({ token, onCallback }: GatheringApiParams) => {
     const queryClient = useQueryClient();
 
@@ -26,7 +25,7 @@ export const useCreateReview = ({ token, onCallback }: GatheringApiParams) => {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["myReviews"] });
+            queryClient.invalidateQueries({ queryKey: ["myReviews", token] });
             queryClient.invalidateQueries({ queryKey: ["gatheringReviews"] });
             onCallback?.('리뷰가 성공적으로 등록되었습니다');
         },

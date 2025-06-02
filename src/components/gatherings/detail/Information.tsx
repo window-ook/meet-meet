@@ -1,4 +1,4 @@
-import { Participant } from '@/components/gatherings/detail/ClientPage';
+import { Participant } from './GatheringDetailUI';
 import { formatDate, formatTime } from '@/components/shared/utils/format';
 import { Gathering } from '@/types/gatherings';
 import { Check, UserRoundCheck } from "lucide-react"
