@@ -5,20 +5,29 @@ import { useFetchInfiniteGatherings } from "@/hooks/api/useFetchInfiniteGatherin
 import { useGatheringsStore } from '@/store/gatheringsStore';
 import { Gathering, GatheringsListProps } from "@/types/gatherings";
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/format';
+import { filterGatherings } from '@/components/gatherings/shared/utils/fetch';
 import { UserRoundCheck } from "lucide-react"
 import Image from "next/image";
-import SaveToggleButton from "@/components/gatherings/shared/ui/SaveToggleButton";
 import JoinedCountsProgressBar from './shared/ui/JoinedCountsProgressBar';
+import SaveToggleButton from './shared/ui/SaveToggleButton';
+
+interface ExtendedGatheringsListProps extends GatheringsListProps {
+    location?: string;
+    date?: string;
+    sortOrder?: 'asc' | 'desc';
+}
 
 export default function GatheringsList({
+    gatherings,
     fetchFromApi = true,
-}: GatheringsListProps) {
+    selectedMainType = 'DALLAEMFIT',
+    selectedSubType = 'ALL',
+    location = '',
+    date = '',
+    sortOrder = 'asc'
+}: ExtendedGatheringsListProps) {
     const router = useRouter();
-
-    // 전역 상태: SSR 모임 목록
     const ssrGatherings = useGatheringsStore((s) => s.gatherings);
-
-    // SSR 모임 목록 확인
     const hasSSRData = ssrGatherings.length > 0;
 
     const {
@@ -28,28 +37,31 @@ export default function GatheringsList({
         infiniteScrollEnabled,
     } = useFetchInfiniteGatherings({
         enabled: fetchFromApi,
-        hasSSRData,
+        mainType: selectedMainType,
+        location,
+        date,
+        sortBy: 'registrationEnd',
+        sortOrder
     });
 
-    // 전체 모임 데이터 합치기
+    // 데이터 합치기 시 정렬 순서 유지
     const mergedGatherings = (() => {
-        const gatherings = [...ssrGatherings];
-
-        if (hasSSRData && fetchFromApi && infiniteScrollEnabled) {
-            gatherings.push(...infiniteGatherings);
+        if (!fetchFromApi) {
+            // API를 사용하지 않는 경우 (찜목록 등)
+            return filterGatherings(gatherings || ssrGatherings, selectedMainType, selectedSubType);
         }
 
-        return gatherings;
+        if (!hasSSRData) {
+            return filterGatherings(infiniteGatherings, selectedMainType, selectedSubType);
+        }
+
+        const serverSortedData = infiniteGatherings.length > 0 ? infiniteGatherings : ssrGatherings;
+        
+        return filterGatherings(serverSortedData, selectedMainType, selectedSubType);
     })();
 
-    // 최종 모임 목록
-    const finalGatherings = fetchFromApi
-        ? (hasSSRData ? mergedGatherings : [])  // 메인 페이지: SSR + 무한스크롤
-        : ssrGatherings;                    // 찜목록: 전달받은 데이터 그대로
+    const isInitialLoading = fetchFromApi && !hasSSRData && infiniteGatherings.length === 0;
 
-    const isInitialLoading = fetchFromApi && !hasSSRData;
-
-    // 마감 여부 확인 함수
     const isExpired = (gathering: Gathering): boolean => {
         if (!gathering.registrationEnd) return false;
         return getTimeRemaining(gathering.registrationEnd) === '마감됨';
@@ -57,18 +69,17 @@ export default function GatheringsList({
 
     return (
         <div className="w-full flex flex-col justify-start gap-5">
-            {/* 모임 목록 */}
-            {!isInitialLoading && finalGatherings.map((gathering: Gathering, index: number) => {
-                const isLastItem = index === finalGatherings.length - 1;
+            {!isInitialLoading && mergedGatherings.map((gathering: Gathering, index: number) => {
+                const isLastItem = index === mergedGatherings.length - 1;
                 const expired = isExpired(gathering);
 
                 return (
                     <section
                         role="button"
                         tabIndex={0}
-                        key={`${gathering.teamId || 'unknown'}-${gathering.id}`}
+                        key={`${gathering.teamId || 'unknown'}-${gathering.id}-${index}`}
                         onClick={expired ? undefined : () => router.push(`/gatherings/detail/${gathering.id}`)}
-                        ref={isLastItem && hasSSRData && fetchFromApi ? lastItemRef : undefined}
+                        ref={isLastItem && fetchFromApi ? lastItemRef : undefined}
                         className={`w-full flex flex-col md:flex-row justify-start border border-gray-200 rounded-2xl bg-white hover:border-main-300 hover:shadow-lg transition-all duration-300 overflow-hidden relative `}
                     >
                         {/* 마감된 모임 오버레이 */}
@@ -145,7 +156,7 @@ export default function GatheringsList({
                                 )}
                             </div>
 
-                            {/* 하단 영역역 */}
+                            {/* 하단 영역 */}
                             <div className="flex flex-row items-center justify-between">
                                 {/* 참여 인원 */}
                                 <div className="flex items-center gap-2">
@@ -172,17 +183,27 @@ export default function GatheringsList({
             {infiniteScrollEnabled && isFetchingNextPage && (
                 <div className="w-full h-[80px] flex justify-center items-center">
                     <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-6 h-6 border-3 border-main-500 border-t-transparent rounded-full animate-spin"></div>
                         <span className="text-gray-600 font-medium">더 많은 모임을 불러오는 중...</span>
                     </div>
                 </div>
             )}
 
-            {/* 빈 목록 */}
-            {!isInitialLoading && finalGatherings.length === 0 && (
-                <div className="w-full h-[100px] flex justify-center items-center border-2 border-gray-500">
-                    <p className="text-gray-600 font-medium">아직 모임이 없어요</p>
-                    <p className="text-gray-600 font-medium">지금 바로 모임을 만들어보세요</p>
+            {/* 빈 목록 - 페이지별 다른 메시지 */}
+            {!isInitialLoading && mergedGatherings.length === 0 && (
+                <div className="w-full h-[100px] flex flex-col justify-center items-center text-gray-500 font-medium text-sm">
+                    {fetchFromApi ? (
+                        // 모임찾기 페이지 (API 데이터 사용)
+                        <>
+                            <p className="">아직 모임이 없어요,</p>
+                            <p className="">지금 모임을 만들어보세요</p>
+                        </>
+                    ) : (
+                        // 찜목록 페이지 (Props 데이터 사용)
+                        <>
+                            <p className="">아직 찜한 모임이 없어요</p>
+                        </>
+                    )}
                 </div>
             )}
         </div>

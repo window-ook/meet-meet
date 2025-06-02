@@ -3,8 +3,7 @@ import Gatherings from "@/components/gatherings/Gatherings";
 
 async function getInitialGatherings(): Promise<Gathering[]> {
     try {
-
-        const response = await fetch(`${process.env.API_URI_DEV}/gatherings?limit=10&offset=0`, {
+        const response = await fetch(`${process.env.API_URI_DEV}/gatherings?limit=10&offset=0&type=DALLAEMFIT`, {
             next: { revalidate: 60 },
             headers: {
                 'Content-Type': 'application/json',
@@ -24,7 +23,11 @@ async function getInitialGatherings(): Promise<Gathering[]> {
         const data = await response.json();
 
         if (Array.isArray(data)) {
-            return data;
+            // DALLAEMFIT의 경우 클라이언트에서 필터링
+            return data.filter((gathering: Gathering) => 
+                gathering.type === 'OFFICE_STRETCHING' || 
+                gathering.type === 'MINDFULNESS'
+            );
         } else {
             console.warn('응답이 배열이 아닙니다:', data);
             return [];
@@ -32,7 +35,6 @@ async function getInitialGatherings(): Promise<Gathering[]> {
 
     } catch (error) {
         console.error('SSR 에러:', error);
-
         return [];
     }
 }

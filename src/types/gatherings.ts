@@ -2,7 +2,7 @@
  * 모임 프로퍼티
  * @type {string} teamId 팀 아이디
  * @type {number} id 모임 아이디
- * @type {"DALLAEMFIT" | "OFFICE_STRETCHING" | "MINDFULNESS" | "WORKATION"} type 모임 타입 (타입 리터럴)
+ * @type {"OFFICE_STRETCHING" | "MINDFULNESS" | "WORKATION"} type 모임 타입
  * @type {string} name 모임 이름
  * @type {string} dateTime 모임 날짜와 시간
  * @type {string} registrationEnd 참여 마감 일시
@@ -16,7 +16,7 @@
 export interface Gathering {
     teamId: string;
     id: number;
-    type: "DALLAEMFIT" | "OFFICE_STRETCHING" | "MINDFULNESS" | "WORKATION";
+    type: "OFFICE_STRETCHING" | "MINDFULNESS" | "WORKATION";
     name: string;
     dateTime: string;
     registrationEnd: string;
@@ -26,6 +26,7 @@ export interface Gathering {
     image: string;
     createdBy: number;
     canceledAt: string | null;
+    description?: string;
 }
 
 /**
@@ -36,6 +37,7 @@ export interface Gathering {
  * @type {string[]} savedGatheringIds 저장된 모임 아이디 배열
  * @type {function} onToggleSaved 저장된 모임 아이디 배열 업데이트 함수
  * @type {boolean} fetchFromApi API 호출 여부
+ * @type {function} lastItemRef 마지막 아이템 참조 함수
  */
 export interface GatheringsListProps {
     gatherings?: Gathering[];
@@ -44,6 +46,8 @@ export interface GatheringsListProps {
     savedGatheringIds?: string[];
     onToggleSaved?: (id: string) => void;
     fetchFromApi?: boolean;
+    selectedMainType?: string;
+    selectedSubType?: string;
 }
 
 /**
@@ -56,4 +60,33 @@ export interface JoinedGathering extends Gathering {
     joinedAt: string;
     isCompleted: boolean;
     isReviewed: boolean;
+}
+
+/**
+ * 모임 필터 타입
+ * @type {string} category 모임 카테고리 (북적북적 or 도란도란)
+ * @type {string} type 실제 모임 타입
+ */
+export type FilterCategory = 'DALLAEMFIT' | 'WORKATION';
+export type FilterType = Gathering['type'] | 'ALL';
+
+export interface FilterState {
+    category: FilterCategory;
+    type: FilterType;
+}
+
+export interface GatheringsFiltersProps {
+    filters: FilterState;
+    onFilterChange: (filters: FilterState) => void;
+    showCreateButton?: boolean;
+    onCreateClick?: () => void;
+    isLoggedIn?: boolean;
+    showSortButton?: boolean;
+    sortContent?: {
+        mobile: string;
+        desktop: string;
+        className: string;
+    };
+    onSortClick?: () => void;
+    sortDisabled?: boolean;
 }
