@@ -73,7 +73,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const fetchUser = async (token: string) => {
         try {
-            const result = await axios.post('/api/auth/fetch-user', { token });
+            const result = await axios.get('/api/auth/user', { headers: { Authorization: `Bearer ${token}` } });
             if (result.status === 200) {
                 localStorage.setItem('user_id', result.data.id);
                 localStorage.setItem('user_email', result.data.email);
