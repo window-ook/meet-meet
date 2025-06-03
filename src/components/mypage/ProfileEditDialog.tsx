@@ -11,15 +11,12 @@ const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog
 
 const editProfile = async (imageFile: File | null, companyName: string, token: string) => {
     try {
-        // FormData 생성
         const formData = new FormData();
         formData.append('companyName', companyName);
-
-        // 이미지 파일이 있는 경우에만 추가
         if (imageFile) formData.append('image', imageFile);
 
         const response = await axios.put('/api/auth/user', formData, { headers: { Authorization: `Bearer ${token}` } });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Profile edit error:', error);
         throw error;
@@ -27,7 +24,7 @@ const editProfile = async (imageFile: File | null, companyName: string, token: s
 };
 
 export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setProfileEditDialogOpen: (open: boolean) => void }) {
-    const { token } = useContext(AuthContext);
+    const { token, updateUserProfile } = useContext(AuthContext);
 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [companyName, setCompanyName] = useState<string>('');
@@ -56,7 +53,6 @@ export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setPro
 
             setImageFile(file);
             setError(null);
-            console.log('파일 정보:', file);
         }
     };
 
@@ -73,13 +69,11 @@ export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setPro
         try {
             const response = await editProfile(imageFile, companyName, token!);
             if (response.status === 200) {
+                updateUserProfile(response.data);
                 setError(null);
                 setImageFile(null);
                 setCompanyName('');
-                openConfirmDialog(setConfirmDialog, '프로필 수정 완료', () => {
-                    setProfileEditDialogOpen(false);
-                    window.location.reload();
-                });
+                openConfirmDialog(setConfirmDialog, '프로필 수정 완료', () => setProfileEditDialogOpen(false));
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -103,7 +97,6 @@ export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setPro
             <form
                 className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4"
                 onSubmit={handleSubmit}>
-                {/* 프로필/회사 입력 grid 레이아웃 */}
                 <div className="grid grid-cols-3 items-center gap-y-6 gap-x-4 w-full mb-2">
                     <label className="col-span-1 text-left font-semibold">IMAGE</label>
                     <div className="col-span-2 flex items-center gap-4">
@@ -137,7 +130,6 @@ export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setPro
                     />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                {/* 버튼 */}
                 <div className='flex gap-4'>
                     <button
                         type="button"
@@ -153,7 +145,7 @@ export default function ProfileEditDialog({ setProfileEditDialogOpen }: { setPro
             </form>
             <ConfirmDialog
                 open={confirmDialog.open}
-                text={confirmDialog.text}
+                text={'프로필을 수정했습니다'}
                 onClose={() => setConfirmDialog({ open: false, text: '' })}
                 onConfirm={confirmDialog.onConfirm}
             />

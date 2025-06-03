@@ -32,9 +32,6 @@ export async function PUT(req: NextRequest) {
     const companyName = formData.get('companyName') as string;
     const imageFile = formData.get('image') as File;
 
-    console.log('Company Name:', companyName);
-    console.log('Image File:', imageFile?.name, imageFile?.size);
-
     // 서버로 전송할 FormData 생성
     const serverFormData = new FormData();
     serverFormData.append('companyName', companyName);
@@ -46,23 +43,13 @@ export async function PUT(req: NextRequest) {
     const response = await axios.put(
       `${process.env.API_URI_DEV}/auths/user`,
       serverFormData,
-      {
-        headers: {
-          Authorization: token!,
-          // axios가 자동으로 Content-Type을 설정하도록 함
-        }
-      }
+      { headers: { Authorization: token! } }
     );
 
     return new NextResponse(JSON.stringify(response.data), { status: 200 });
   } catch (error) {
     console.error('API Error:', error);
-    const err = error as any;
-    return new NextResponse(
-      JSON.stringify({
-        error: err?.response?.data || err.message
-      }),
-      { status: 500 }
-    );
+    const err = error as AxiosError;
+    return new NextResponse(JSON.stringify({ error: err?.response?.data }), { status: 500 });
   }
 }

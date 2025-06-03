@@ -1,27 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '@/providers/AuthProvider';
 import Image from 'next/image';
 import ProfileEditDialog from './ProfileEditDialog';
 
 export default function ProfileCard() {
-  const [name, setName] = useState('');
-  const [company, setCompany] = useState('');
-  const [email, setEmail] = useState('');
-  const [profileImage, setProfileImage] = useState('');
+  const { userName, userCompanyName, userEmail, userImage } = useContext(AuthContext)
+
   const [profileEditDialogOpen, setProfileEditDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const NAME = localStorage.getItem('user_name') || '';
-    const COMPANY_NAME = localStorage.getItem('user_company_name') || '';
-    const EMAIL = localStorage.getItem('user_email') || '';
-    const PROFILE_IMAGE = localStorage.getItem('user_image') || '';
-
-    setName(NAME);
-    setCompany(COMPANY_NAME);
-    setEmail(EMAIL);
-    setProfileImage(PROFILE_IMAGE);
-  }, []);
 
   return (
     <section className="overflow-hidden border-2 border-gray-200 rounded-lg">
@@ -46,7 +33,7 @@ export default function ProfileCard() {
         {/* 이미지 */}
         <div className="w-16 h-16 z-1 -mt-20 rounded-full border border-gray-400">
           <Image
-            src={profileImage || '/icons/default_profile_image.svg'}
+            src={userImage || '/icons/default_profile_image.svg'}
             alt="프로필"
             width={1000}
             height={1000}
@@ -55,14 +42,14 @@ export default function ProfileCard() {
         </div>
         {/* 스펙 */}
         <div>
-          <div className="text-md font-bold text-gray-800">{name}</div>
+          <div className="text-md font-bold text-main-500">{userName}</div>
           <div className="flex gap-2 text-sm text-gray-800">
             <div className="font-bold">COMPANY</div>
-            <div>{company}</div>
+            <div>{userCompanyName}</div>
           </div>
           <div className="flex gap-2 text-sm text-gray-800">
             <div className="font-bold">E-MAIL</div>
-            <div>{email}</div>
+            <div>{userEmail}</div>
           </div>
         </div>
       </section>
