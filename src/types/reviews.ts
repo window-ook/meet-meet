@@ -16,6 +16,7 @@ export interface ReviewItem {
     User: {
         id: string;
         name: string;
+        image: string;
     };
     Gathering: {
         id: string;
