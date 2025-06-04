@@ -4,6 +4,7 @@ import axios from 'axios';
  * axios 인스턴스 API 클라이언트
  * @param baseURL - API 기본 URL
  * @param withCredentials - 쿠키 포함 여부
+ * @warning 외부경로에는 사용하지 말 것
  */
 export const apiClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URI,
@@ -29,7 +30,7 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터: 에러 메세지, 에러 코드 parsing
+// 응답 인터셉터: 에러 메세지, 에러 코드 parsing 후 반환
 apiClient.interceptors.response.use(
     response => response,
     error => {
