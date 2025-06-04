@@ -20,7 +20,7 @@ import Information from '@/components/gatherings/detail/Information';
 import Review from '@/components/gatherings/detail/Review';
 import PageConverter from '@/components/gatherings/detail/PageConverter';
 import Footer from '@/components/gatherings/detail/Footer';
-
+import { useQueryClient } from '@tanstack/react-query';
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
 
 export interface Participant {
@@ -46,6 +46,7 @@ const LIMIT = 4;
 
 export default function GatheringsDetailUI({ id, detailReviews }: { id: string, detailReviews: Reviews }) {
     const { token, userId, loginDialogOpen, setLoginDialogOpen } = useContext(AuthContext);
+    const queryClient = useQueryClient();
 
     const [page, setPage] = useState(detailReviews?.currentPage ?? 1);
     const [reviews, setReviews] = useState<ReviewItem[]>(detailReviews.data);
@@ -82,8 +83,12 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
         if (nextPageData) setReviews(detailReviews.data.concat(nextPageData.data));
     }, [page, nextPageData, detailReviews.data]);
 
+
     const handleDeleteConfirm = () => {
         cancelGathering(Number(id));
+
+        queryClient.invalidateQueries({ queryKey: ['gatherings'] });
+        
         setDialog((prev) => ({ ...prev, open: false }));
     };
 
