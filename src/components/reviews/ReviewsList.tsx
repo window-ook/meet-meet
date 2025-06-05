@@ -8,6 +8,7 @@ import { useReviewsStore } from '@/store/reviewsStore';
 import { filterReviews } from '@/components/reviews/shared/utils/fetch';
 import ReviewStats from './ReviewStats';
 
+
 interface ReviewsListProps {
     fetchFromApi?: boolean;
     selectedMainType?: string;
@@ -22,7 +23,7 @@ interface ReviewsListProps {
 export default function ReviewsList({
     fetchFromApi = true,
     selectedMainType = 'DALLAEMFIT',
-    selectedSubType = 'ALL',
+    selectedSubType = '',
     location = '',
     date = '',
     sortBy = 'createdAt',
@@ -72,10 +73,6 @@ export default function ReviewsList({
 
             {/* 리뷰 목록 */}
             <div className="w-full flex flex-col justify-start gap-5">
-                <h3 className="text-lg font-semibold text-gray-900">
-                    모든 리뷰 ({mergedReviews.length}개)
-                </h3>
-
                 {!isInitialLoading && mergedReviews.map((review, index) => {
                     const isLastItem = index === mergedReviews.length - 1;
 

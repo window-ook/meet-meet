@@ -16,9 +16,10 @@ interface UseFetchInfiniteReviewsProps {
 }
 
 /**
- * 클라이언트 필터링에 최적화된 무한스크롤 훅
+ * 수정된 무한스크롤 훅 - subType 처리 개선
  * @param enabled 무한스크롤 활성화 여부
  * @param mainType 모임 타입
+ * @param subType 서브 타입
  * @param location 위치
  * @param date 날짜
  * @param sortBy 정렬 기준
@@ -46,13 +47,16 @@ export function useFetchInfiniteReviews({
         queryKey: [
             'reviews', 
             mainType, 
-            location || 'all', 
-            date || 'all', 
-            sortBy || 'createdAt', 
-            sortOrder || 'desc'
-        ], // 필터링 조건이 바뀌면 새로 조회
+            location, 
+            date, 
+            sortBy, 
+            sortOrder
+        ],
         queryFn: ({ pageParam }) => {
             
+            // fetchReviewsPaginated는 subType을 직접 처리하지 않음
+            // 서버에서 mainType 데이터를 모두 가져온 후, 
+            // 클라이언트에서 subType 필터링은 filterReviews에서 처리됨
             return fetchReviewsPaginated(
                 Number(pageParam),
                 mainType,
@@ -73,7 +77,7 @@ export function useFetchInfiniteReviews({
         initialPageParam: 0,
         enabled: enabled && infiniteScrollEnabled,
         retry: (failureCount, error) => {
-            console.error(error);   
+            console.error('무한스크롤 에러:', error);   
             if (failureCount < 2) return true;
             return false;
         },
@@ -84,7 +88,7 @@ export function useFetchInfiniteReviews({
 
     // 모든 페이지의 데이터를 하나의 배열로 합침
     const infiniteReviews = data?.pages.flat() || [];
-
+    
     // 무한스크롤 로딩 처리
     const observer = useRef<IntersectionObserver | null>(null);
     

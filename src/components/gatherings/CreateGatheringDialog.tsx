@@ -10,11 +10,12 @@ import dynamic from 'next/dynamic';
 import SelectionService from "./SelectionService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useQueryClient } from '@tanstack/react-query';
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
 
 export default function CreateGatheringDialog({ onClose }: { onClose: () => void }) {
     const { token } = useContext(AuthContext);
+    const queryClient = useQueryClient();
 
     // 폼 데이터 상태 관리
     const [formData, setFormData] = useState({
@@ -179,7 +180,8 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
         // 모임 생성 요청
         createGathering(apiFormData, {
             onSuccess: () => {
-                openConfirmDialog(setConfirmDialog, '모임 생성 완료', () => {
+                openConfirmDialog(setConfirmDialog, '모임 생성 완료', async () => {
+                    await queryClient.invalidateQueries({ queryKey: ['gatherings'] });
                     setIsSubmitting(false);
                     onClose();
                 });
