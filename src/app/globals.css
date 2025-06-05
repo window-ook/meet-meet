@@ -55,6 +55,10 @@ html {
   --color-red-900: oklch(0.400 0.265 27.0);
   --color-red-950: oklch(0.350 0.265 27.0);
 
+  --color-main-apricot: oklch(0.87 0.143 94.0);
+  --color-main-jade: oklch(0.845 0.130 165.0);
+  --color-main-pink: oklch(0.725 0.175 349.7);
+
   --color-global-text: var(--color-gray-900);
 
   /* 전 페이지 공통 UI */
