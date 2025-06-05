@@ -5,11 +5,15 @@ import { usePathname } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Navbar() {
-    const { token, signout, userName } = useContext(AuthContext);
+    const { token, signout, userName, userImage } = useContext(AuthContext);
+    const queryClient = useQueryClient();
+    const savedIds = queryClient.getQueryData<string[]>(['savedGatherings']);
+    const userSavedCount = Array.isArray(savedIds) ? savedIds.length : 0;
 
     const pathname = usePathname();
 
@@ -23,23 +27,22 @@ export default function Navbar() {
         <nav className="sticky z-50 top-0 w-full bg-white border-b-2 border-gray-300 text-xs md:text-base font-bold">
             <div className="max-w-screen-lg mx-auto h-[3.75rem] py-8 px-5 flex justify-between items-center">
                 <section className='flex gap-4 items-center'>
-                    <Link href="/gatherings">
-                        <Image
-                            src="/images/logo.avif"
-                            alt="logo image"
-                            width={100}
-                            height={100}
-                            className='w-[3rem] h-[3rem] md:w-[6rem] md:h-[6rem] pointer-events-none'
-                        />
-                    </Link>
+                    <Image
+                        src="/images/logo.avif"
+                        alt="logo image"
+                        width={100}
+                        height={100}
+                        className='w-[3rem] h-[3rem] md:w-[6rem] md:h-[6rem] pointer-events-none'
+                    />
                     {navLinks.map(link => {
                         return (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`hover:opacity-50 duration-300 ease-in-out ${pathname.includes(link.href) ? 'text-main-600' : ''}`}
+                                className={`flex items-center gap-1 ${pathname.includes(link.href) ? 'text-main-600' : ''} over:opacity-50 duration-300 ease-in-out`}
                             >
-                                {link.label}
+                                <span>{link.label}</span>
+                                {link.href === '/saved' && <span className='bg-main-600 px-2 rounded-md text-xs text-button-text'>{userSavedCount}</span>}
                             </Link>
                         )
                     })}
@@ -48,7 +51,9 @@ export default function Navbar() {
                     {token && (
                         <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <Image src='/icons/default_profile_image.svg' alt='profile image' width={32} height={32} className='rounded-full cursor-pointer' />
+                                <div className='w-8 h-8 rounded-full border border-gray-300 overflow-hidden'>
+                                    <Image src={userImage || '/icons/default_profile_image.svg'} alt='profile image' width={1000} height={1000} className='rounded-full cursor-pointer' />
+                                </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className='w-[9rem] mt-2 p-2 border-2 border-gray-300 rounded-md bg-white flex flex-col gap-2'>
                                 <DropdownMenuLabel className='text-main-500'>{userName}</DropdownMenuLabel>

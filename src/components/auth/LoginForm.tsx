@@ -31,11 +31,7 @@ export default function LoginForm() {
         handleSubmit,
         formState: { errors, isSubmitting, isSubmitted },
     } = useForm<SigninFormSchemaType>({
-        resolver: zodResolver(signinFormSchema),
-        defaultValues: {
-            email: 'hi123@hi.com',
-            password: '12312!2a',
-        },
+        resolver: zodResolver(signinFormSchema)
     });
 
     const email = watch('email');
