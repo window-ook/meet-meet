@@ -3,8 +3,8 @@
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { ConfirmDialogState, openConfirmDialog } from '../shared/utils/confirmDialog';
+import { Upload } from 'lucide-react';
 import axios from 'axios';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
@@ -25,10 +25,10 @@ const editProfile = async (imageFile: File | null, companyName: string, token: s
 
 /** 마이페이지 프로필 수정 다이얼로그 */
 export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setIsProfileEditDialogOpen: (open: boolean) => void }) {
-    const { token, updateUserProfile } = useContext(AuthContext);
+    const { token, userCompanyName, updateUserProfile } = useContext(AuthContext);
 
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [companyName, setCompanyName] = useState<string>('');
+    const [companyName, setCompanyName] = useState<string>(userCompanyName);
     const [error, setError] = useState<string | null>(null);
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState>({ isOpen: false, text: '' });
 
@@ -106,13 +106,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
                             className="w-10 h-10 cursor-pointer"
                             onClick={handleFileClick}
                         >
-                            <Image
-                                src="/icons/default_profile_image.svg"
-                                alt="프로필 수정"
-                                width={36}
-                                height={36}
-                                className='w-full h-full pointer-events-none object-cover rounded-full'
-                            />
+                            <Upload className='w-full h-full' />
                         </button>
                         <input
                             type="file"
@@ -121,6 +115,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
                             onChange={handleFileChange}
                             accept="image/*"
                         />
+                        <span>{imageFile?.name}</span>
                     </div>
                     <label className="col-span-1 text-left font-semibold">COMPANY</label>
                     <input

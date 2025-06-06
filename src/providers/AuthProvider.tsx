@@ -12,9 +12,8 @@ const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog
 
 type AuthContextType = {
     token: string | null;
-    isLoading: boolean;
-    loginDialogOpen: boolean;
-    setLoginDialogOpen: Dispatch<SetStateAction<boolean>>;
+    signInDialogOpen: boolean;
+    setSignInDialogOpen: Dispatch<SetStateAction<boolean>>;
     setToken: Dispatch<SetStateAction<string | null>>;
     signUp: (email: string, password: string, name: string, companyName: string) => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
@@ -29,9 +28,8 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType>({
     token: null,
-    isLoading: true,
-    loginDialogOpen: false,
-    setLoginDialogOpen: () => { },
+    signInDialogOpen: false,
+    setSignInDialogOpen: () => { },
     setToken: () => { },
     signUp: async () => { },
     signIn: async () => { },
@@ -44,17 +42,19 @@ export const AuthContext = createContext<AuthContextType>({
     userImage: '',
 });
 
+const DEFAULT_PROFILE_IMAGE = '/icons/default_profile_image.svg';
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [userName, setUserName] = useState('이름');
     const [userId, setUserId] = useState(0);
     const [userEmail, setUserEmail] = useState('이메일');
     const [userCompanyName, setUserCompanyName] = useState('회사명');
-    const [userImage, setUserImage] = useState('');
+    const [userImage, setUserImage] = useState(DEFAULT_PROFILE_IMAGE);
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [previousPath, setPreviousPath] = useState<string>('/');
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [signInDialogOpen, setSignInDialogOpen] = useState(false);
     const [signUpDialogOpen, setSignupDialogOpen] = useState(false);
     const queryClient = useQueryClient();
 
@@ -107,19 +107,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         }
     }
 
-    const updateUserProfile = (data: { name: string, id: number, email: string, companyName: string, image: string }) => {
-        setUserName(data.name);
-        setUserId(data.id);
-        setUserEmail(data.email);
-        setUserCompanyName(data.companyName);
-        setUserImage(data.image);
-        localStorage.setItem('user_id', data.id.toString());
-        localStorage.setItem('user_email', data.email);
-        localStorage.setItem('user_name', data.name);
-        localStorage.setItem('user_company_name', data.companyName);
-        localStorage.setItem('user_image', data.image);
-    };
-
     const signOut = async () => {
         setToken(null);
         setUserId(0);
@@ -137,7 +124,21 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         await axios.post(INTERNAL_PATHS.signOut);
     }
 
-    // 페이지 이동 시 토큰, 유저명, 유저 아이디 감지
+    const updateUserProfile = (data: { name: string, id: number, email: string, companyName: string, image: string }) => {
+        setUserName(data.name);
+        setUserId(data.id);
+        setUserEmail(data.email);
+        setUserCompanyName(data.companyName);
+        setUserImage(data.image || DEFAULT_PROFILE_IMAGE);
+        localStorage.setItem('user_id', data.id.toString());
+        localStorage.setItem('user_email', data.email);
+        localStorage.setItem('user_name', data.name);
+        localStorage.setItem('user_company_name', data.companyName);
+        localStorage.setItem('user_image', data.image);
+    };
+
+
+    // 페이지 이동 시 토큰, 유저명, 유저 아이디 감지 (처음 한 번)
     useEffect(() => {
         const checkAuth = () => {
             const storedToken = localStorage.getItem('token');
@@ -152,23 +153,23 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             if (userId) setUserId(Number(userId));
             if (userEmail) setUserEmail(userEmail);
             if (userCompanyName) setUserCompanyName(userCompanyName);
-            if (userImage) setUserImage(userImage);
+            if (userImage && userImage !== 'null') setUserImage(userImage);
+            else setUserImage(DEFAULT_PROFILE_IMAGE);
             setIsLoading(false);
         };
+
         checkAuth();
-    }, [userName, userId, userEmail, userCompanyName, userImage]);
+    }, []);
 
     useEffect(() => {
-        // 마이페이지 접근 시 로그인 확인
-        if (!isLoading && !token && pathname.startsWith('/mypage')) setLoginDialogOpen(true);
-        // 로그인 후 이전 경로 저장
-        if (pathname !== '/signin' && !pathname.includes('/auth/')) setPreviousPath(pathname);
-        // 로그인 후 로그인 페이지 접근 시 이전 경로로 이동
-        if (!isLoading && token && pathname === '/signin') router.replace(previousPath);
+        if (isLoading) return; // 로딩 중이면 아무것도 하지 않음
+        if (!token && pathname.startsWith('/mypage')) setSignInDialogOpen(true); // 마이페이지 접근 시 로그인 확인
+        if (pathname !== '/signin' && !pathname.includes('/auth/')) setPreviousPath(pathname); // 로그인 후 이전 경로 저장
+        if (token && pathname === '/signin') router.replace(previousPath); // 로그인 후 로그인 페이지 접근 시 이전 경로로 이동
     }, [isLoading, token, pathname, router, previousPath]);
 
     const handleLoginModalConfirm = () => {
-        setLoginDialogOpen(false);
+        setSignInDialogOpen(false);
         router.replace('/signin');
     };
 
@@ -177,11 +178,27 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         router.replace('/');
     };
 
+    if (isLoading) return null;
+
     return (
-        <AuthContext value={{ token, userName, userId, userEmail, userCompanyName, userImage, loginDialogOpen, isLoading, setLoginDialogOpen, setToken, signUp, signIn, signOut, updateUserProfile }}>
+        <AuthContext value={{
+            token,
+            userName,
+            userId,
+            userEmail,
+            userCompanyName,
+            userImage,
+            signInDialogOpen,
+            setSignInDialogOpen,
+            setToken,
+            signUp,
+            signIn,
+            signOut,
+            updateUserProfile
+        }}>
             {children}
             <ConfirmDialog
-                isOpen={loginDialogOpen}
+                isOpen={signInDialogOpen}
                 onClose={handleLoginModalConfirm}
                 text="로그인이 필요합니다"
             />

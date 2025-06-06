@@ -12,11 +12,11 @@ interface FooterProps {
     leaveGathering: (id: number) => void;
     joinGathering: (id: number) => void;
     setDialogOpen: (open: boolean) => void;
-    setLoginDialogOpen: (open: boolean) => void;
+    setSignInDialogOpen: (open: boolean) => void;
 }
 
 /** 모임 상세 페이지 Footer */
-export default function Footer({ userId, detail, isParticipated, leaveGathering, joinGathering, token, setDialogOpen, handleCopyUrl, id, setLoginDialogOpen }: FooterProps) {
+export default function Footer({ userId, detail, isParticipated, leaveGathering, joinGathering, token, setDialogOpen, handleCopyUrl, id, setSignInDialogOpen }: FooterProps) {
     return (
         <footer className='sticky bottom-0 w-full h-16 border-t border-gray-300 bg-white' >
             <div className='max-w-screen-lg h-full mx-auto px-4 md:px-20 flex justify-between items-center'>
@@ -43,7 +43,7 @@ export default function Footer({ userId, detail, isParticipated, leaveGathering,
                     ) : (
                         <button type="button"
                             onClick={() => {
-                                if (!token) setLoginDialogOpen(true);
+                                if (!token) setSignInDialogOpen(true);
                                 else joinGathering(Number(id))
                             }}
                             className='w-24 h-[60%] py-1 bg-button text-button-text rounded-lg cursor-pointer hover:opacity-60 transition duration-300 ease-in'>참여하기</button>
