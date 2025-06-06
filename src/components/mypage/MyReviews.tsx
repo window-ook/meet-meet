@@ -27,11 +27,13 @@ export default function MyReviews({ teamId }: { teamId: string }) {
   const queryClient = useQueryClient();
   const gatherings = queryClient.getQueryData<JoinedGathering[]>(["joinedGatherings", token]) ?? [];
 
-  // 작성 가능한 리뷰: 마감 완료 && 개설 확정 (5명 이상) && 작성하지 않은 모임들
-  const reviewableGatherings = gatherings.filter((gathering: JoinedGathering) => !gathering.isReviewed && gathering.isCompleted && gathering.participantCount >= 5);
+  // 작성 가능한 모임: 개설 확정 (5명 이상) && 작성하지 않은 모임
+  const reviewableGatherings = gatherings.filter((gathering: JoinedGathering) => !gathering.isReviewed && gathering.participantCount >= 5);
 
-  // 작성한 리뷰
+  // 작성한 모임
   const reviewedGatherings = gatherings.filter((gathering: JoinedGathering) => gathering.isReviewed);
+
+  // 작성한 리뷰 (작성한 모임의 ID와 유저 ID를 통해 조회)
   const { data: createdReviews } = useFetchMyCreatedReviews(token!, reviewedGatherings.map(gathering => gathering.id), userId);
 
   return (
@@ -55,10 +57,9 @@ export default function MyReviews({ teamId }: { teamId: string }) {
       </div>
 
       {/* 리뷰 */}
-
       {tab === 0 ? (
         reviewableGatherings.length === 0 ?
-          <span className="flex h-[100px] w-full items-center justify-center text-gray-700">작성 가능한 리뷰가 없어요</span>
+          <span className="text-gray-500 text-center">작성 가능한 리뷰가 없어요</span>
           :
           <div className="flex flex-col gap-4">
             {reviewableGatherings.map((gathering: JoinedGathering) => (
@@ -114,7 +115,7 @@ export default function MyReviews({ teamId }: { teamId: string }) {
       ) :
         (
           createdReviews?.length === 0 ?
-            <span className="flex h-[100px] w-full items-center justify-center text-gray-700">아직 작성한 리뷰가 없어요</span>
+            <span className="text-gray-500 text-center">아직 작성한 리뷰가 없어요</span>
             :
             <div
               className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"

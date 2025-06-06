@@ -4,8 +4,12 @@ import { useFetchCreatedGatherings } from '@/hooks/api/mypage/useFetchCreatedGat
 import { useContext } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/date';
-import { UserRoundCheck, Hand } from "lucide-react"
+import { UserRoundCheck } from "lucide-react"
 import Image from 'next/image';
+import OverlayForDisabled from '../shared/ui/OverlayForDisabled';
+import dynamic from 'next/dynamic';
+
+const LoadingUI = dynamic(() => import('@/components/mypage/LoadingUI'), { ssr: false });
 
 /** 마이페이지 내가 만든 모임 */
 export default function CreatedGatherings() {
@@ -13,9 +17,9 @@ export default function CreatedGatherings() {
 
   const { data: gatherings = [], isLoading, error } = useFetchCreatedGatherings(token!, userId);
 
-  if (isLoading) return <div className="text-center text-gray-500">로딩 중...</div>;
-  if (error) return <p className="text-center text-red-500">에러 발생: {(error as Error).message}</p>;
-  if (!isLoading && !error && gatherings.length === 0) return <p className="text-center text-gray-700">내가 만든 모임이 없어요</p>;
+  if (isLoading) return <LoadingUI width="w-full" height="h-32" />;
+  if (error) return <p className="text-center text-red-500">에러: {(error as Error).message}</p>;
+  if (!isLoading && !error && gatherings.length === 0) return <p className="text-center text-gray-500">내가 만든 모임이 없어요</p>;
 
   return (
     <div className='px-4 flex flex-col gap-2'>
@@ -27,16 +31,11 @@ export default function CreatedGatherings() {
               key={gathering.id}
               className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
             >
-              {/* 마감된 모임 오버레이 */}
-              {new Date(gathering.registrationEnd) < new Date() && (
-                <div className="absolute bg-black/90 inset-0 z-20 flex items-center justify-center text-center rounded-xl">
-                  <div className="px-4 py-2 rounded-lg flex gap-1 text-sm text-white">
-                    <Hand className="w-4 h-4 text-main-400" />
-                    <span>마감되었습니다</span>
-                  </div>
-                </div>
-              )}
-
+              <OverlayForDisabled
+                filterings={getTimeRemaining(gathering?.registrationEnd) === '마감됨' && gathering.participantCount < 5}
+                notice="마감되었습니다"
+                reason="(모집 마감)"
+              />
               {/* 좌측 */}
               <article className='relative'>
                 <div className="relative px-3 bg-white/80 rounded-full flex items-center text-xs">
