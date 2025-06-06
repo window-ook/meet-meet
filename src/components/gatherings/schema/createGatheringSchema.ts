@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DateTimeValue, isValidDateTimeValue, isAfterNow, isBefore } from '@/components/shared/utils/date';
+import { DateTimeValue, isValidDateTimeValue, isAfterNow, isBefore } from '@/components/shared/utils/dateFormats';
 
 /**
  * 파일 크기 검증 함수 (5MB)
@@ -14,11 +14,11 @@ const validateFileSize = (file: File) => {
  */
 const validateImageType = (file: File) => {
     const allowedTypes = [
-        'image/jpeg', 
-        'image/png', 
-        'image/gif', 
-        'image/svg+xml', 
-        'image/avif', 
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/svg+xml',
+        'image/avif',
         'image/webp'
     ];
     return allowedTypes.includes(file.type);
@@ -50,19 +50,19 @@ export const createGatheringFormSchema = z.object({
     name: z
         .string()
         .min(1, '모임 이름을 입력해주세요.'),
-    
+
     location: z
         .string()
         .min(1, '장소를 선택해주세요.'),
-    
+
     capacity: z
         .number()
         .min(5, '모집 정원은 최소 5명 이상이어야 합니다.'),
-    
+
     type: z
         .string()
         .min(1, '서비스 타입을 선택해주세요.'),
-    
+
     imageFile: z
         .custom<File | null>()
         .nullable()
@@ -75,7 +75,7 @@ export const createGatheringFormSchema = z.object({
             if (!file) return false;
             return validateImageType(file);
         }, '이미지 파일 타입이 맞지않습니다. jpg, png, gif, svg, avif, webp 파일만 가능합니다.'),
-    
+
     meetingDateTime: z
         .custom<DateTimeValue | null>()
         .nullable()
@@ -84,7 +84,7 @@ export const createGatheringFormSchema = z.object({
             if (!value) return false;
             return validateDateTimeValue(value);
         }, '모임 날짜는 현재 시간 이후여야 합니다.'),
-    
+
     deadlineDateTime: z
         .custom<DateTimeValue | null>()
         .nullable()
@@ -131,12 +131,12 @@ export const validateCreateGathering = (
     if (!tokenResult.success) {
         return { success: false, error: tokenResult.error.errors[0].message };
     }
-    
+
     // 폼 데이터 검증
     const formResult = createGatheringFormSchema.safeParse(formData);
     if (!formResult.success) {
         return { success: false, error: formResult.error.errors[0].message };
     }
-    
+
     return { success: true, data: formResult.data };
 };

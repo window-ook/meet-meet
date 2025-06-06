@@ -3,7 +3,7 @@
 import { useFetchCreatedGatherings } from '@/hooks/api/mypage/useFetchCreatedGatherings';
 import { useContext } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
-import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/date';
+import { formatDate, formatTime, getTimeRemaining } from '@/components/shared/utils/dateFormats';
 import { UserRoundCheck } from "lucide-react"
 import Image from 'next/image';
 import OverlayForDisabled from '../shared/ui/OverlayForDisabled';

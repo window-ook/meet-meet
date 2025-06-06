@@ -8,7 +8,7 @@ import { XIcon } from "lucide-react";
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 import SelectionService from "./SelectionService";
-import { formatDateToISO, DateTimeValue, dateTimeValueToDate, formatDateTimeValue } from '@/components/shared/utils/date';
+import { formatDateToISO, DateTimeValue, dateTimeValueToDate, formatDateTimeValue } from '@/components/shared/utils/dateFormats';
 import { validateCreateGathering, CreateGatheringFormSchemaType } from '@/components/gatherings/schema/createGatheringSchema';
 import { useQueryClient } from '@tanstack/react-query';
 import CustomDateTimePicker from '@/components/gatherings/shared/ui/dateTimePicker';
