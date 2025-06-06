@@ -212,7 +212,7 @@ export default function LocationDateFilter({
                         value={selectedDate}
                         min={pageType === 'search' ? today : undefined}
                         onChange={(e) => handleDateChange(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-500"
+                        className="px-3 py-2 border border-gray-300 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-main-500"
                     />
 
                     {/* 초기화 버튼 */}
