@@ -47,7 +47,7 @@ const LIMIT = 4;
 
 /** 모임 상세 페이지 UI */
 export default function GatheringsDetailUI({ id, detailReviews }: { id: string, detailReviews: Reviews }) {
-    const { token, userId, loginDialogOpen, setLoginDialogOpen } = useContext(AuthContext);
+    const { token, userId, signInDialogOpen, setSignInDialogOpen } = useContext(AuthContext);
 
     const [page, setPage] = useState(detailReviews?.currentPage ?? 1);
     const [reviews, setReviews] = useState<ReviewItem[]>(detailReviews.data);
@@ -135,16 +135,16 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
                 handleCopyUrl={handleCopyUrl}
                 leaveGathering={leaveGathering}
                 joinGathering={joinGathering}
-                setLoginDialogOpen={setLoginDialogOpen}
+                setSignInDialogOpen={setSignInDialogOpen}
                 setDialogOpen={(open: boolean) => {
                     if (open) openConfirmDialog(setDialog, '모임을 삭제 하시겠습니까?', handleDeleteConfirm);
                     else setDialog((prev) => ({ ...prev, isOpen: false }));
                 }}
             />
             <ConfirmDialog
-                isOpen={loginDialogOpen}
+                isOpen={signInDialogOpen}
                 text='로그인이 필요합니다'
-                onClose={() => setLoginDialogOpen(false)}
+                onClose={() => setSignInDialogOpen(false)}
                 onCallback={() => router.push('/signin')} />
             <ConfirmDialog
                 isOpen={dialog.isOpen}
