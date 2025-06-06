@@ -31,7 +31,7 @@ export default function LoginForm() {
         handleSubmit,
         formState: { errors, isSubmitting, isSubmitted },
     } = useForm<SignInFormSchemaType>({
-        resolver: zodResolver(signInFormSchema)
+        resolver: zodResolver(signInFormSchema),
     });
 
     const email = watch('email');

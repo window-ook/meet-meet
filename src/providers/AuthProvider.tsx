@@ -66,7 +66,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             const result = await apiClient.post(INTERNAL_PATHS.signUp, { email, password, name, companyName })
             if (result.status === 200) {
                 setSignupDialogOpen(true);
-                router.replace('/login')
+                router.replace('/signin')
             }
         } catch (error) {
             throw error;
@@ -162,14 +162,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         // 마이페이지 접근 시 로그인 확인
         if (!isLoading && !token && pathname.startsWith('/mypage')) setLoginDialogOpen(true);
         // 로그인 후 이전 경로 저장
-        if (pathname !== '/login' && !pathname.includes('/auth/')) setPreviousPath(pathname);
+        if (pathname !== '/signin' && !pathname.includes('/auth/')) setPreviousPath(pathname);
         // 로그인 후 로그인 페이지 접근 시 이전 경로로 이동
-        if (!isLoading && token && pathname === '/login') router.replace(previousPath);
+        if (!isLoading && token && pathname === '/signin') router.replace(previousPath);
     }, [isLoading, token, pathname, router, previousPath]);
 
     const handleLoginModalConfirm = () => {
         setLoginDialogOpen(false);
-        router.replace('/login');
+        router.replace('/signin');
     };
 
     const handleSignupModalConfirm = () => {
