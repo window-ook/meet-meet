@@ -44,7 +44,7 @@ export default function CreateReviewDialog({
   const handleSubmit = () => createReview({ gatheringId: reviewFormData.gatheringId, score, comment, });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="dialog-background">
       <div className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4">
         <h2 className="text-xl font-semibold">리뷰 남기기</h2>
         <label className="block">만족스러운 경험이었나요?</label>
