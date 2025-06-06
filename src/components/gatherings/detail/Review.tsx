@@ -1,4 +1,4 @@
-import { formatDate } from '@/components/shared/utils/date';
+import { formatDate } from '@/components/shared/utils/dateFormats';
 import { ReviewItem } from '@/types/reviews';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';

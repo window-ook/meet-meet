@@ -4,7 +4,7 @@ import { useFetchJoinedGatherings } from '@/hooks/api/mypage/useFetchJoinedGathe
 import { useLeaveGathering } from '@/hooks/api/gatherings/detail/useLeaveGathering';
 import { useContext, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
-import { formatDate, formatTime, getTimeRemaining } from '../shared/utils/date';
+import { formatDate, formatTime, getTimeRemaining } from '../shared/utils/dateFormats';
 import { UserRoundCheck, CheckCircle } from "lucide-react"
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
