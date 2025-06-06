@@ -63,7 +63,7 @@ export default function Navbar() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    {!token && <Link href='/login' className='hover:opacity-50 duration-300 ease-in-out'>로그인</Link>}
+                    {!token && <Link href='/signin' className='hover:opacity-50 duration-300 ease-in-out'>로그인</Link>}
                 </section>
             </div>
         </nav>

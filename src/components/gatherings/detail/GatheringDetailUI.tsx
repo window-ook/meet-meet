@@ -88,7 +88,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
         cancelGathering(Number(id));
 
         queryClient.invalidateQueries({ queryKey: ['gatherings'] });
-        
+
         setDialog((prev) => ({ ...prev, open: false }));
     };
 
@@ -143,7 +143,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
                 open={loginDialogOpen}
                 text='로그인이 필요합니다'
                 onClose={() => setLoginDialogOpen(false)}
-                onCallback={() => router.push('/login')} />
+                onCallback={() => router.push('/signin')} />
             <ConfirmDialog
                 open={dialog.open}
                 text={dialog.text}
