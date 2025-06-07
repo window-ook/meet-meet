@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchGatheringsPaginated } from '@/components/gatherings/shared/utils/fetch';
+import { fetchPaginatedGatherings } from '@/components/gatherings/shared/utils/fetchPaginatedGatherings';
 import { Gathering } from '@/types/gatherings';
 
 /**
@@ -39,7 +39,7 @@ export function useFetchInfiniteGatherings({
     // 위치/날짜 필터값 정규화
     const normalizedLocation = location?.trim() || '';
     const normalizedDate = date?.trim() || '';
-    
+
     // 쿼리 키
     const queryKey = [
         'gatherings',
@@ -66,9 +66,9 @@ export function useFetchInfiniteGatherings({
     } = useInfiniteQuery<Gathering[]>({
         queryKey,
         queryFn: ({ pageParam }) => {
-            return fetchGatheringsPaginated(
+            return fetchPaginatedGatherings(
                 Number(pageParam),
-                mainType, 
+                mainType,
                 normalizedLocation || undefined,
                 normalizedDate || undefined,
                 filterSavedIds,

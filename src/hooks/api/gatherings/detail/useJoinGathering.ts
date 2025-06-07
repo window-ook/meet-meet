@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { GatheringApiParams } from '@/types/gatheringApi';
-import { apiClient } from '@/lib/api/axios';
+import { apiClient } from '@/lib/api/clientFetcher';
 import { handleApiError } from '@/lib/api/handleApiResponse';
 
 /** 모임 참여 훅

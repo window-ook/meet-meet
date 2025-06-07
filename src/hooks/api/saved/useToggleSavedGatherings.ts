@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { getSavedGatherings, setSavedGatherings } from '@/components/gatherings/shared/utils/savedGatherings';
 import { getTimeRemaining } from '@/components/shared/utils/dateFormats';
-import { apiClient } from '@/lib/api/axios';
+import { apiClient } from '@/lib/api/clientFetcher';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { Gathering } from '@/types/gatherings';
 
@@ -23,7 +23,7 @@ export const useToggleSavedGatherings = () => {
     if (gatheringIds.length === 0) return gatheringIds;
 
     try {
-      const response = await apiClient.get(INTERNAL_PATHS.fetchGatherings, {
+      const response = await apiClient.get(INTERNAL_PATHS.GATHERINGS, {
         params: { limit: 1000 }
       });
 
@@ -43,12 +43,12 @@ export const useToggleSavedGatherings = () => {
       // localStorage 업데이트
       if (validIds.length !== gatheringIds.length) {
         setSavedGatherings(validIds);
-        
+
         // 쿼리 캐시 업데이트
         queryClient.setQueryData(["savedGatherings"], validIds);
-        queryClient.invalidateQueries({ 
-          queryKey: ["allSavedGatherings"], 
-          exact: false 
+        queryClient.invalidateQueries({
+          queryKey: ["allSavedGatherings"],
+          exact: false
         });
       }
 

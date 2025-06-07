@@ -1,9 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'next/navigation';
 import { JoinedGathering } from '@/types/gatherings';
-import { apiClient } from '@/lib/api/axios';
+import { apiClient } from '@/lib/api/clientFetcher';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import axios from 'axios';
 
@@ -16,12 +15,10 @@ export const useCheckJoined = (
     id: number,
     token: string | null
 ) => {
-    const searchParams = useSearchParams();
-    const queries = searchParams.toString();
 
     const checkJoined = async () => {
         try {
-            const response = await apiClient.get(INTERNAL_PATHS.checkJoined(queries), { headers: { Authorization: `Bearer ${token}` } },);
+            const response = await apiClient.get(INTERNAL_PATHS.CHECK_JOINED, { headers: { Authorization: `Bearer ${token}` } },);
             return response.data.some((gathering: JoinedGathering) => gathering.id === Number(id))
         } catch (error) {
             if (axios.isAxiosError(error)) {

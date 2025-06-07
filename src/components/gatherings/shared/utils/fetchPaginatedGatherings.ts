@@ -1,7 +1,6 @@
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
-import { apiClient } from '@/lib/api/axios';
+import { apiClient } from '@/lib/api/clientFetcher';
 import { Gathering } from "@/types/gatherings";
-
 
 /**
  * 페이지네이션된 모임 목록 조회
@@ -13,7 +12,7 @@ import { Gathering } from "@/types/gatherings";
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
  */
-export async function fetchGatheringsPaginated(
+export async function fetchPaginatedGatherings(
     page: number,
     mainType: string = 'DALLAEMFIT',
     location?: string,
@@ -56,7 +55,7 @@ export async function fetchGatheringsPaginated(
         }
 
         // 모임 목록 조회
-        const response = await apiClient.get(INTERNAL_PATHS.fetchGatherings, {
+        const response = await apiClient.get(INTERNAL_PATHS.GATHERINGS, {
             params,
         });
 
