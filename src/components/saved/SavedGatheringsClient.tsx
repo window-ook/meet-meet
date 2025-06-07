@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from 'react';
-import GatheringsList from '@/components/gatherings/GatheringsList';
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api/axios';
-import { Gathering } from '@/types/gatherings';
-import GatheringFilters from '@/components/gatherings/shared/ui/GatheringsFilters';
 import { useToggleSavedGatherings } from '@/hooks/api/saved/useToggleSavedGatherings';
-import GatheringsHeader from '@/components/gatherings/shared/ui/GatheringsHeader';
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api/clientFetcher';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
+import { Gathering } from '@/types/gatherings';
+import GatheringsList from '@/components/gatherings/GatheringsList';
+import GatheringFilters from '@/components/gatherings/shared/ui/GatheringsFilters';
+import GatheringsHeader from '@/components/gatherings/shared/ui/GatheringsHeader';
 
 export default function SavedGatheringsClient() {
     const [selectedMainType, setSelectedMainType] = useState('DALLAEMFIT');
@@ -23,7 +23,7 @@ export default function SavedGatheringsClient() {
         queryFn: async () => {
             if (savedIds.length === 0) return [];
 
-            const response = await apiClient.get(INTERNAL_PATHS.fetchGatherings, {
+            const response = await apiClient.get(INTERNAL_PATHS.GATHERINGS, {
                 params: {
                     limit: 1000
                 }
