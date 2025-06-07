@@ -327,29 +327,3 @@ export const isSameDateForFilter = (dateTimeString: string, targetDate: string):
         return false;
     }
 };
-
-
-/**
- * 기존 formatDate 함수와 동일한 결과를 보장하는 날짜 추출
- * @param dateTimeString 날짜 시간 문자열
- * @returns YYYY-MM-DD 형식 문자열
- */
-export const extractDateString = (dateTimeString: string): string => {
-    if (!dateTimeString) return '';
-    
-    try {
-        // 기존 formatDate와 동일한 방식으로 한국 시간 변환
-        const date = new Date(dateTimeString);
-        if (isNaN(date.getTime())) return '';
-        
-        const koreanDate = toKoreanTime(date);
-        const year = koreanDate.getFullYear();
-        const month = String(koreanDate.getMonth() + 1).padStart(2, '0');
-        const day = String(koreanDate.getDate()).padStart(2, '0');
-        
-        return `${year}-${month}-${day}`;
-    } catch (error) {
-        console.error('extractDateString error:', error);
-        return '';
-    }
-};
