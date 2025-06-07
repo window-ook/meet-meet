@@ -19,7 +19,7 @@ export default function Navbar() {
     const savedCounts = Array.isArray(savedIds) ? savedIds.length : 0;
 
     const navLinks = [
-        { href: '/gatherings', label: '모임찾기' },
+        { href: '/gatherings', label: '모임 찾기' },
         { href: '/saved', label: '찜한 모임' },
         { href: '/reviews', label: '모든 리뷰' },
     ]
