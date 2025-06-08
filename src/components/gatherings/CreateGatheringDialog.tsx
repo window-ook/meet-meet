@@ -182,10 +182,7 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
     };
 
     return (
-        <div className="fixed inset-0 z-50">
-            {/* 배경 */}
-            <div className="absolute inset-0 bg-black opacity-50"></div>
-
+        <div className="dialog-background">
             {/* 모달 컨테이너 */}
             <div className="relative w-full h-full flex items-center justify-center md:p-4">
                 <div className="w-full max-w-2xl max-h-full flex flex-col">
@@ -252,10 +249,10 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                                         readOnly
                                     />
                                     <div
-                                        className="w-[100px] h-[44px] border-2 border-main-500 text-main-500 font-semibold text-sm px-2 rounded-lg flex flex-row items-center justify-center cursor-pointer hover:bg-main-50"
+                                        className="w-[100px] h-[44px] border-2 border-main-500 text-main-500 font-semibold text-sm px-2 rounded-lg flex flex-row items-center justify-center cursor-pointer hover:bg-main-50 whitespace-nowrap"
                                         onClick={handleFileButtonClick}
                                     >
-                                        <p>파일 추가</p>
+                                        <p className="text-base">파일 추가</p>
                                     </div>
                                     <input
                                         type="file"
