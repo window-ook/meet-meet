@@ -34,7 +34,7 @@ export default function ProfileCard() {
       {/* 프로필 정보 */}
       <section className="h-full flex items-center gap-4 bg-white p-4">
         {/* 이미지 */}
-        <div className="size-12 sm:size-24 z-1 -mt-20 rounded-full border border-gray-400">
+        <div className="size-12 sm:size-18 z-1 -mt-20 rounded-full border border-gray-400">
           <Image
             src={userImage || '/icons/default_profile_image.svg'}
             alt="프로필"
@@ -50,7 +50,7 @@ export default function ProfileCard() {
             <div className="text-xs sm:text-base font-bold">COMPANY</div>
             <div className='text-xs sm:text-base'>{userCompanyName}</div>
           </div>
-          <div className="flex gap-2 text-gray-800 text-xs sm:text-sm">
+          <div className="flex gap-2 text-gray-800 text-xs sm:text-base">
             <div className="font-bold">E-MAIL</div>
             <div>{userEmail}</div>
           </div>
