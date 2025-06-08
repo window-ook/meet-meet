@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic';
 
 const SelectionService = dynamic(() => import('@/components/gatherings/SelectionService'), { ssr: false });
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
-const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePicker'), { ssr: false });
+const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePick'), { ssr: false });
 
 export default function CreateGatheringDialog({ onClose }: { onClose: () => void }) {
     const { token } = useContext(AuthContext);
