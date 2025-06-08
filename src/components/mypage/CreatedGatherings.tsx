@@ -29,7 +29,7 @@ export default function CreatedGatherings() {
           return (
             <div
               key={gathering.id}
-              className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
+              className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col sm:flex-row gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
             >
               <OverlayForDisabled
                 filterings={getTimeRemaining(gathering?.registrationEnd) === '마감됨' && gathering.participantCount < 5}
@@ -53,9 +53,9 @@ export default function CreatedGatherings() {
               </article>
 
               {/* 우측 정보 */}
-              <div className='flex flex-col justify-between'>
+              <article className='flex flex-col justify-between'>
                 <div className='flex flex-col gap-1'>
-                  <h3 className="text-xl font-semibold text-gray-800">{gathering.name}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{gathering.name}</h3>
                   <p className="text-gray-600">{gathering.location}</p>
                   <div className='flex items-center gap-4 text-sm font-medium'>
                     {/* 참여자 수 */}
@@ -74,7 +74,7 @@ export default function CreatedGatherings() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
             </div>
           );
         })}

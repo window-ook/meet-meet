@@ -93,7 +93,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2 bg-black/50">
+        <div className="dialog-background">
             <h1 className='text-2xl font-semibold text-white'>PROFILE EDIT</h1>
             <form
                 className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4"

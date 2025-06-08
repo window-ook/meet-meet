@@ -49,7 +49,7 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
       {sortedGatherings.map(data => (
         <div
           key={data.id}
-          className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
+          className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col sm:flex-row gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
         >
           {/* 마감 완료 및 5명 미만 */}
           <OverlayForDisabled
@@ -75,9 +75,9 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
           </article>
 
           {/* 우측 */}
-          <div className='flex flex-col justify-between'>
+          <div className='flex flex-col gap-2 sm:gap-0 justify-between'>
             {/* 모임 정보 */}
-            <div className='flex flex-col gap-1'>
+            <div className='flex flex-col gap-2 sm:gap-1'>
               <div className='flex items-center gap-1'>
                 {/* 마감 완료 및 5명 이상 모집 및 모임 후 '이용 완료' */}
                 {getTimeRemaining(data?.registrationEnd) === '마감됨' && data?.participantCount >= 5 && data?.isCompleted && (
@@ -99,8 +99,10 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
                   <div className="px-3 py-1 rounded-full bg-gray-200 self-start text-gray-500 text-xs">개설 대기</div>
                 )}
               </div>
-              <h1 className="text-xl font-semibold">{data?.name}</h1>
-              <p className="text-gray-600">{data?.location}</p>
+              <div className='flex items-center sm:items-start sm:flex-col gap-2 sm:gap-1'>
+                <h1 className="text-lg sm:text-xl font-semibold">{data?.name}</h1>
+                <p className="text-sm sm:text-base text-gray-600">{data?.location}</p>
+              </div>
               <div className='flex items-center gap-4 text-sm font-medium'>
                 {/* 참여자 수 */}
                 <div className='flex items-center gap-1'>
@@ -119,7 +121,7 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
               </div>
             </div>
 
-            <div className='flex gap-2'>
+            <div className='flex text-xs sm:text-base gap-2'>
               {/* 개설 확정 모임은 참여 상태라면 리뷰 작성이 가능*/}
               {data?.participantCount >= 5 && (
                 <div>
@@ -131,14 +133,14 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
                         setSelectedTab(1);
                         setMyReviewsTab(1);
                       }}
-                      customClassName='w-36'
+                      customClassName='w-24 sm:w-36'
                     />
                   ) : (
                     <Button
                       variant='default'
                       text='리뷰 작성하기'
                       onClick={() => onOpenReviewDialog({ userId, gatheringId: Number(data.id) })}
-                      customClassName='w-32'
+                      customClassName='w-28 sm:w-32'
                     />
                   )}
                 </div>
@@ -148,7 +150,7 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
                 variant='cancel'
                 text='참여 취소하기'
                 onClick={() => leaveGathering(Number(data?.id))}
-                customClassName='w-32'
+                customClassName='w-28 sm:w-32'
               />
             </div>
 

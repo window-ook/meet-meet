@@ -31,7 +31,7 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
 
   return (
     <div className="px-4 flex w-full flex-col justify-start gap-5">
-      <div className="flex items-center gap-2">
+      <div className="flex justify-center sm:justify-start items-center gap-2">
         {/* 작성 가능한 리뷰, 작성한 리뷰 버튼 */}
         <button
           type="button"
@@ -51,14 +51,14 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
 
       {/* 리뷰 */}
       {myReviewsTab === 0 ? (
-        reviewableGatherings.length === 0 ?
+        !reviewableGatherings || reviewableGatherings.length === 0 ?
           <span className="text-gray-500 text-center">작성 가능한 리뷰가 없어요</span>
           :
           <div className="flex flex-col gap-4">
             {reviewableGatherings.map((gathering: JoinedGathering) => (
               <div
                 key={gathering.id}
-                className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
+                className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col sm:flex-row gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
               >
                 {/* 이미지 */}
                 <div className="flex-shrink-0">
@@ -71,10 +71,10 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
                   />
                 </div>
                 {/* 정보 + 버튼 */}
-                <div className="flex flex-col justify-between">
+                <div className="flex flex-col gap-2 sm:gap-0 justify-between">
                   {/* 정보 */}
                   <div className='flex flex-col gap-1'>
-                    <h1 className="text-xl font-semibold">{gathering.name}</h1>
+                    <h1 className="text-lg sm:text-xl font-semibold">{gathering.name}</h1>
                     <p className="text-gray-600">{gathering?.location}</p>
                     <div className='flex items-center gap-4 text-sm font-medium'>
                       <div className='flex items-center gap-1'>
@@ -97,7 +97,7 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
                       variant='default'
                       text='리뷰 작성하기'
                       onClick={() => onOpenReviewDialog({ userId, gatheringId: Number(gathering.id) })}
-                      customClassName='w-32'
+                      customClassName='w-28 sm:w-32 text-sm'
                     />
                   )}
                 </div>
@@ -106,14 +106,14 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
           </div>
       ) :
         (
-          createdReviews?.length === 0 ?
+          !createdReviews || createdReviews?.length === 0 ?
             <span className="text-gray-500 text-center">아직 작성한 리뷰가 없어요</span>
             :
             <div
-              className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
+              className="relative min-h-[100px] w-full p-4 rounded-xl flex gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
             >
               {createdReviews?.map((review: ReviewItem) => (
-                <div key={`${review?.Gathering?.id}-${review?.id}`} className='flex gap-4'>
+                <div key={`${review?.Gathering?.id}-${review?.id}`} className='flex flex-col sm:flex-row gap-4'>
                   {/* 이미지 */}
                   <div className="flex-shrink-0">
                     <Image
@@ -130,12 +130,9 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
                         <Heart key={index} className="w-4 h-4 text-main-500 fill-main-500" />
                       ))}
                     </div>
-                    <p>{review?.comment}</p>
-                    <div className='flex gap-1 items-center'>
-                      <h1 className="text-xl font-semibold">{review?.Gathering?.name}</h1>
-                      <p className="text-gray-600">{review?.Gathering?.location}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                    <p className='text-sm sm:text-base'>{review?.comment}</p>
+                    <span className="text-sm sm:text-xl font-semibold">{review?.Gathering?.name}</span>
+                    <div className="flex flex-wrap gap-2 text-xs sm:text-base text-gray-400">
                       <span className={`inline-flex items-center rounded-md`}>
                         {formatDate(review?.Gathering?.dateTime ?? '')}
                       </span>

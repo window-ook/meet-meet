@@ -25,7 +25,7 @@ export default function MyPageUI() {
 
         {/* 탭 네비게이션 */}
         <div className=" border-t-[3px] border-gray-800">
-          <div className="px-4 py-4 flex gap-4 text-lg font-bold">
+          <div className="sm:px-4 py-4 flex gap-4 justify-between sm:justify-start text-sm sm:text-lg font-bold">
             {[
               { label: "참여중인 모임", value: 0 },
               { label: "나의 리뷰", value: 1 },
