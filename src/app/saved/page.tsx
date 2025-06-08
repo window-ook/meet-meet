@@ -1,11 +1,15 @@
 import { Metadata } from 'next';
-import LikedMeetingsUI from './ui';
+import SavedGatheringsClient from '@/components/saved/SavedGatheringsClient';
 
 export const metadata: Metadata = {
-  title: '찜한 모임 | Meet2',
-  description: '내가 찜한 모임들을 확인할 수 있어요',
+  title: `찜한 모임 | Meet Meet`,
+  description: `모임 찾기 페이지 입니다`,
 };
 
-export default function LikedMeetingsPage() {
-  return <LikedMeetingsUI />;
+export default function SavedPage() {
+  return (
+    <div className="contents-container">
+      <SavedGatheringsClient />
+    </div>
+  );
 }

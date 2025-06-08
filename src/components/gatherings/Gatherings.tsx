@@ -1,93 +1,150 @@
 "use client"
 
-
-import { useContext, useEffect, useState } from "react";
-import { Gathering } from "@/types/gatherings";
-import { useGatheringsStore } from '@/store/gatheringsStore';
-import CreateMeetingModal from "@/components/gatherings/CreateGatheringDialog";
-import GatheringsList from "@/components/gatherings/GatheringsList";
-import Image from "next/image";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
+import { useGatheringsStore } from '@/store/gatheringsStore';
+import { Gathering } from "@/types/gatherings";
+import dynamic from "next/dynamic";
 
+const CreateGatheringModal = dynamic(() => import('@/components/gatherings/CreateGatheringDialog'), { ssr: false });
+const GatheringsList = dynamic(() => import('@/components/gatherings/GatheringsList'), { ssr: false });
+const GatheringFilters = dynamic(() => import('@/components/gatherings/shared/ui/GatheringsFilters'), { ssr: false });
+const GatheringsHeader = dynamic(() => import('@/components/gatherings/shared/ui/GatheringsHeader'), { ssr: false });
+const LocationDateFilter = dynamic(() => import('@/components/gatherings/shared/ui/LocationDateFilter'), { ssr: false });
+
+/**
+ * 모임 페이지 프로퍼티
+ * @param initialGatherings 초기 모임 목록
+ */
 interface PageProps {
     initialGatherings?: Gathering[];
 }
 
+/**
+ * 필터 프로퍼티
+ * @param location 위치
+ * @param date 날짜
+ */
+interface Filters {
+    location: string;
+    date: string;
+}
+
+/**
+ * 정렬 프로퍼티
+ * @param sortBy 정렬 기준
+ * @param sortOrder 정렬 순서
+ */
+interface Sort {
+    sortBy: string;
+    sortOrder: string;
+}
+
 export default function Gatherings({ initialGatherings = [] }: PageProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const setGatherings = useGatheringsStore((s) => s.setGatherings);
+    const [selectedMainType, setSelectedMainType] = useState('DALLAEMFIT');
+    const [selectedSubType, setSelectedSubType] = useState('ALL');
+    const [filters, setFilters] = useState<Filters>({
+        location: '',
+        date: ''
+    });
+    const [sort, setSort] = useState<Sort>({
+        sortBy: 'registrationEnd',
+        sortOrder: 'desc'
+    });
+    const isLoggedIn = useContext(AuthContext);
 
+    const setGatherings = useGatheringsStore((state) => state.setGatherings); // 모임 목록 설정
+
+    // 초기 모임 목록 설정
     useEffect(() => {
-        setGatherings(initialGatherings);
+        if (initialGatherings.length > 0) {
+            setGatherings(initialGatherings);
+        }
     }, [initialGatherings, setGatherings]);
 
-    const { token } = useContext(AuthContext);
-    const isLoggedIn = !!token; // 로그인 여부 확인
+    // 모달 열기
+    const openModal = useCallback(() => {
+        setIsModalOpen(true);
+    }, []);
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    // 모달 닫기
+    const closeModal = useCallback(() => {
+        setIsModalOpen(false);
+    }, []);
+
+    // 모임 주제 변경
+    const handleTypeChange = useCallback((mainType: string, subType: string) => {
+        setSelectedMainType(mainType);
+        setSelectedSubType(subType);
+    }, []);
+
+    // 위치/날짜 필터 변경
+    const handleFilterChange = useCallback((newFilters: Filters) => {
+        setFilters(prev => {
+            if (
+                prev.location === newFilters.location &&
+                prev.date === newFilters.date
+            ) {
+                return prev;
+            }
+
+            return newFilters;
+        });
+    }, []);
+
+    // 마감시간 정렬 변경
+    const handleSortChange = useCallback((newSort: Sort) => {
+        setSort(prev => {
+            if (
+                prev.sortBy === newSort.sortBy &&
+                prev.sortOrder === newSort.sortOrder
+            ) {
+                return prev;
+            }
+
+            return newSort;
+        });
+    }, []);
 
     return (
         <>
-            {isModalOpen && <CreateMeetingModal onClose={closeModal} />}
-            <div className="w-full">
-                {/* 모임 목록 헤더 */}
+            {isModalOpen && (
+                <CreateGatheringModal
+                    onClose={closeModal}
+                />
+            )}
+            <div className="w-full flex flex-col">
+                <GatheringsHeader type="search" />
                 <div className="w-full flex flex-col">
-                    <div className=" w-full pt-10 flex flex-row justify-between items-center">
-                        <Image src="/images/logo.avif" alt="logo" width={70} height={70} className="rounded-full border-2 border-black mr-1" priority />
-                        <div className="w-full flex flex-col justify-start px-2">
-                            <p className=" text-[#374151] text-sm font-medium mb-2">함께 할 사람이 없나요</p>
-                            <p className=" text-gray-900 text-lg font-semibold">지금 모임에 참여해보세요</p>
-                        </div>
-                    </div>
                     {/* 모임 주제 선택 및 모임 만들기 */}
-                    <div className="w-full flex flex-col justify-start py-5">
-                        <div className="flex flex-row">
-                            <button className="text-gray-900 text-lg font-semibold px-4 py-1 border-b-2 border-gray-900">
-                                주제1
-                            </button>
-                            <button className="text-gray-900 text-lg font-semibold px-4 py-1">
-                                주제2
-                            </button>
-                            {isLoggedIn && (    
-                            <button onClick={openModal} className="bg-main-500 text-white font-semibold text-sm px-4 py-1 rounded-lg ml-auto">
-                                모임 만들기
-                            </button>
-                            )}
-                        </div>
-                        <div className="w-full flex flex-col justify-start py-5 border-b-2 border-gray-200">
-                            <div className="flex flex-row items-center gap-2">
-                                <button className="bg-gray-800 text-white text-sm font-medium px-3 py-2 rounded-lg">전체</button>
-                                <button className="bg-gray-200 text-gray-900 text-sm font-medium px-3 py-2 rounded-lg">오피스 스트레칭</button>
-                                <button className="bg-gray-200 text-gray-900 text-sm font-medium px-3 py-2 rounded-lg">마인드풀니스</button>
-                            </div>
-                        </div>
-                    </div>
-                    {/* 모임 목록 */}
-                    <div className="w-full flex flex-col justify-start mb-10">
-                        <div className="flex flex-row items-center gap-3 text-sm text-gray-900 font-medium">
-                            <select name="" id="" className="w-[110px] border-2 border-gray-100 rounded-lg px-3 py-2 appearance-none bg-[url('/icons/polygon_down.svg')] bg-[length:13px_13px] bg-[right_13px_center] bg-no-repeat">
-                                <option value="" >지역 전체</option>
-                                <option value="">을지로3가</option>
-                                <option value="">건대입구</option>
-                                <option value="">신림</option>
-                                <option value="">홍대입구</option>
-                            </select>
-                            <input type="date" name="" id="" className="w-[110px] border-2 border-gray-100 rounded-lg px-3 py-2 appearance-none bg-[url('/icons/polygon_down.svg')] bg-[length:13px_13px] bg-[right_13px_center] bg-no-repeat" />
-                            <div className="ml-auto">
-                                <button className="border-2 border-gray-200 text-gray-900 font-semibold px-3 py-2 rounded-lg tracking-2 md:hidden block">
-                                    ↑↓
-                                </button>
-                                <button className="border-2 border-gray-200 text-gray-900 font-semibold px-3 py-2 rounded-lg tracking-1 md:block hidden">
-                                    ↑↓ 마감 임박
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <GatheringFilters
+                        showCreateButton={!!isLoggedIn} // 모임 만들기 버튼 표시 여부
+                        onCreateClick={openModal} // 모임 만들기 버튼 클릭 핸들러
+                        onTypeChange={handleTypeChange} // 모임 주제 변경 핸들러
+                        initialMainType={selectedMainType} // 초기 모임 주제
+                        initialSubType={selectedSubType} // 초기 모임 서브타입
+                    />
+
+                    {/* 위치/날짜 필터 + 정렬 */}
+                    <LocationDateFilter
+                        onFilterChange={handleFilterChange} // 필터 변경 핸들러
+                        onSortChange={handleSortChange} // 정렬 변경 핸들러
+                        pageType="search" // 페이지 타입
+                        initialLocation={filters.location} // 초기 위치
+                        initialDate={filters.date} // 초기 날짜
+                    />
                 </div>
-                {/* SSR 데이터를 GatheringsList에 전달 */}
+
+                {/* 모임 목록 조회 */}
                 <GatheringsList
-                    fetchFromApi={true}
+                    fetchFromApi={true} // 무한스크롤 활성화
+                    selectedMainType={selectedMainType} // 모임 주제
+                    selectedSubType={selectedSubType} // 모임 서브타입
+                    location={filters.location} // 위치
+                    date={filters.date} // 날짜
+                    sortBy={sort.sortBy} // 정렬 기준
+                    sortOrder={sort.sortOrder} // 정렬 순서
                 />
             </div>
         </>

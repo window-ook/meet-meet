@@ -1,132 +1,153 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'next/navigation';
-import { useContext } from 'react';
-import Image from 'next/image';
-import axios from 'axios';
-
+import { useFetchJoinedGatherings } from '@/hooks/api/mypage/useFetchJoinedGatherings';
+import { useLeaveGathering } from '@/hooks/api/gatherings/detail/useLeaveGathering';
+import { useContext, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
+import { getTimeRemaining } from '@/components/shared/utils/dateFormats';
+import { CheckCircle } from "lucide-react"
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
-export interface GatheringData {
-  id: string;
-  name: string;
-  image?: string;
-  location?: string;
-  type?: string;
-  participantCount?: number;
-  capacity?: number;
-  dateTime?: string;
-  isCompleted?: boolean;
-  isReviewed?: boolean;
+const LoadingUI = dynamic(() => import('@/components/mypage/shared/ui/LoadingUI'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const OverlayForDisabled = dynamic(() => import('@/components/shared/ui/OverlayForDisabled'), { ssr: false });
+const Button = dynamic(() => import('@/components/shared/ui/Button'), { ssr: false });
+const GatheringInformation = dynamic(() => import('@/components/mypage/shared/ui/GatheringInformation'), { ssr: false });
+const DateReminder = dynamic(() => import('@/components/shared/ui/DateReminder'), { ssr: false });
+
+interface JoinedGatheringsProps {
+  setSelectedTab: (tab: number) => void;
+  setMyReviewsTab: (tab: number) => void;
+  onOpenReviewDialog: (gathering: { userId: number, gatheringId: number }) => void;
 }
 
-const fetchJoinedGatherings = async (
-  token: string,
-  queries: string,
-): Promise<GatheringData[]> => {
-  const { data } = await axios.get(
-    `/api/gatherings/joined?${queries}&limit=1000`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+/** 마이페이지 '참여중인 모임' */
+export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOpenReviewDialog }: JoinedGatheringsProps) {
+  const { token, userId } = useContext(AuthContext);
+
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const { data: gatherings = [], isLoading, error } = useFetchJoinedGatherings(token!);
+
+  const { leaveGathering } = useLeaveGathering({
+    token,
+    onCallback: (message) => {
+      setErrorMessage(message);
+      setIsErrorDialogOpen(true);
     },
-  );
-  return data;
-};
-
-export default function JoinedGatherings() {
-  const searchParams = useSearchParams();
-  const queries = searchParams.toString();
-  const { token } = useContext(AuthContext);
-
-  console.log('queries:', queries);
-
-  const {
-    data: gatherings = [],
-    isLoading,
-    error,
-  } = useQuery<GatheringData[], Error>({
-    queryKey: ['joinedGatherings', token],
-    queryFn: () => fetchJoinedGatherings(token!, queries),
-    enabled: !!token,
   });
 
-  if (!token) {
-    return (
-      <div className="text-main-500 flex h-[100px] w-full items-center justify-center">
-        토큰 없음
-      </div>
-    );
-  }
+  const sortedGatherings = [...gatherings].sort((a, b) => {
+    if (a.isCompleted === b.isCompleted) {
+      const A_REGISTRATION_END = new Date(a.registrationEnd || '').getTime();
+      const B_REGISTRATION_END = new Date(b.registrationEnd || '').getTime();
+      return B_REGISTRATION_END - A_REGISTRATION_END;
+    }
+    return a.isCompleted ? 1 : -1;
+  });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[100px] w-full items-center justify-center border-2 border-blue-500">
-        <h1>로딩 중...</h1>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex h-[100px] w-full items-center justify-center border-2 border-red-500">
-        <h1 className="text-red-500">{error.message || '오류 발생'}</h1>
-      </div>
-    );
-  }
-
-  if (gatherings.length === 0) {
-    return (
-      <div className="flex h-[100px] w-full items-center justify-center border-2 border-gray-500">
-        <h1>참석한 모임이 없습니다.</h1>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingUI />;
+  if (error) return <div className="text-red-500">에러: {error.message}</div>;
+  if (gatherings.length === 0) return <div className="text-gray-500 text-center">참여한 모임이 없습니다</div>;
 
   return (
-    <div className="flex w-full flex-col gap-5">
-      {gatherings.map(data => (
+    <section className='px-4 flex flex-col gap-2'>
+      {sortedGatherings.map(data => (
         <div
           key={data.id}
-          className="flex min-h-[100px] w-full flex-col rounded-lg border-2 border-gray-200 p-4 transition hover:shadow-md"
+          className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col sm:flex-row gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
         >
-          <h1 className="text-lg font-semibold text-gray-800">{data.name}</h1>
+          {/* 마감 완료 및 5명 미만 */}
+          <OverlayForDisabled
+            filterings={getTimeRemaining(data?.registrationEnd) === '마감됨' && data?.participantCount < 5}
+            notice="모집이 취소된 모임입니다"
+            reason="(모집 마감 및 최소 인원 미달)"
+          />
 
-          {data.image && (
-            <Image
-              src={data.image}
-              alt={`${data.name} 이미지`}
-              width={100}
-              height={100}
-              className="pointer-events-none my-2 rounded-lg object-cover"
+          {/* 좌측 */}
+          <article className='relative'>
+            <DateReminder registrationEnd={data?.registrationEnd} />
+            <Image src={data?.image}
+              alt='모임 이미지'
+              width={1000}
+              height={1000}
+              className="w-[17.5rem] h-[10rem] rounded-xl object-cover"
             />
-          )}
+          </article>
 
-          {data.location && (
-            <p className="text-gray-600">위치: {data.location}</p>
-          )}
-          {data.type && <p className="text-gray-600">종류: {data.type}</p>}
+          {/* 우측 */}
+          <div className='flex flex-col gap-2 sm:gap-0 justify-between'>
+            {/* 모임 정보 */}
+            <div className='flex flex-col gap-2 sm:gap-1'>
+              <div className='flex items-center gap-1'>
+                {/* 마감 완료 및 5명 이상 모집 및 모임 후 '이용 완료' */}
+                {getTimeRemaining(data?.registrationEnd) === '마감됨' && data?.participantCount >= 5 && data?.isCompleted && (
+                  <div className="px-3 py-1 rounded-full bg-gray-200 self-start text-gray-500 text-xs">이용 완료</div>)}
 
-          {data.participantCount != null && data.capacity != null && (
-            <p className="text-gray-600">
-              참여자: {data.participantCount}/{data.capacity}명
-            </p>
-          )}
+                {/* 마감 미완료 및 모임 전 '이용 예정' */}
+                {getTimeRemaining(data?.registrationEnd) !== '마감됨' && !data?.isCompleted && (
+                  <div className="px-3 py-1 rounded-full bg-main-200 self-start text-white text-xs">이용 예정</div>)}
 
-          {data.dateTime && (
-            <p className="text-gray-600">
-              날짜: {new Date(data.dateTime).toLocaleDateString()}{' '}
-              {data.isCompleted && (
-                <span className="text-green-600">(종료됨)</span>
+                {/* 마감 미완료 및 5명 이상 모집 '개설 확정'  */}
+                {getTimeRemaining(data?.registrationEnd) !== '마감됨' && data?.participantCount >= 5 && (
+                  <div className="px-3 py-1 rounded-full bg-main-200 self-start text-white text-xs flex items-center gap-1">
+                    <CheckCircle className="w-4 h-4 text-white" />
+                    개설 확정
+                  </div>)}
+
+                {/* 마감 미완료 및 5명 미만 시 '개설 대기' */}
+                {getTimeRemaining(data?.registrationEnd) !== '마감됨' && data?.participantCount < 5 && (
+                  <div className="px-3 py-1 rounded-full bg-gray-200 self-start text-gray-500 text-xs">개설 대기</div>)}
+              </div>
+              <GatheringInformation data={data} />
+            </div>
+
+            <div className='flex text-xs sm:text-base gap-2'>
+              {/* 개설 확정 모임이여야 리뷰 관련 버튼 표시*/}
+              {data?.participantCount >= 5 && (
+                <div>
+                  {/* 리뷰 작성 완료 */}
+                  {data.isReviewed ? (
+                    <Button
+                      variant='default'
+                      text='내가 쓴 리뷰 보기'
+                      onClick={() => {
+                        setSelectedTab(1);
+                        setMyReviewsTab(1);
+                      }}
+                      customClassName='w-24 sm:w-36'
+                    />
+                  ) : (
+                    // 리뷰 작성 미완료 
+                    <Button
+                      variant='default'
+                      text='리뷰 작성하기'
+                      onClick={() => onOpenReviewDialog({ userId, gatheringId: Number(data.id) })}
+                      customClassName='w-28 sm:w-32'
+                    />
+                  )}
+                </div>
               )}
-            </p>
-          )}
 
-          {data.isReviewed && (
-            <p className="text-sm text-violet-600">✅ 리뷰 작성 완료</p>
-          )}
+              {/* 참여 취소 버튼 */}
+              <Button
+                variant='cancel'
+                text='참여 취소하기'
+                onClick={() => leaveGathering(Number(data?.id))}
+                customClassName='w-28 sm:w-32'
+              />
+            </div>
+          </div>
         </div>
       ))}
-    </div>
+
+      <ConfirmDialog
+        isOpen={isErrorDialogOpen}
+        text={errorMessage}
+        onClose={() => setIsErrorDialogOpen(false)}
+      />
+    </section>
   );
 }

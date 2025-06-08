@@ -1,0 +1,36 @@
+'use client';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { GatheringApiParams } from '@/types/gatheringApi';
+import { apiClient } from '@/lib/api/clientFetcher';
+import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
+import { handleApiError } from '@/lib/api/handleApiResponse';
+
+/** 모임 참여 취소 훅
+* @param token 토큰
+* @param onCallback 모달에 표시할 메세지를 전달
+* @returns {function} leaveGathering - 모임 참여 취소 함수
+*/
+export const useLeaveGathering = ({ token, onCallback }: GatheringApiParams) => {
+    const queryClient = useQueryClient();
+
+    const leaveGathering = useMutation({
+        mutationFn: async (id: number) => {
+            if (!token) throw new Error('로그인이 필요합니다.');
+            const response = await apiClient.delete(INTERNAL_PATHS.leaveGathering(id));
+            return response.data;
+        },
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: ["gatheringDetail", id] });
+            queryClient.invalidateQueries({ queryKey: ["checkGatheringJoined"] });
+            queryClient.invalidateQueries({ queryKey: ["joinedGatherings", token] });
+            onCallback?.('참여 취소했습니다');
+        },
+        onError: (error) => {
+            const response = handleApiError(error);
+            response.text().then(message => onCallback?.(message));
+        }
+    });
+
+    return { leaveGathering: leaveGathering.mutate }
+}

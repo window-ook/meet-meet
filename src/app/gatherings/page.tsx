@@ -1,30 +1,24 @@
+import { Metadata } from 'next';
+import { serverFetcher } from '@/lib/api/serverFetcher';
 import { Gathering } from "@/types/gatherings";
-import Gatherings from "@/components/gatherings/gatherings";
+import { EXTERNAL_PATHS } from '@/lib/api/apiPaths';
+import Gatherings from "@/components/gatherings/Gatherings";
+
+export const metadata: Metadata = {
+    title: `모임 찾기 | Meet Meet`,
+    description: `모임 찾기 페이지 입니다`,
+};
 
 async function getInitialGatherings(): Promise<Gathering[]> {
     try {
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URI}/api/gatherings?limit=10&offset=0`, {
-            cache: 'no-store',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('모임 목록 데이터 SSR 실패:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errorText
-            });
-            return [];
-        }
-
-        const data = await response.json();
+        const data = await serverFetcher(`${EXTERNAL_PATHS.GATHERINGS}?limit=10&offset=0&type=DALLAEMFIT`);
 
         if (Array.isArray(data)) {
-            return data;
+            // DALLAEMFIT의 경우 클라이언트에서 필터링
+            return data.filter((gathering: Gathering) =>
+                gathering.type === 'OFFICE_STRETCHING' ||
+                gathering.type === 'MINDFULNESS'
+            );
         } else {
             console.warn('응답이 배열이 아닙니다:', data);
             return [];
@@ -32,7 +26,6 @@ async function getInitialGatherings(): Promise<Gathering[]> {
 
     } catch (error) {
         console.error('SSR 에러:', error);
-
         return [];
     }
 }
