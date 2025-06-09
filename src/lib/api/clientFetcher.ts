@@ -7,7 +7,7 @@ import axios from 'axios';
  * @warning 외부 경로에는 사용하지 말 것
  */
 export const apiClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BASE_URI,
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     withCredentials: true,
 });
 
@@ -49,6 +49,6 @@ const parseAxiosError = (error: unknown, message = '요청 중 에러가 발생�
  * @warning 내부 경로에는 사용하지 말 것
  */
 export const apiServer = axios.create({
-    baseURL: process.env.API_URI_DEV,
+    baseURL: process.env.API_URL,
     withCredentials: true,
 });
