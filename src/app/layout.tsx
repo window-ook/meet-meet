@@ -13,7 +13,7 @@ const pretendard = localFont({
 
 export const metadata: Metadata = {
   title: "Meet Meet",
-  description: "고민하지 말고 모여봐요!",
+  description: "서울 2030을 위한 모임",
   keywords: [
     '밋밋',
     '밋밋 모임 앱',
@@ -24,25 +24,26 @@ export const metadata: Metadata = {
     'meetmeet',
   ],
   openGraph: {
+    url: 'https://meet-meet-psi.vercel.app',
     type: 'website',
     locale: 'ko_KR',
     title: 'Meet Meet',
     siteName: 'Meet Meet',
-    description: '고민하지 말고 모여봐요!',
+    description: '서울 2030을 위한 모임',
     images: [
       {
-        url: '/images/og_image.png',
+        url: 'https://meet-meet-psi.vercel.app/images/og_image.png',
         width: 1200,
         height: 630,
-        alt: 'Meet Meet 대표 이미지',
+        alt: 'Meet Meet OG 이미지',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Meet Meet',
-    description: '고민하지 말고 모여봐요!',
-    images: ['/og-image.png'],
+    description: '서울 2030을 위한 모임',
+    images: ['https://meet-meet-psi.vercel.app/images/og_image.png'],
   },
   alternates: {
     canonical: '/',
