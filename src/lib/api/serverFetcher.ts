@@ -24,7 +24,7 @@ export async function serverFetcher<T = unknown>(
         },
     };
 
-    const fullUrl = `${process.env.API_URI_DEV}${url}`;
+    const fullUrl = `${process.env.API_URL}${url}`;
 
     const response = await fetch(fullUrl, mergedOptions);
 
