@@ -22,6 +22,7 @@ export const useJoinGathering = ({ token, onCallback }: GatheringApiParams) => {
         },
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ["gatheringDetail", id] });
+            queryClient.invalidateQueries({ queryKey: ["gatherings", "infinite"] });
             queryClient.invalidateQueries({ queryKey: ["checkGatheringJoined"] });
             queryClient.invalidateQueries({ queryKey: ["joinedGatherings", token] });
             onCallback?.('참여 완료했습니다');
