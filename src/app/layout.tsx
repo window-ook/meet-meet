@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     'MeetMeet',
     'meetmeet',
   ],
+  metadataBase: new URL('https://meet-meet-psi.vercel.app'),
   openGraph: {
     url: 'https://meet-meet-psi.vercel.app',
     type: 'website',
@@ -32,10 +33,11 @@ export const metadata: Metadata = {
     description: '서울 2030을 위한 모임',
     images: [
       {
-        url: 'https://meet-meet-psi.vercel.app/images/og_image.png',
+        url: '/opengraph-image.png',
         width: 1200,
         height: 630,
         alt: 'Meet Meet OG 이미지',
+        type: 'image/png',
       },
     ],
   },
@@ -43,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Meet Meet',
     description: '서울 2030을 위한 모임',
-    images: ['https://meet-meet-psi.vercel.app/images/og_image.png'],
+    images: ['/opengraph-image.png'],
   },
   alternates: {
     canonical: '/',
@@ -56,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body
         className={`${pretendard.variable} font-pretendard text-global-text`}
       >
