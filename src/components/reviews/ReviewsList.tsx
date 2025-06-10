@@ -4,36 +4,77 @@ import Image from 'next/image';
 import HeartRating from '@/components/reviews/HeartRating';
 import { ReviewItem } from '@/types/reviews';
 import { useFetchInfiniteReviews } from '@/hooks/api/reviews/useFetchInfiniteReviews';
-import { useReviewsStore } from '@/store/reviewsStore';
-import { filterReviews } from '@/components/reviews/shared/utils/fetch';
 import { isSameDateForFilter } from '@/components/shared/utils/dateFormats';
 import ReviewStats from './ReviewStats';
 import { useMemo } from 'react';
 
 /**
  * 리뷰 목록 프로퍼티
- * @param fetchFromApi 무한스크롤 활성화 여부
- * @param selectedMainType 모임 주제
- * @param selectedSubType 모임 서브타입
- * @param location 위치
- * @param date 날짜
- * @param sortBy 정렬 기준
- * @param sortOrder 정렬 순서
- * @param reviews 리뷰 목록
+ * @param ssrReviews 서버 렌더링 리뷰 목록
+ * @param selectedMainType 선택된 모임 주제
+ * @param selectedSubType 선택된 모임 서브타입
+ * @param filters 필터 옵션
+ * @param sort 정렬 옵션
+ * @param enableInfiniteScroll 무한스크롤 활성화 여부
  */
 interface ReviewsListProps {
-    fetchFromApi?: boolean;
-    selectedMainType?: string;
-    selectedSubType?: string;
-    location?: string;
-    date?: string;
-    sortBy?: string;
-    sortOrder?: string;
-    reviews?: ReviewItem[];
+    ssrReviews: ReviewItem[];
+    selectedMainType: string;
+    selectedSubType: string;
+    filters: {
+        location: string;
+        date: string;
+    };
+    sort: {
+        sortBy: string;
+        sortOrder: string;
+    };
+    enableInfiniteScroll?: boolean;
 }
 
 /**
+ * 리뷰 타입 필터링 (클라이언트 사이드)
+ * @param reviewsList 리뷰 목록
+ * @param selectedMainType 선택된 메인 타입
+ * @param selectedSubType 선택된 서브 타입
+ * @returns 필터링된 리뷰 목록
+ */
+const filterReviewsByType = (
+    reviewsList: ReviewItem[],
+    selectedMainType: string,
+    selectedSubType: string
+): ReviewItem[] => {
+    
+    if (selectedMainType === 'DORANDORAN') {
+        const result = reviewsList.filter(review => 
+            review.Gathering && review.Gathering.type === 'WORKATION'
+        );
+        return result;
+    } else {
+        if (selectedSubType === 'ALL') {
+            const result = reviewsList.filter(review =>
+                review.Gathering && (
+                    review.Gathering.type === 'OFFICE_STRETCHING' ||
+                    review.Gathering.type === 'MINDFULNESS'
+                )
+            );
+            
+            return result;
+        } else {
+            const result = reviewsList.filter(review => 
+                review.Gathering && review.Gathering.type === selectedSubType
+            );
+            return result;
+        }
+    }
+};
+
+/**
  * 리뷰 위치/날짜 필터링 함수
+ * @param reviewsList 리뷰 목록
+ * @param location 위치
+ * @param date 날짜
+ * @returns 필터링된 리뷰 목록
  */
 const filterReviewsByLocationAndDate = (
     reviewsList: ReviewItem[],
@@ -57,92 +98,91 @@ const filterReviewsByLocationAndDate = (
     });
 };
 
+/**
+ * 중복 제거 함수
+ * @param reviews 리뷰 목록
+ * @returns 중복 제거된 리뷰 목록
+ */
+const removeDuplicateReviews = (reviews: ReviewItem[]): ReviewItem[] => {
+    const seen = new Set<string>();
+    const duplicates: ReviewItem[] = [];
+    
+    const result = reviews.filter(review => {
+        if (seen.has(review.id)) {
+            duplicates.push(review);
+            return false;
+        }
+        seen.add(review.id);
+        return true;
+    });
+    return result;
+};
+
 export default function ReviewsList({
-    fetchFromApi = true,
-    selectedMainType = 'DALLAEMFIT',
-    selectedSubType = '',
-    location = '',
-    date = '',
-    sortBy = 'createdAt',
-    sortOrder = 'desc',
-    reviews
+    ssrReviews,
+    selectedMainType,
+    selectedSubType,
+    filters,
+    sort,
+    enableInfiniteScroll = true,
 }: ReviewsListProps) {
-    const ssrReviews = useReviewsStore((s) => s.reviews);
 
-    // 필터 활성화 여부 확인
-    const hasActiveFilters = location || date;
-
-    // 리뷰 무한스크롤 훅
+    // CSR 무한스크롤 데이터
     const {
         infiniteReviews,
         lastItemRef,
         isFetchingNextPage,
-        infiniteScrollEnabled,
         isLoading,
     } = useFetchInfiniteReviews({
-        enabled: fetchFromApi,
+        enabled: enableInfiniteScroll,
         mainType: selectedMainType,
-        location,
-        date,
-        sortBy,
-        sortOrder
+        location: filters.location,
+        date: filters.date,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder
     });
 
-    // 리뷰 하이브리드 필터링 로직
-    const mergedReviews = useMemo(() => {
-        // API를 사용하지 않는 경우 (찜목록 등)
-        if (!fetchFromApi) {
-            return filterReviews(reviews || [], selectedMainType, selectedSubType);
-        }
-
-        // 무한스크롤 데이터가 있으면 우선 사용
-        if (infiniteReviews.length > 0) {
-            return filterReviews(infiniteReviews, selectedMainType, selectedSubType);
-        } 
+    // SSR 데이터 타입 및 위치/날짜 필터링
+    const filteredSSRReviews = useMemo(() => {
+        // 1. 타입 필터링
+        const typeFiltered = filterReviewsByType(ssrReviews, selectedMainType, selectedSubType);
         
-        // 무한스크롤 데이터가 없을 때 SSR 사용
-        if (hasActiveFilters) {
-            // 타입 필터링
-            const typeFiltered = filterReviews(ssrReviews, selectedMainType, selectedSubType);
-            // 위치/날짜 필터링
-            const clientFiltered = filterReviewsByLocationAndDate(typeFiltered, location, date);
-            // 조건에 맞는 게 없으면 빈 배열 (이상한 fallback 방지)
-            return clientFiltered;
-        } else {
-            // 필터가 없으면 SSR 데이터 그대로 사용
-            return filterReviews(ssrReviews, selectedMainType, selectedSubType);
-        }
-    }, [
-        fetchFromApi, 
-        infiniteReviews, 
-        ssrReviews, 
-        selectedMainType, 
-        selectedSubType, 
-        location, 
-        date,  
-        reviews,
-        hasActiveFilters
-    ]);
+        // 2. 위치/날짜 필터링
+        const locationDateFiltered = filterReviewsByLocationAndDate(typeFiltered, filters.location, filters.date);
+        
+        return locationDateFiltered;
+    }, [ssrReviews, selectedMainType, selectedSubType, filters]);
 
-    // 로딩 상태 개선 
-    const isInitialLoading = fetchFromApi && isLoading && infiniteReviews.length === 0 && 
-        (hasActiveFilters || ssrReviews.length === 0);
+    // CSR 데이터 타입 필터링
+    const filteredCSRReviews = useMemo(() => {
+        const result = filterReviewsByType(infiniteReviews, selectedMainType, selectedSubType);
+        
+        return result;
+    }, [infiniteReviews, selectedMainType, selectedSubType]);
+
+    // 중복 제거된 최종 리뷰 목록
+    const allReviews = useMemo(() => {
+        const combined = [...filteredSSRReviews, ...filteredCSRReviews];
+        const deduplicated = removeDuplicateReviews(combined);
+        
+        return deduplicated;
+    }, [filteredSSRReviews, filteredCSRReviews]);
 
     return (
         <div className="w-full flex flex-col">
             {/* 리뷰 전용 평균 평점 섹션 */}
-            <ReviewStats reviews={mergedReviews} />
+            <ReviewStats reviews={allReviews} />
 
             {/* 리뷰 목록 */}
             <div className="w-full flex flex-col justify-start gap-5">
-                {!isInitialLoading && mergedReviews.map((review, index) => {
-                    const isLastItem = index === mergedReviews.length - 1;
+                {allReviews.map((review, index) => {
+                    const isLastItem = index === allReviews.length - 1;
 
                     return (
                         <section
                             key={`${review.id}-${index}`}
-                            className="w-full flex flex-col md:flex-row justify-start border border-gray-200 rounded-2xl bg-white hover:border-main-300 hover:shadow-lg transition-all duration-300 overflow-hidden"
-                            ref={isLastItem && fetchFromApi ? lastItemRef : undefined}
+                            className="w-full flex flex-col md:flex-row justify-start border border-gray-200 rounded-2xl bg-white hover:border-main-300 hover:shadow-lg transition-all duration-300 overflow-hidden relative"
+                            ref={isLastItem && !isFetchingNextPage && enableInfiniteScroll ? lastItemRef : undefined}
                         >
                             {/* 이미지 영역 */}
                             <div className="w-full md:w-80 h-48 md:h-40 relative flex-shrink-0">
@@ -182,7 +222,7 @@ export default function ReviewsList({
                 })}
 
                 {/* 무한스크롤 로딩 */}
-                {infiniteScrollEnabled && isFetchingNextPage && (
+                {enableInfiniteScroll && isFetchingNextPage && (
                     <div className="w-full h-[80px] flex justify-center items-center">
                         <div className="flex items-center gap-3">
                             <div className="w-6 h-6 border-3 border-main-500 border-t-transparent rounded-full animate-spin"></div>
@@ -192,25 +232,12 @@ export default function ReviewsList({
                 )}
 
                 {/* 빈 목록 메시지 */}
-                {!isInitialLoading && mergedReviews.length === 0 && (
-                    <div className="w-full h-[100px] flex flex-col justify-center items-center text-gray-500 font-medium text-sm">
-                        {fetchFromApi ? (
-                            hasActiveFilters ? (
-                                <>
-                                    <p className="">선택한 조건에 맞는 리뷰가 없어요,</p>
-                                    <p className="">다른 조건으로 검색해보세요</p>
-                                </>
-                            ) : (
-                                <>
-                                    <p className="">아직 리뷰가 없어요,</p>
-                                    <p className="">첫 번째 리뷰를 남겨보세요</p>
-                                </>
-                            )
-                        ) : (
-                            <>
-                                <p className="">아직 리뷰가 없어요</p>
+                {!isLoading && allReviews.length === 0 && (
+                    <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 font-medium text-sm">
+                        <>
+                                <p>선택한 조건에 맞는 리뷰가 없어요,</p>
+                                <p>다른 조건으로 검색해보세요</p>
                             </>
-                        )}
                     </div>
                 )}
             </div>

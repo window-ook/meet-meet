@@ -1,12 +1,13 @@
 import { internalClient } from "@/lib/api/clientFetchers";
 import { ReviewItem } from "@/types/reviews";
+import { isSameDateForFilter } from '@/components/shared/utils/dateFormats';
 
 /**
- * 리뷰 목록 조회
+ * 페이지네이션된 리뷰 목록 조회
  * @param page 페이지 번호
  * @param mainType 모임 주제
  * @param location 위치
- * @param date 날짜
+ * @param date 날짜 (한국 시간 기준)
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
  */
@@ -19,6 +20,7 @@ export async function fetchReviewsPaginated(
     sortOrder: string = 'desc'
 ): Promise<ReviewItem[]> {
     try {
+        // mainType에 따른 type 파라미터 설정
         let type: string;
         if (mainType === 'DORANDORAN') {
             type = 'WORKATION';
@@ -26,10 +28,10 @@ export async function fetchReviewsPaginated(
             type = 'DALLAEMFIT';
         }
 
-        // 리뷰 목록 조회
+        // 서버 요청 파라미터
         const params: Record<string, string | number> = {
-            offset: page * 3, // 페이지 번호 * 3
-            limit: 3, // 한 페이지당 3개
+            offset: page * 3,
+            limit: 3,
             type,
             sortBy,
             sortOrder
@@ -40,40 +42,69 @@ export async function fetchReviewsPaginated(
             params.location = location.trim();
         }
 
-        // 날짜 필터
-        if (date && date.trim() !== '') {
-            const dateValue = date.trim();
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
-                params.date = dateValue;
-            } else {
-                console.warn('잘못된 날짜 형식:', dateValue);
-            }
-        }
-
         // 리뷰 목록 조회
         const response = await internalClient.get('/api/reviews', { params });
 
-        // 응답 데이터 구조 파싱
-        let allReviews: ReviewItem[] = [];
-        if (Array.isArray(response.data)) {
-            allReviews = response.data;
-        } else if (response.data?.data) {
-            allReviews = response.data.data;
-        } else {
-            console.error('알 수 없는 응답 구조:', response.data);
-            return [];
+        let reviews = response.data || [];
+
+        // 응답 구조 확인 및 정규화
+        if (!Array.isArray(reviews)) {
+            if (response.data?.data) {
+                reviews = response.data.data;
+            } else if (response.data?.reviews) {
+                reviews = response.data.reviews;
+            } else if (response.data?.items) {
+                reviews = response.data.items;
+            } else {
+                console.error('리뷰 응답 데이터 형식 오류:', response.data);
+                return [];
+            }
         }
 
-        return allReviews;
+        // 한국 시간 기준 날짜 필터링
+        if (date && date.trim() !== '') {
+            const targetDate = date.trim();
+            
+            reviews = reviews.filter((review: ReviewItem) => {
+                if (!review.Gathering?.dateTime) return false;
+                
+                return isSameDateForFilter(review.Gathering.dateTime, targetDate);
+            });
+        }
 
+        // DALLAEMFIT 서브타입 필터링
+        let filteredReviews = reviews;
+        if (mainType === 'DALLAEMFIT') {
+            filteredReviews = reviews.filter((review: ReviewItem) =>
+                review.Gathering && (
+                    review.Gathering.type === 'OFFICE_STRETCHING' ||
+                    review.Gathering.type === 'MINDFULNESS'
+                )
+            );
+        }
+
+        return filteredReviews;
     } catch (error) {
         console.error('리뷰 목록 조회 에러:', error);
+        
+        // 에러 상세 정보
+        if (error instanceof Error) {
+            console.error('에러 메시지:', error.message);
+        }
+        
+        // axios 에러인 경우
+        if (error && typeof error === 'object' && 'response' in error) {
+            const axiosError = error as any;
+            console.error('HTTP 상태:', axiosError.response?.status);
+            console.error('응답 데이터:', axiosError.response?.data);
+        }
+        
         return [];
     }
 }
 
 /**
- * 리뷰 필터링
+ * 리뷰 타입 필터링
  * @param reviewsList 리뷰 목록
  * @param selectedMainType 모임 주제
  * @param selectedSubType 모임 서브타입

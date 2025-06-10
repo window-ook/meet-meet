@@ -1,25 +1,27 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ReviewItem } from "@/types/reviews";
-import { useReviewsStore } from '@/store/reviewsStore';
 import ReviewsList from "@/components/reviews/ReviewsList";
-import GatheringsFilters from "@/components/gatherings/shared/ui/GatheringsFilters";
+import GatheringFilters from "@/components/gatherings/shared/ui/GatheringsFilters";
 import GatheringsHeader from "@/components/gatherings/shared/ui/GatheringsHeader";
 import LocationDateFilter from "@/components/gatherings/shared/ui/LocationDateFilter";
 
-/**
- * 리뷰 페이지 메인 컴포넌트 프로퍼티
- * @param initialReviews 초기 리뷰 목록
- */
+// 페이지 컴포넌트 props 타입 정의
 interface PageProps {
-    initialReviews?: ReviewItem[];
+    ssrReviews: ReviewItem[];
+    initialFilters: {
+        mainType: string;
+        location: string;
+        date: string;
+        sortBy: string;
+        sortOrder: string;
+    };
 }
 
 /**
  * 리뷰 필터 프로퍼티
- * @param location 위치
- * @param date 날짜
  */
 interface Filters {
     location: string;
@@ -28,62 +30,88 @@ interface Filters {
 
 /**
  * 리뷰 정렬 프로퍼티
- * @param sortBy 정렬 기준
- * @param sortOrder 정렬 순서
  */
 interface Sort {
     sortBy: string;
     sortOrder: string;
 }
 
-export default function ReviewsUI({ initialReviews = [] }: PageProps) {
-    const [selectedMainType, setSelectedMainType] = useState('DALLAEMFIT'); // 모임 주제
-    const [selectedSubType, setSelectedSubType] = useState('ALL'); // 모임 서브타입
-    const [sort, setSort] = useState<Sort>({ sortBy: 'createdAt', sortOrder: 'desc' }); // 정렬
-    const [filters, setFilters] = useState<Filters>({ location: '', date: '' }); // 필터
+export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
+    const [selectedMainType, setSelectedMainType] = useState(initialFilters.mainType);
+    const [selectedSubType, setSelectedSubType] = useState('ALL');
+    const [currentFilters, setCurrentFilters] = useState({
+        location: initialFilters.location,
+        date: initialFilters.date
+    });
+    const [currentSort, setCurrentSort] = useState({
+        sortBy: initialFilters.sortBy,
+        sortOrder: initialFilters.sortOrder
+    });
+    
+    // 필터 변경 감지를 위한 키
+    const [filterChangeKey, setFilterChangeKey] = useState(0);
 
-    const setReviews = useReviewsStore((state) => state.setReviews); // 리뷰 목록 설정
+    // URL 업데이트 함수
+    const updateURL = useCallback((newParams: Record<string, string>) => {
+        const params = new URLSearchParams(searchParams);
+        
+        Object.entries(newParams).forEach(([key, value]) => {
+            if (value && value.trim()) {
+                params.set(key, value);
+            } else {
+                params.delete(key);
+            }
+        });
 
-    // 초기 SSR 데이터 설정
-    useEffect(() => {
-        if (initialReviews.length > 0) {
-            setReviews(initialReviews);
-        }
-    }, [initialReviews, setReviews]);
+        // 필터 변경 감지를 위한 키 업데이트
+        setFilterChangeKey(prev => prev + 1);
+
+        // URL 업데이트 (SSR 트리거)
+        router.push(`/reviews?${params.toString()}`);
+    }, [router, searchParams]);
 
     // 타입 변경 핸들러
     const handleTypeChange = useCallback((mainType: string, subType: string) => {
         setSelectedMainType(mainType);
         setSelectedSubType(subType);
-    }, []);
+        
+        updateURL({
+            mainType,
+            location: currentFilters.location,
+            date: currentFilters.date,
+            sortBy: currentSort.sortBy,
+            sortOrder: currentSort.sortOrder
+        });
+    }, [currentFilters, currentSort, updateURL]);
 
     // 필터 변경 핸들러
-    const handleFilterChange = useCallback((newFilters: Filters) => {
-        setFilters(prev => {
-            if (
-                prev.location === newFilters.location &&
-                prev.date === newFilters.date
-            ) {
-                return prev; // 값이 동일하면 상태 업데이트 안함
-            }
-
-            return newFilters;
+    const handleFilterChange = useCallback((filters: Filters) => {
+        setCurrentFilters(filters);
+        
+        updateURL({
+            mainType: selectedMainType,
+            location: filters.location,
+            date: filters.date,
+            sortBy: currentSort.sortBy,
+            sortOrder: currentSort.sortOrder
         });
-    }, []);
+    }, [selectedMainType, currentSort, updateURL]);
 
     // 정렬 변경 핸들러
-    const handleSortChange = useCallback((newSort: Sort) => {
-        setSort(prev => {
-            if (
-                prev.sortBy === newSort.sortBy &&
-                prev.sortOrder === newSort.sortOrder
-            ) {
-                return prev;
-            }
-
-            return newSort;
+    const handleSortChange = useCallback((sort: Sort) => {
+        setCurrentSort(sort);
+        
+        updateURL({
+            mainType: selectedMainType,
+            location: currentFilters.location,
+            date: currentFilters.date,
+            sortBy: sort.sortBy,
+            sortOrder: sort.sortOrder
         });
-    }, []);
+    }, [selectedMainType, currentFilters, updateURL]);
 
     return (
         <div className="w-full flex flex-col">
@@ -91,7 +119,7 @@ export default function ReviewsUI({ initialReviews = [] }: PageProps) {
 
             <div className="w-full flex flex-col">
                 {/* 모임 주제 선택 */}
-                <GatheringsFilters
+                <GatheringFilters
                     showCreateButton={false} // 모임 만들기 버튼 숨김
                     onTypeChange={handleTypeChange} // 모임 주제 변경 핸들러
                     initialMainType={selectedMainType} // 초기 모임 주제
@@ -103,21 +131,21 @@ export default function ReviewsUI({ initialReviews = [] }: PageProps) {
                     onFilterChange={handleFilterChange} // 필터 변경 핸들러
                     onSortChange={handleSortChange} // 정렬 변경 핸들러
                     pageType="review" // 페이지 타입
-                    initialLocation={filters.location} // 초기 위치
-                    initialDate={filters.date} // 초기 날짜
-                    initialSort="latest" // 초기 정렬
+                    initialLocation={currentFilters.location} // 초기 위치
+                    initialDate={currentFilters.date} // 초기 날짜
+                    initialSort={`${currentSort.sortBy}_${currentSort.sortOrder}`} // 초기 정렬
                 />
             </div>
 
             {/* 리뷰 목록 */}
             <ReviewsList
-                fetchFromApi={true} // 무한스크롤 활성화
-                selectedMainType={selectedMainType} // 모임 주제
-                selectedSubType={selectedSubType} // 모임 서브타입
-                location={filters.location} // 위치
-                date={filters.date} // 날짜
-                sortBy={sort.sortBy} // 정렬 기준
-                sortOrder={sort.sortOrder} // 정렬 순서
+                key={filterChangeKey} // 필터 변경 시 컴포넌트 재마운트
+                ssrReviews={ssrReviews} // 서버 렌더링 리뷰 목록
+                selectedMainType={selectedMainType} // 선택된 모임 주제
+                selectedSubType={selectedSubType} // 선택된 모임 서브타입
+                filters={currentFilters} // 현재 필터 상태
+                sort={currentSort} // 현재 정렬 상태
+                enableInfiniteScroll={true} // 무한스크롤 활성화
             />
         </div>
     );
