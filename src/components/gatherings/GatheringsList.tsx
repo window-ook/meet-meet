@@ -194,8 +194,8 @@ export default function GatheringsList({
                         <OverlayForDisabled
                             emoji=""
                             filterings={expired}
-                            notice="마감된 챌린지에요,"
-                            reason="다음 기회에 만나요🙌"
+                            notice="마감된 모임이에요"
+                            reason="다음에 만나요🙌"
                         />
 
                         {/* 이미지 영역 */}

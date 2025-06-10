@@ -59,13 +59,13 @@ export default function GatheringFilters({
                 <div className={`absolute bottom-0 h-0.5 bg-gray-900 transition-all duration-300 ease-in-out w-20 ${selectedMainType === 'DALLAEMFIT' ? 'translate-x-2' : 'translate-x-26'}`} />
                 <button
                     onClick={() => handleMainTypeChange('DALLAEMFIT')}
-                    className={`text-gray-900 text-lg font-semibold px-4 py-1`}
+                    className={`text-gray-900 text-lg font-semibold px-4 py-1 cursor-pointer`}
                 >
                     북적북적
                 </button>
                 <button
                     onClick={() => handleMainTypeChange('DORANDORAN')}
-                    className={`text-gray-900 text-lg font-semibold px-4 py-1`}
+                    className={`text-gray-900 text-lg font-semibold px-4 py-1 cursor-pointer`}
                 >
                     도란도란
                 </button>
@@ -85,19 +85,19 @@ export default function GatheringFilters({
                     <div className="flex flex-row items-center gap-2">
                         <button
                             onClick={() => handleSubTypeChange('ALL')}
-                            className={`${selectedSubType === 'ALL' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg`}
+                            className={`${selectedSubType === 'ALL' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg cursor-pointer`}
                         >
                             전체
                         </button>
                         <button
                             onClick={() => handleSubTypeChange('OFFICE_STRETCHING')}
-                            className={`${selectedSubType === 'OFFICE_STRETCHING' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg`}
+                            className={`${selectedSubType === 'OFFICE_STRETCHING' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg cursor-pointer`}
                         >
                             엔터테인먼트
                         </button>
                         <button
                             onClick={() => handleSubTypeChange('MINDFULNESS')}
-                            className={`${selectedSubType === 'MINDFULNESS' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg`}
+                            className={`${selectedSubType === 'MINDFULNESS' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'} text-sm font-medium px-3 py-2 rounded-lg cursor-pointer`}
                         >
                             액티비티
                         </button>
