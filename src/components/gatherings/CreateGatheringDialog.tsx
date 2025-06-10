@@ -15,101 +15,152 @@ const SelectionService = dynamic(() => import('@/components/gatherings/Selection
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
 const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePick'), { ssr: false });
 
-export default function CreateGatheringDialog({ onClose }: { onClose: () => void }) {
+interface CreateGatheringDialogProps {
+    onClose: (shouldRefresh?: boolean) => void;
+}
+
+// 상수 선언 (스키마에 맞춰 정리)
+const INITIAL_FORM_DATA = {
+    name: '',
+    location: '',
+    capacity: 5,
+    type: 'OFFICE_STRETCHING'
+};
+
+const LOCATION_OPTIONS = [
+    { value: '', label: '장소를 선택해주세요' },
+    { value: '을지로3가', label: '을지로3가' },
+    { value: '건대입구', label: '건대입구' },
+    { value: '신림', label: '신림' },
+    { value: '홍대입구', label: '홍대입구' }
+];
+
+// 외부 함수들 (스키마와 연동)
+const preventScrollAndShift = () => {
+    const originalBodyOverFlow = document.body.style.overflow;
+    const originalBodyPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+    return () => {
+        document.body.style.overflow = originalBodyOverFlow;
+        document.body.style.paddingRight = originalBodyPaddingRight;
+    };
+};
+
+const handleAxiosError = (error: unknown): string => {
+    if (axios.isAxiosError(error)) {
+        const serverError = error?.response?.data?.error;
+        return serverError?.message ?? '서버 처리 중 오류가 발생했습니다.';
+    }
+    
+    if (error instanceof Error) {
+        return error.message;
+    }
+    
+    return '알 수 없는 에러가 발생했습니다';
+};
+
+const createApiFormData = (
+    formData: typeof INITIAL_FORM_DATA,
+    meetingDateTime: DateTimeValue | null,
+    deadlineDateTime: DateTimeValue | null,
+    imageFile: File | null
+): FormData => {
+    const apiFormData = new FormData();
+    
+    apiFormData.append('name', formData.name);
+    apiFormData.append('location', formData.location);
+    apiFormData.append('type', formData.type);
+    apiFormData.append('capacity', formData.capacity.toString());
+
+    if (meetingDateTime) {
+        const finalGatheringDateTime = dateTimeValueToDate(meetingDateTime);
+        apiFormData.append('dateTime', formatDateToISO(finalGatheringDateTime));
+    }
+
+    if (deadlineDateTime) {
+        const finalDeadlineDateTime = dateTimeValueToDate(deadlineDateTime);
+        apiFormData.append('registrationEnd', formatDateToISO(finalDeadlineDateTime));
+    }
+
+    if (imageFile) {
+        apiFormData.append('image', imageFile);
+    }
+
+    return apiFormData;
+};
+
+export default function CreateGatheringDialog({ onClose }: CreateGatheringDialogProps) {
     const { token } = useContext(AuthContext);
     const queryClient = useQueryClient();
 
-    // 폼 데이터 상태 관리
-    const [formData, setFormData] = useState({
-        name: '',
-        location: '',
-        capacity: 5,
-        type: 'OFFICE_STRETCHING'
-    });
-
-    const [fileName, setFileName] = useState(""); // 이미지 파일 이름
-    const fileInputRef = useRef<HTMLInputElement>(null); // 파일 입력 요소 참조
-    const [imageFile, setImageFile] = useState<File | null>(null); // 이미지 파일
-    const [meetingDateTime, setGatheringDateTime] = useState<DateTimeValue | null>(null); // 모임 일정
-    const [deadlineDateTime, setDeadlineDateTime] = useState<DateTimeValue | null>(null); // 마감 일정
-    const [showGatheringPicker, setShowGatheringPicker] = useState(false); // 모임 일정 선택 모달 상태
-    const [showDeadlinePicker, setShowDeadlinePicker] = useState(false); // 마감 일정 선택 모달 상태
-    const [error, setError] = useState<string | null>(null); // 에러 메시지
-    const [isSubmitting, setIsSubmitting] = useState(false); // 모임 생성 처리 상태
-
-    // 모임 생성 완료/실패 모달
+    // 상태 관리 (스키마 타입에 맞춰 정리)
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+    const [fileName, setFileName] = useState("");
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [meetingDateTime, setMeetingDateTime] = useState<DateTimeValue | null>(null);
+    const [deadlineDateTime, setDeadlineDateTime] = useState<DateTimeValue | null>(null);
+    const [showGatheringPicker, setShowGatheringPicker] = useState(false);
+    const [showDeadlinePicker, setShowDeadlinePicker] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState>({ isOpen: false, text: '' });
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const { createGathering } = useCreateGathering({
         token,
         onCallback: (message) => openConfirmDialog(setConfirmDialog, message),
     });
 
-    // 입력 필드 변경 핸들러
+    // 모달 스크롤 방지 효과
+    useEffect(() => {
+        return preventScrollAndShift();
+    }, []);
+
+    // 이벤트 핸들러들
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        if (name === 'capacity') {
-            const numValue = parseInt(value);
-            setFormData(prev => ({
-                ...prev,
-                [name]: isNaN(numValue) ? 5 : numValue
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-        }
-    };
-
-    // 서비스 타입 선택 핸들러
-    const handleServiceTypeSelect = (type: string) => {
         setFormData(prev => ({
             ...prev,
-            type
+            [name]: name === 'capacity' 
+                ? (isNaN(parseInt(value)) ? 5 : parseInt(value))
+                : value
         }));
     };
 
-    // 모달이 열릴 때 스크롤 방지 및 레이아웃 시프트 방지
-    useEffect(() => {
-        const originalBodyOverFlow = document.body.style.overflow;
-        const originalBodyPaddingRight = document.body.style.paddingRight;
+    const handleServiceTypeSelect = (type: string) => {
+        setFormData(prev => ({ ...prev, type }));
+    };
 
-        // 스크롤바 너비 계산
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-        // 스크롤 방지 및 스크롤바 공간 보상
-        document.body.style.overflow = 'hidden';
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-
-        return () => {
-            document.body.style.overflow = originalBodyOverFlow;
-            document.body.style.paddingRight = originalBodyPaddingRight;
-        };
-    }, []);
-
-    // 파일 추가 버튼 클릭 핸들러
     const handleFileButtonClick = () => {
         fileInputRef.current?.click();
     };
 
-    // 파일 선택 핸들러 (실시간 검증 제거 - 제출시에만 검증)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
 
-        if (files && files.length > 0) {
+        if (files?.length) {
             const file = files[0];
             setFileName(file.name);
             setImageFile(file);
-            setError(null); // 기존 에러 클리어
+            setError(null);
         }
+    };
+
+    const handleNormalClose = () => {
+        onClose(false);
     };
 
     // 폼 제출 핸들러
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 폼 데이터 준비
+        // 스키마에 정의된 타입에 맞춰 데이터 준비
         const formDataToValidate: CreateGatheringFormSchemaType = {
             name: formData.name,
             location: formData.location,
@@ -120,7 +171,7 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
             imageFile
         };
 
-        // zod 통합 유효성 검증
+        // 스키마 통합 유효성 검증
         const validationResult = validateCreateGathering(formDataToValidate, token);
 
         if (!validationResult.success) {
@@ -131,28 +182,8 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
         setIsSubmitting(true);
         setError(null);
 
-        // FormData 객체 생성
-        const apiFormData = new FormData();
-        apiFormData.append('name', formData.name);
-        apiFormData.append('location', formData.location);
-        apiFormData.append('type', formData.type);
-        apiFormData.append('capacity', formData.capacity.toString());
-
-        // 날짜 포맷팅
-        if (meetingDateTime) {
-            const finalGatheringDateTime = dateTimeValueToDate(meetingDateTime);
-            apiFormData.append('dateTime', formatDateToISO(finalGatheringDateTime));
-        }
-
-        if (deadlineDateTime) {
-            const finalDeadlineDateTime = dateTimeValueToDate(deadlineDateTime);
-            apiFormData.append('registrationEnd', formatDateToISO(finalDeadlineDateTime));
-        }
-
-        // 이미지 파일 추가
-        if (imageFile) {
-            apiFormData.append('image', imageFile);
-        }
+        // API용 FormData 생성
+        const apiFormData = createApiFormData(formData, meetingDateTime, deadlineDateTime, imageFile);
 
         // 모임 생성 요청
         createGathering(apiFormData, {
@@ -160,22 +191,14 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                 openConfirmDialog(setConfirmDialog, '모임 생성 완료', async () => {
                     await queryClient.invalidateQueries({ queryKey: ['gatherings'] });
                     setIsSubmitting(false);
-                    onClose();
+                    onClose(true);
                 });
             },
             onError: (error: unknown) => {
                 console.error('모임 생성 실패:', error);
                 setIsSubmitting(false);
-
-                let errorMessage = '알 수 없는 에러가 발생했습니다';
-
-                if (axios.isAxiosError(error)) {
-                    const serverError = error?.response?.data?.error;
-                    errorMessage = serverError?.message ?? '서버 처리 중 오류가 발생했습니다.';
-                } else if (error instanceof Error) {
-                    errorMessage = error.message;
-                }
-
+                
+                const errorMessage = handleAxiosError(error);
                 openConfirmDialog(setConfirmDialog, errorMessage);
             }
         });
@@ -183,23 +206,22 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
 
     return (
         <div className="dialog-background">
-            {/* 모달 컨테이너 */}
             <div className="relative w-full h-full flex items-center justify-center md:p-4">
                 <div className="w-full max-w-2xl max-h-full flex flex-col">
                     <form
                         className="flex flex-col w-full h-full bg-white md:rounded-lg shadow-xl overflow-hidden"
                         onSubmit={handleSubmit}
                     >
-                        {/* 모임 만들기 타이틀*/}
-                        <div className="w-full h-[60px] bg-white md:rounded-t-lg flex flex-row justify-between items-center px-5 border-b border-gray-100 flex-shrink-0">
+                        {/* 헤더 */}
+                        <header className="w-full h-[60px] bg-white md:rounded-t-lg flex flex-row justify-between items-center px-5 border-b border-gray-100 flex-shrink-0">
                             <h1 className="text-lg font-bold text-gray-800">모임 만들기</h1>
-                            <button type="button" onClick={onClose}>
+                            <button type="button" onClick={handleNormalClose}>
                                 <XIcon className="w-7 h-7 text-gray-500" />
                             </button>
-                        </div>
+                        </header>
 
                         {/* 콘텐츠 영역 */}
-                        <div className="flex-1 overflow-y-auto p-5">
+                        <main className="flex-1 overflow-y-auto p-5">
                             {/* 에러 메시지 */}
                             {error && (
                                 <div className="w-full mb-5 p-3 bg-red-100 text-red-600 rounded-lg">
@@ -209,7 +231,7 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
 
                             {/* 모임 이름 */}
                             <div className="w-full mb-5">
-                                <h1 className="font-bold text-gray-800 mb-3">모임 이름</h1>
+                                <h2 className="font-bold text-gray-800 mb-3">모임 이름</h2>
                                 <input
                                     type="text"
                                     name="name"
@@ -222,24 +244,24 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
 
                             {/* 장소 선택 */}
                             <div className="w-full mb-5">
-                                <h1 className="font-bold text-gray-800 mb-3">장소</h1>
+                                <h2 className="font-bold text-gray-800 mb-3">장소</h2>
                                 <select
                                     name="location"
                                     value={formData.location}
                                     onChange={handleInputChange}
                                     className="w-full h-[44px] rounded-lg bg-gray-50 py-2 px-4 text-semibold appearance-none bg-[url('/icons/polygon_down.svg')] bg-[length:13px_13px] bg-[right_16px_center] bg-no-repeat"
                                 >
-                                    <option value="">장소를 선택해주세요</option>
-                                    <option value="을지로3가">을지로3가</option>
-                                    <option value="건대입구">건대입구</option>
-                                    <option value="신림">신림</option>
-                                    <option value="홍대입구">홍대입구</option>
+                                    {LOCATION_OPTIONS.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             {/* 이미지 첨부 */}
                             <div className="w-full mb-5">
-                                <h1 className="font-bold text-gray-800 mb-3">이미지</h1>
+                                <h2 className="font-bold text-gray-800 mb-3">이미지</h2>
                                 <div className="w-full flex flex-row items-center gap-5">
                                     <input
                                         type="text"
@@ -264,14 +286,16 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                                 </div>
                             </div>
 
-                            {/* 서비스 선택 컴포넌트 */}
-                            <SelectionService selectedType={formData.type} onSelect={handleServiceTypeSelect} />
+                            {/* 서비스 선택 */}
+                            <SelectionService 
+                                selectedType={formData.type} 
+                                onSelect={handleServiceTypeSelect} 
+                            />
 
                             {/* 날짜/시간 선택 */}
                             <div className="flex flex-col md:flex-row gap-5 mb-5">
-                                {/* 모임 날짜/시간 입력 */}
                                 <div className="flex-1">
-                                    <h1 className="font-bold text-gray-800 mb-3">모임 일정</h1>
+                                    <h2 className="font-bold text-gray-800 mb-3">모임 일정</h2>
                                     <input
                                         type="text"
                                         value={formatDateTimeValue(meetingDateTime)}
@@ -282,9 +306,8 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                                     />
                                 </div>
 
-                                {/* 마감 날짜/시간 입력 */}
                                 <div className="flex-1">
-                                    <h1 className="font-bold text-gray-800 mb-3">마감 일정</h1>
+                                    <h2 className="font-bold text-gray-800 mb-3">마감 일정</h2>
                                     <input
                                         type="text"
                                         value={formatDateTimeValue(deadlineDateTime)}
@@ -298,21 +321,22 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
 
                             {/* 모집정원 */}
                             <div className="w-full mb-5">
-                                <h1 className="font-bold text-gray-800 mb-3">모집 정원</h1>
+                                <h2 className="font-bold text-gray-800 mb-3">모집 정원</h2>
                                 <input
                                     type="number"
                                     name="capacity"
                                     value={formData.capacity}
                                     onChange={handleInputChange}
                                     min="5"
+                                    max="20"
                                     className="w-full h-[44px] rounded-lg bg-gray-50 py-2 px-4 text-semibold"
                                     placeholder="최소 5인 이상 입력해주세요."
                                 />
                             </div>
-                        </div>
+                        </main>
 
-                        {/* 제출 버튼*/}
-                        <div className="w-full p-5 bg-white md:rounded-b-lg flex-shrink-0">
+                        {/* 제출 버튼 */}
+                        <footer className="w-full p-5 bg-white md:rounded-b-lg flex-shrink-0">
                             <button
                                 type="submit"
                                 className="w-full bg-main-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-main-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -320,12 +344,12 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                             >
                                 {isSubmitting ? '처리 중...' : '확인'}
                             </button>
-                        </div>
+                        </footer>
                     </form>
                 </div>
             </div>
 
-            {/* 모임 생성 완료/실패 모달 */}
+            {/* 확인 다이얼로그 */}
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}
                 text={confirmDialog.text}
@@ -346,7 +370,7 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
                         </div>
                         <DateTimePicker
                             value={meetingDateTime}
-                            onChange={setGatheringDateTime}
+                            onChange={setMeetingDateTime}
                             label=""
                         />
                     </div>
@@ -374,4 +398,4 @@ export default function CreateGatheringDialog({ onClose }: { onClose: () => void
             )}
         </div>
     );
-};
+}
