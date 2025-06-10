@@ -112,11 +112,12 @@ export default function GatheringsList({
 
     // SSR 데이터 타입 필터링 및 마감된 모임 필터링
     const filteredSSRGatherings = useMemo(() => {
-        let result = filterGatheringsByType(ssrGatherings, selectedMainType, selectedSubType);
+        const result = filterGatheringsByType(ssrGatherings, selectedMainType, selectedSubType);
         
         // 마감된 모임 제외
         if (excludeExpired) {
-            result = result.filter(gathering => !isGatheringExpired(gathering.registrationEnd));
+            const filteredResult = result.filter(gathering => !isGatheringExpired(gathering.registrationEnd));
+            return filteredResult;
         }
 
         return result;
@@ -127,12 +128,11 @@ export default function GatheringsList({
         if (isSavedPage) {
             return [];
         }
-
-        let result = filterGatheringsByType(infiniteGatherings, selectedMainType, selectedSubType);
-        
+    
+        const result = filterGatheringsByType(infiniteGatherings, selectedMainType, selectedSubType);
         
         return result;
-    }, [infiniteGatherings, selectedMainType, selectedSubType, excludeExpired, isSavedPage]);
+    }, [infiniteGatherings, selectedMainType, selectedSubType, isSavedPage]);
 
     // 중복 제거된 최종 모임 목록
     const allGatherings = useMemo(() => {
@@ -142,11 +142,12 @@ export default function GatheringsList({
         return deduplicated;
     }, [filteredSSRGatherings, filteredCSRGatherings]);
 
-    //제목 자르기기
+    //제목 자르기
     const truncateTitle = (title: string, maxLength: number = 20): string => {
         if (!title) return '';
         return title.length > maxLength ? title.slice(0, maxLength) + '...' : title;
     };
+
 
     return (
         <div className="w-full flex flex-col justify-start gap-5">

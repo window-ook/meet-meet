@@ -110,14 +110,6 @@ export async function fetchPaginatedGatherings(
         if (error instanceof Error) {
             console.error('에러 메시지:', error.message);
         }
-        
-        // axios 에러인 경우
-        if (error && typeof error === 'object' && 'response' in error) {
-            const axiosError = error as any;
-            console.error('HTTP 상태:', axiosError.response?.status);
-            console.error('응답 데이터:', axiosError.response?.data);
-        }
-        
         return [];
     }
 }

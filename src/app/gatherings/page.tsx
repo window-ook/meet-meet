@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { serverFetcher } from '@/lib/api/serverFetcher';
 import { Gathering } from "@/types/gatherings";
 import { EXTERNAL_PATHS } from '@/lib/api/apiPaths';
-import { isGatheringExpired } from '@/components/shared/utils/dateFormats';
 import Gatherings from "@/components/gatherings/GatheringsUI";
 
 export const metadata: Metadata = {
@@ -64,20 +63,15 @@ async function getFilteredGatherings(searchParams: {
         const data = await serverFetcher(`${EXTERNAL_PATHS.GATHERINGS}?${params.toString()}`);
 
         if (Array.isArray(data)) {
-            // 마감된 모임 필터링 추가
-            let filteredData = data.filter((gathering: Gathering) => 
-                !isGatheringExpired(gathering.registrationEnd)
-            );
-
-            // DALLAEMFIT의 경우 서브타입 필터링
+            // DALLAEMFIT의 경우 서브타입 필터링만 유지
             if (mainType === 'DALLAEMFIT') {
-                filteredData = filteredData.filter((gathering: Gathering) =>
+                return data.filter((gathering: Gathering) =>
                     gathering.type === 'OFFICE_STRETCHING' ||
                     gathering.type === 'MINDFULNESS'
                 );
             }
             
-            return filteredData;
+            return data;
         } else {
             console.warn('응답이 배열이 아닙니다:', data);
             return [];
