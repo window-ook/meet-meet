@@ -1,6 +1,7 @@
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { Gathering } from "@/types/gatherings";
+import { isSameDateForFilter, isGatheringExpired } from '@/components/shared/utils/dateFormats';
 
 /**
  * 페이지네이션된 모임 목록 조회
@@ -11,6 +12,7 @@ import { Gathering } from "@/types/gatherings";
  * @param filterSavedIds 찜목록 필터링
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
+ * @param excludeExpired 마감된 모임 제외 여부
  */
 export async function fetchPaginatedGatherings(
     page: number,
@@ -19,7 +21,8 @@ export async function fetchPaginatedGatherings(
     date?: string,
     filterSavedIds?: string[],
     sortBy: string = 'registrationEnd',
-    sortOrder: string = 'desc'
+    sortOrder: string = 'desc',
+    excludeExpired: boolean = true
 ): Promise<Gathering[]> {
     try {
         // mainType에 따른 type 파라미터 설정
@@ -30,7 +33,7 @@ export async function fetchPaginatedGatherings(
             type = 'DALLAEMFIT';
         }
 
-        // 모든 필터링과 정렬을 서버에서 처리
+        // 서버 요청 파라미터 (날짜 필터 제외)
         const params: Record<string, string | number> = {
             offset: page * 10,
             limit: 10,
@@ -44,16 +47,6 @@ export async function fetchPaginatedGatherings(
             params.location = location.trim();
         }
 
-        // 날짜 필터
-        if (date && date.trim() !== '') {
-            const dateValue = date.trim();
-            if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
-                params.date = dateValue;
-            } else {
-                console.warn('잘못된 날짜 형식:', dateValue);
-            }
-        }
-
         // 모임 목록 조회
         const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
             params,
@@ -61,21 +54,42 @@ export async function fetchPaginatedGatherings(
 
         let gatherings = response.data || [];
 
-        // 응답이 배열이 아닌 경우 구조 확인
+        // 응답 구조 확인 및 정규화
         if (!Array.isArray(gatherings)) {
             if (response.data?.data) {
                 gatherings = response.data.data;
             } else if (response.data?.gatherings) {
                 gatherings = response.data.gatherings;
+            } else if (response.data?.items) {
+                gatherings = response.data.items;
             } else {
-                console.error('알 수 없는 응답 구조:', response.data);
+                console.error('응답 데이터 형식 오류:', response.data);
                 return [];
             }
         }
 
+        // 마감된 모임 필터링 추가
+        if (excludeExpired) {
+            gatherings = gatherings.filter((gathering: Gathering) => 
+                !isGatheringExpired(gathering.registrationEnd)
+            );
+        }
+
+        // 한국 시간 기준 날짜 필터링
+        if (date && date.trim() !== '') {
+            const targetDate = date.trim();
+            
+            gatherings = gatherings.filter((gathering: Gathering) => {
+                if (!gathering.dateTime) return false;
+                
+                return isSameDateForFilter(gathering.dateTime, targetDate);
+            });
+        }
+
         // DALLAEMFIT 서브타입 필터링
+        let filteredGatherings = gatherings;
         if (mainType === 'DALLAEMFIT') {
-            gatherings = gatherings.filter((gathering: Gathering) =>
+            filteredGatherings = gatherings.filter((gathering: Gathering) =>
                 gathering.type === 'OFFICE_STRETCHING' ||
                 gathering.type === 'MINDFULNESS'
             );
@@ -83,14 +97,27 @@ export async function fetchPaginatedGatherings(
 
         // 찜한 모임 필터링
         if (filterSavedIds && filterSavedIds.length > 0) {
-            gatherings = gatherings.filter((gathering: Gathering) =>
+            filteredGatherings = filteredGatherings.filter((gathering: Gathering) =>
                 filterSavedIds.includes(gathering.id.toString())
             );
         }
 
-        return gatherings;
+        return filteredGatherings;
     } catch (error) {
         console.error('모임 목록 조회 에러:', error);
+        
+        // 에러 상세 정보
+        if (error instanceof Error) {
+            console.error('에러 메시지:', error.message);
+        }
+        
+        // axios 에러인 경우
+        if (error && typeof error === 'object' && 'response' in error) {
+            const axiosError = error as any;
+            console.error('HTTP 상태:', axiosError.response?.status);
+            console.error('응답 데이터:', axiosError.response?.data);
+        }
+        
         return [];
     }
 }

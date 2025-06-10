@@ -5,16 +5,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPaginatedGatherings } from '@/components/gatherings/shared/utils/fetchPaginatedGatherings';
 import { Gathering } from '@/types/gatherings';
 
-/**
- * 모임 무한스크롤 훅
- * @param enabled 훅 활성화 여부
- * @param mainType 모임 주제
- * @param location 위치
- * @param date 날짜
- * @param sortBy 정렬 기준
- * @param sortOrder 정렬 순서
- * @param filterSavedIds 저장된 모임 ID 배열
- */
 interface UseFetchInfiniteGatheringsProps {
     enabled: boolean;
     mainType?: string;
@@ -23,6 +13,8 @@ interface UseFetchInfiniteGatheringsProps {
     sortBy?: string;
     sortOrder?: string;
     filterSavedIds?: string[];
+    startPage?: number;
+    excludeExpired?: boolean;
 }
 
 export function useFetchInfiniteGatherings({
@@ -32,15 +24,17 @@ export function useFetchInfiniteGatherings({
     date = '',
     sortBy = 'registrationEnd',
     sortOrder = 'desc',
-    filterSavedIds
+    filterSavedIds,
+    startPage = 0,
+    excludeExpired = true
 }: UseFetchInfiniteGatheringsProps) {
     const [infiniteScrollEnabled] = useState(true);
+    const [hasTriggeredFirstFetch, setHasTriggeredFirstFetch] = useState(false);
 
-    // 위치/날짜 필터값 정규화
     const normalizedLocation = location?.trim() || '';
     const normalizedDate = date?.trim() || '';
 
-    // 쿼리 키
+    // 쿼리키
     const queryKey = [
         'gatherings',
         'infinite',
@@ -50,11 +44,12 @@ export function useFetchInfiniteGatherings({
             date: normalizedDate,
             sortBy,
             sortOrder,
+            startPage,
+            excludeExpired,
             filterSavedIds: filterSavedIds?.sort().join(',') || ''
         }
     ];
 
-    // 무한스크롤 데이터
     const {
         data,
         fetchNextPage,
@@ -74,42 +69,57 @@ export function useFetchInfiniteGatherings({
                 filterSavedIds,
                 sortBy,
                 sortOrder,
+                excludeExpired
             );
         },
         getNextPageParam: (lastPage, allPages) => {
-            // 마지막 페이지가 비어있거나 10개 미만이면 더 이상 없음
-            if (!lastPage || lastPage.length === 0 || lastPage.length < 10) {
+            const lastPageLength = lastPage?.length || 0;
+            const totalPages = allPages.length;
+            const nextPage = startPage + totalPages;
+            
+            // 10개 미만이면 마지막 페이지
+            if (lastPageLength < 10) {
                 return undefined;
             }
-            return allPages.length;
+            
+            return nextPage;
         },
-        initialPageParam: 0,
-        enabled: enabled && infiniteScrollEnabled,
+        initialPageParam: startPage,
+        // 스크롤 기반 지연 로딩
+        enabled: enabled && infiniteScrollEnabled && hasTriggeredFirstFetch,
         retry: 2,
         refetchOnWindowFocus: false,
-        refetchOnMount: true,
+        refetchOnMount: false,
     });
 
-    // 무한스크롤 데이터
     const infiniteGatherings = data?.pages.flat() || [];
 
-    // 무한스크롤 로딩 컴포넌트
     const observer = useRef<IntersectionObserver | null>(null);
 
     const lastItemRef = useCallback(
         (node: HTMLElement | null) => {
             if (isFetchingNextPage) return;
+            
             if (observer.current) observer.current.disconnect();
 
             observer.current = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && hasNextPage) {
-                    fetchNextPage();
+                if (entries[0].isIntersecting) {
+                    // 첫 번째 스크롤 감지 시 무한스크롤 시작
+                    if (!hasTriggeredFirstFetch) {
+                        setHasTriggeredFirstFetch(true);
+                    } else if (hasNextPage) {
+                        fetchNextPage();
+                    }
                 }
+            }, {
+                rootMargin: '0px',
             });
 
-            if (node) observer.current.observe(node);
+            if (node) {
+                observer.current.observe(node);
+            }
         },
-        [isFetchingNextPage, fetchNextPage, hasNextPage]
+        [isFetchingNextPage, fetchNextPage, hasNextPage, hasTriggeredFirstFetch]
     );
 
     return {
@@ -120,5 +130,6 @@ export function useFetchInfiniteGatherings({
         status,
         isLoading,
         isError,
+        hasNextPage,
     };
 }
