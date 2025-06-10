@@ -7,12 +7,13 @@ import { ReviewItem } from '@/types/reviews';
 
 /**
  * 리뷰 무한스크롤 훅 프로퍼티
- * @param enabled 훅 활성화 여부
+ * @param enabled 무한스크롤 활성화 여부
  * @param mainType 모임 주제
  * @param location 위치
  * @param date 날짜
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
+ * @param startPage 시작 페이지
  */
 interface UseFetchInfiniteReviewsProps {
     enabled: boolean;
@@ -21,17 +22,25 @@ interface UseFetchInfiniteReviewsProps {
     date?: string;
     sortBy?: string;
     sortOrder?: string;
+    startPage?: number;
 }
 
+/**
+ * 리뷰 무한스크롤 훅
+ * @param props 프로퍼티
+ * @returns 무한스크롤 데이터
+ */
 export function useFetchInfiniteReviews({
     enabled,
     mainType = 'DALLAEMFIT',
     location = '',
     date = '',
     sortBy = 'createdAt',
-    sortOrder = 'desc'
+    sortOrder = 'desc',
+    startPage = 1
 }: UseFetchInfiniteReviewsProps) {
     const [infiniteScrollEnabled] = useState(true);
+    const [hasTriggeredFirstFetch, setHasTriggeredFirstFetch] = useState(false);
 
     // 위치/날짜 필터값 정규화
     const normalizedLocation = location?.trim() || '';
@@ -46,7 +55,8 @@ export function useFetchInfiniteReviews({
             location: normalizedLocation,
             date: normalizedDate,
             sortBy,
-            sortOrder
+            sortOrder,
+            startPage,
         }
     ];
 
@@ -61,29 +71,34 @@ export function useFetchInfiniteReviews({
         isError,
     } = useInfiniteQuery<ReviewItem[]>({
         queryKey,
-        queryFn: async ({ pageParam }) => {
-            // 리뷰 목록 조회
-            return await fetchReviewsPaginated(
+        queryFn: ({ pageParam }) => {
+            return fetchReviewsPaginated(
                 Number(pageParam),
                 mainType,
                 normalizedLocation || undefined,
                 normalizedDate || undefined,
                 sortBy,
-                sortOrder
+                sortOrder,
             );
         },
         getNextPageParam: (lastPage, allPages) => {
-            // 무한스크롤 활성화 여부
-            if (!lastPage || lastPage.length === 0 || lastPage.length < 3) {
+            const lastPageLength = lastPage?.length || 0;
+            const totalPages = allPages.length;
+            const nextPage = startPage + totalPages;
+            
+            // 3개 미만이면 마지막 페이지
+            if (lastPageLength < 3) {
                 return undefined;
             }
-            return allPages.length;
+            
+            return nextPage;
         },
-        initialPageParam: 0,
-        enabled: enabled && infiniteScrollEnabled,
+        initialPageParam: startPage,
+        // 스크롤 기반 지연 로딩
+        enabled: enabled && infiniteScrollEnabled && hasTriggeredFirstFetch,
         retry: 2,
         refetchOnWindowFocus: false,
-        refetchOnMount: true,
+        refetchOnMount: false,
     });
 
     // 리뷰 목록
@@ -96,27 +111,37 @@ export function useFetchInfiniteReviews({
     const lastItemRef = useCallback(
         (node: HTMLElement | null) => {
             if (isFetchingNextPage) return;
+            
             if (observer.current) observer.current.disconnect();
 
             observer.current = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && hasNextPage) {
-                    fetchNextPage();
+                if (entries[0].isIntersecting) {
+                    // 첫 번째 스크롤 감지 시 무한스크롤 시작
+                    if (!hasTriggeredFirstFetch) {
+                        setHasTriggeredFirstFetch(true);
+                    } else if (hasNextPage) {
+                        fetchNextPage();
+                    }
                 }
+            }, {
+                rootMargin: '0px',
             });
 
-            // 만약 노드가 있다면 옵저버 관찰
-            if (node) observer.current.observe(node);
+            if (node) {
+                observer.current.observe(node);
+            }
         },
-        [isFetchingNextPage, fetchNextPage, hasNextPage]
+        [isFetchingNextPage, fetchNextPage, hasNextPage, hasTriggeredFirstFetch]
     );
 
     return {
         infiniteReviews,
         lastItemRef,
         isFetchingNextPage,
-        infiniteScrollEnabled: true,
+        infiniteScrollEnabled,
         status,
         isLoading,
         isError,
+        hasNextPage,
     };
 }

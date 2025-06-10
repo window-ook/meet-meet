@@ -240,6 +240,29 @@ export const isValidDateTimeValue = (value: DateTimeValue | null): boolean => {
 };
 
 /**
+ * 모임이 마감되었는지 확인하는 함수 (새로 추가)
+ * @param registrationEnd 마감시간 (ISO string)
+ * @returns 마감되었으면 true
+ */
+export const isGatheringExpired = (registrationEnd: string | null | undefined): boolean => {
+    if (!registrationEnd) return false;
+    
+    try {
+        const endDate = new Date(registrationEnd);
+        const now = new Date();
+        
+        // 한국 시간으로 정확한 비교
+        const koreanEndDate = toKoreanTime(endDate);
+        const koreanNow = toKoreanTime(now);
+        
+        return koreanEndDate <= koreanNow;
+    } catch (error) {
+        console.error('마감 시간 확인 오류:', error);
+        return false;
+    }
+};
+
+/**
  * 마감시간 계산 (개선된 버전 - DateTimeValue와 isBefore 활용)
  * @param registrationEnd 마감시간 (string 또는 DateTimeValue)
  * @returns 마감시간 계산 결과
@@ -307,10 +330,8 @@ export const getTimeRemaining = (registrationEnd: string | DateTimeValue): strin
     }
 };
 
-
-
 /**
- * 필터링 날짜 비교 함수
+ * 수정된 필터링 날짜 비교 함수
  * @param dateTimeString ISO 문자열 또는 날짜 문자열
  * @param targetDate YYYY-MM-DD 형식 문자열
  * @returns 같은 날짜면 true
@@ -319,9 +340,13 @@ export const isSameDateForFilter = (dateTimeString: string, targetDate: string):
     if (!dateTimeString || !targetDate) return false;
     
     try {
-        // ISO 문자열에서 직접 날짜 부분만 추출
-        const extractedDate = dateTimeString.substring(0, 10);
-        return extractedDate === targetDate;
+        const utcDate = new Date(dateTimeString);
+        
+        // 정확한 한국 시간 변환
+        const koreanDate = new Date(utcDate.getTime() + (9 * 60 * 60 * 1000));
+        const koreanDateString = koreanDate.toISOString().substring(0, 10);
+        
+        return koreanDateString === targetDate;
     } catch (error) {
         console.warn('날짜 비교 오류:', error);
         return false;
