@@ -21,7 +21,7 @@ export const EXTERNAL_PATHS = {
     REVIEWS: '/reviews',
     CHECK_JOINED: '/gatherings/joined',
     fetchGatheringDetail: (id: number) => `/gatherings/${id}`,
-    fetchGatheringParticipants: (id: number) => `/gatherings/${id}/participants`,
+    fetchGatheringParticipants: (id: number) => `/gatherings/${id}/participants?limit=100`,
     joinGathering: (id: number) => `/gatherings/${id}/join`,
     cancelGathering: (id: number) => `/gatherings/${id}/cancel`,
     leaveGathering: (id: number) => `/gatherings/${id}/leave`,
