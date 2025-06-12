@@ -158,7 +158,7 @@ export default function GatheringsList({
                                 {/* 제목과 위치 */}
                                 <div className="flex flex-row md:justify-between gap-3">
                                     <div className="flex-1 flex flex-row gap-2 items-center">
-                                        <h1 className="text-lg font-semibold -mt-6 text-gray-900">
+                                        <h1 className="text-lg font-semibold -mt-6">
                                             {truncateTitle(gathering.name)}
                                         </h1>
                                         <div className="hidden sm:block w-[2px] h-[16px] -mt-6 bg-gray-900"></div>

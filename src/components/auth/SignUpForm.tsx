@@ -108,7 +108,7 @@ export default function SignUpForm() {
                 <div className='w-full flex flex-col gap-2'>
                     <label
                         htmlFor="password-check"
-                        className="block text-sm text-gray-900 font-bold"
+                        className="block text-sm font-bold"
                     >
                         비밀번호 확인
                     </label>
@@ -116,7 +116,7 @@ export default function SignUpForm() {
                         <input
                             type={isPasswordCheckVisible ? 'text' : 'password'}
                             id="password-check"
-                            className={`w-full rounded-lg bg-gray-50 p-2.5 text-sm text-gray-900 border-2 focus:outline-none ${!isPasswordMatch || !passwordCheck ? 'border-red-600' : 'focus:border-main-300'}`}
+                            className={`w-full rounded-lg bg-gray-50 p-2.5 text-sm border-2 focus:outline-none ${!isPasswordMatch || !passwordCheck ? 'border-red-600' : 'focus:border-main-300'}`}
                             placeholder="비밀번호를 다시 한 번 입력해 주세요"
                             onChange={(e) => setPasswordCheck(e.target.value)}
                         />
@@ -125,7 +125,11 @@ export default function SignUpForm() {
                             className='absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer hover:opacity-60 transition-all duration-200 ease-in-out'
                             onClick={() => setIsPasswordCheckVisible((v) => !v)}
                         >
-                            <Image src={isPasswordCheckVisible ? "/icons/visibility_on.svg" : "/icons/visibility_off.svg"} alt="비밀번호 보기 숨김" width={24} height={24} />
+                            <Image
+                                src={isPasswordCheckVisible ? "https://res.cloudinary.com/dbvzbdffi/image/upload/v1749713866/visibility_on_jh4sec.svg" : "https://res.cloudinary.com/dbvzbdffi/image/upload/v1749713865/visibility_off_qtspno.svg"}
+                                alt="비밀번호 보기 숨김"
+                                width={24}
+                                height={24} />
                         </button>
                     </div>
                     {!isPasswordMatch || !passwordCheck ? (
@@ -141,7 +145,7 @@ export default function SignUpForm() {
                     props={{ name, email, companyName, password }}
                 />
                 <FormFooter
-                    route="/signin"
+                    route="/auth/signin"
                     description="이미 계정이 있으신가요?"
                     text="로그인"
                 />

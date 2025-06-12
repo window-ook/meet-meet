@@ -75,7 +75,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
             if (errorMessage === '로그인이 만료되었습니다') {
                 openConfirmDialog(setDialog, errorMessage, () => {
                     signOut()
-                    router.push('/signin')
+                    router.push('/auth/signin')
                 });
             }
         }
@@ -140,7 +140,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
                 isOpen={signInDialogOpen}
                 text='로그인이 필요합니다'
                 onClose={() => setSignInDialogOpen(false)}
-                onCallback={() => router.push('/signin')} />
+                onCallback={() => router.push('/auth/signin')} />
             <ConfirmDialog
                 isOpen={dialog.isOpen}
                 text={dialog.text}
