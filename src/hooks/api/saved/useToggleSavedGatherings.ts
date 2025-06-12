@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { getSavedGatherings, setSavedGatherings } from '@/components/gatherings/shared/utils/savedGatherings';
 import { getTimeRemaining } from '@/components/shared/utils/dateFormats';
 import { internalClient } from '@/lib/api/clientFetchers';
@@ -9,128 +9,151 @@ import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { Gathering } from '@/types/gatherings';
 
 /**
- * 찜한 모임 목록을 관리하는 훅 (Optimistic Update + 마감된 모임 자동 제거)
- * @returns {Object} 찜한 모임 목록 조회 및 토글 기능 제공
- * @returns {string[]} savedIds - 찜한 모임 ID 배열
- * @returns {function} toggleSaved - 찜한 모임 토글 기능
- * @returns {boolean} isToggling - 찜한 모임 토글 기능 진행 중 여부
+ * 찜한 모임 목록
  */
 export const useToggleSavedGatherings = () => {
   const queryClient = useQueryClient();
 
-  // 마감된 모임 자동 제거 함수
-  const removeExpiredGatherings = useCallback(async (gatheringIds: string[]) => {
-    if (gatheringIds.length === 0) return gatheringIds;
-
+  // 마감된 모임을 localStorage에서 완전히 제거하는 함수
+  const cleanupExpiredGatherings = useCallback(async () => {
+    const currentIds = getSavedGatherings();
+    if (currentIds.length === 0) return currentIds;
+    
     try {
       const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
         params: { limit: 1000 }
       });
 
-      // 타입 안전성 보장
       const gatherings = response.data as Gathering[];
       const gatheringsMap = new Map(
         gatherings.map((gathering: Gathering) => [gathering.id.toString(), gathering])
       );
 
-      // 마감되지 않은 모임만 필터링
-      const validIds = gatheringIds.filter(id => {
+      const validIds = currentIds.filter(id => {
         const gathering = gatheringsMap.get(id);
-        if (!gathering || !gathering.registrationEnd) return true;
+        if (!gathering) return false;
+        if (!gathering.registrationEnd) return true;
         return getTimeRemaining(gathering.registrationEnd) !== '마감됨';
       });
 
-      // localStorage 업데이트
-      if (validIds.length !== gatheringIds.length) {
+      // 조용한 업데이트
+      if (validIds.length !== currentIds.length) {
         setSavedGatherings(validIds);
-
-        // 쿼리 캐시 업데이트
         queryClient.setQueryData(["savedGatherings"], validIds);
-        queryClient.invalidateQueries({
-          queryKey: ["allSavedGatherings"],
-          exact: false
-        });
+        
+        // 찜한 모임 목록 업데이트
+        const currentSavedData = queryClient.getQueryData<Gathering[]>(["allSavedGatherings", currentIds]);
+        if (currentSavedData) {
+          const updatedSavedData = currentSavedData.filter(gathering => 
+            validIds.includes(gathering.id.toString())
+          );
+          queryClient.setQueryData(["allSavedGatherings", validIds], updatedSavedData);
+        }
       }
 
       return validIds;
     } catch (error) {
-      console.error('마감된 모임 제거 중 오류:', error);
-      return gatheringIds; // 에러 시 기존 데이터 유지
+      console.error('localStorage 정리 중 오류:', error);
+      return currentIds;
     }
   }, [queryClient]);
 
-  // 찜목록 조회 (마감된 모임 자동 정리 포함)
+  useEffect(() => {
+    cleanupExpiredGatherings();
+    
+    const interval = setInterval(cleanupExpiredGatherings, 30000);
+    
+    const handleFocus = () => cleanupExpiredGatherings();
+    const handleVisibilityChange = () => {
+      if (!document.hidden) cleanupExpiredGatherings();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [cleanupExpiredGatherings]);
+
+  // 찜목록 조회
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedGatherings"],
-    queryFn: async () => {
-      const currentIds = getSavedGatherings();
-      // 마감된 모임 제거 후 반환
-      return await removeExpiredGatherings(currentIds);
-    },
+    queryFn: cleanupExpiredGatherings,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
+    staleTime: 30000,
   });
 
-  // 찜하기 토글 mutation (Optimistic Update 포함)
+  // 자연스러운 찜하기 토글 mutation
   const toggleSavedMutation = useMutation({
     mutationFn: async (gatheringId: string) => {
       const currentSaved = getSavedGatherings();
       const isCurrentlySaved = currentSaved.includes(gatheringId);
       const newSaved = isCurrentlySaved
         ? currentSaved.filter(id => id !== gatheringId)
-        : [gatheringId, ...currentSaved]; // 새로 추가된 것은 맨 앞에
+        : [gatheringId, ...currentSaved];
 
       setSavedGatherings(newSaved);
       return { newSaved, gatheringId, isCurrentlySaved };
     },
 
-    // Optimistic Update
+    // 완전한 Optimistic Update
     onMutate: async (gatheringId: string) => {
+      // 진행 중인 쿼리 취소
+      await queryClient.cancelQueries({ queryKey: ["savedGatherings"] });
+      await queryClient.cancelQueries({ queryKey: ["allSavedGatherings"], exact: false });
+
       const currentSaved = getSavedGatherings();
       const isCurrentlySaved = currentSaved.includes(gatheringId);
       const newSaved = isCurrentlySaved
         ? currentSaved.filter(id => id !== gatheringId)
         : [gatheringId, ...currentSaved];
 
-      // 진행 중인 쿼리 취소
-      await queryClient.cancelQueries({ queryKey: ["savedGatherings"] });
-      await queryClient.cancelQueries({
-        queryKey: ["allSavedGatherings"],
-        exact: false // 모든 allSavedGatherings 쿼리 취소
-      });
-
       // 이전 데이터 백업
       const previousSavedIds = queryClient.getQueryData<string[]>(["savedGatherings"]) || [];
-      const previousAllSaved = queryClient.getQueryData<Gathering[]>(["allSavedGatherings", currentSaved]) || [];
+      const previousAllSavedData = queryClient.getQueryData<Gathering[]>(["allSavedGatherings", currentSaved]) || [];
 
-      // 찜 ID 목록 즉시 업데이트
+      // savedIds 즉시 업데이트
       queryClient.setQueryData(["savedGatherings"], newSaved);
 
-      // 찜목록 데이터 즉시 업데이트
-      if (isCurrentlySaved) {
-        // 기존 데이터에서 제거
-        const updatedData = previousAllSaved.filter(
-          gathering => gathering.id.toString() !== gatheringId
-        );
-        queryClient.setQueryData(["allSavedGatherings", newSaved], updatedData);
+      // 찜한 모임 목록 업데이트
+      if (previousAllSavedData.length > 0) {
+        if (isCurrentlySaved) {
+          // 찜 해제
+          const updatedData = previousAllSavedData.filter(
+            gathering => gathering.id.toString() !== gatheringId
+          );
+          queryClient.setQueryData(["allSavedGatherings", newSaved], updatedData);
+        }
       }
 
-      return { previousSavedIds, previousAllSaved, currentSaved };
+      return { 
+        previousSavedIds, 
+        previousAllSavedData, 
+        currentSaved,
+        isCurrentlySaved 
+      };
     },
 
-    onError: (error, _, context) => {
+    // 성공 시에는 아무것도 하지 않음
+    onSuccess: () => {
+    },
+
+    onError: (error, _gatheringId, context) => {
       console.error('찜 토글 실패:', error);
 
-      // 에러 시 이전 상태로 롤백
+      // 에러 시에만 롤백 (자연스럽게 원래 상태로)
       if (context?.previousSavedIds) {
         queryClient.setQueryData(["savedGatherings"], context.previousSavedIds);
         setSavedGatherings(context.previousSavedIds);
       }
-      if (context?.previousAllSaved && context?.currentSaved) {
-        queryClient.setQueryData(["allSavedGatherings", context.currentSaved], context.previousAllSaved);
+      
+      if (context?.previousAllSavedData && context?.currentSaved) {
+        queryClient.setQueryData(["allSavedGatherings", context.currentSaved], context.previousAllSavedData);
       }
-
-      // 모든 관련 쿼리 재실행
-      queryClient.invalidateQueries({ queryKey: ["savedGatherings"] });
-      queryClient.invalidateQueries({ queryKey: ["allSavedGatherings"], exact: false });
     },
   });
 
@@ -138,5 +161,6 @@ export const useToggleSavedGatherings = () => {
     savedIds,
     toggleSaved: toggleSavedMutation.mutate,
     isToggling: toggleSavedMutation.isPending,
+    cleanupExpiredGatherings,
   };
 };

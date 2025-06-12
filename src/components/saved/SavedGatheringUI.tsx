@@ -14,47 +14,36 @@ export default function SavedGatheringsClient() {
     const [selectedMainType, setSelectedMainType] = useState('DALLAEMFIT');
     const [selectedSubType, setSelectedSubType] = useState('ALL');
 
-    // useToggleSavedGatherings 훅
     const { savedIds } = useToggleSavedGatherings();
 
-    // 찜한 모임의 상세 데이터만 별도로 가져오기
-    const { data: allSavedGatherings = [] } = useQuery({
-        queryKey: ["allSavedGatherings", savedIds], // savedIds 자동 갱신
+    // 찜한 모임의 상세 데이터 가져오기
+    const { data: savedGatherings = [] } = useQuery({
+        queryKey: ["allSavedGatherings", savedIds],
         queryFn: async () => {
             if (savedIds.length === 0) return [];
 
-            try {
-                const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
-                    params: {
-                        limit: 1000
-                    }
-                });
+            const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
+                params: { limit: 1000 }
+            });
 
-                // API 응답 구조 확인
-                const gatherings = Array.isArray(response.data) 
-                    ? response.data 
-                    : response.data?.data || response.data?.gatherings || [];
+            // 모임 데이터 가져오기
+            const gatherings = response.data;
 
-                // 찜한 ID 목록을 기반으로 필터링
-                const gatheringsMap = new Map(
-                    gatherings.map((gathering: Gathering) => [gathering.id.toString(), gathering])
-                );
+            // 모임 데이터 맵 생성
+            const gatheringsMap = new Map(
+                gatherings.map((gathering: Gathering) => [gathering.id.toString(), gathering])
+            );
 
-                const orderedGatherings = savedIds
-                    // 찜한 ID 목록을 기반으로 모임 데이터 가져오기
-                    .map(id => gatheringsMap.get(id))
-                    // 모임 데이터가 없는 경우 제외
-                    .filter((gathering): gathering is Gathering => gathering !== undefined);
-
-                return orderedGatherings;
-            } catch (error) {
-                console.error('찜한 모임 데이터 로드 실패:', error);
-                return [];
-            }
+            // savedIds 순서대로 정렬된 모임 반환
+            return savedIds
+                .map(id => gatheringsMap.get(id))
+                .filter((gathering): gathering is Gathering => gathering !== undefined);
         },
-        enabled: savedIds.length > 0, // savedIds가 있을 때만 실행
+        enabled: savedIds.length > 0,
         retry: 2,
         refetchOnWindowFocus: false,
+        staleTime: 30000,
+        placeholderData: (previousData) => previousData,
     });
 
     const handleTypeChange = (mainType: string, subType: string) => {
@@ -74,8 +63,8 @@ export default function SavedGatheringsClient() {
             />
             
             <GatheringsList
-                ssrGatherings={allSavedGatherings}
-                activeStartIndex={0} // 찜 페이지에서는 csr 무한스크롤 자체를 사용하지 않으니 0으로 설정
+                ssrGatherings={savedGatherings}
+                activeStartIndex={0}
                 selectedMainType={selectedMainType}
                 selectedSubType={selectedSubType}
                 filters={{ location: '', date: '' }}
