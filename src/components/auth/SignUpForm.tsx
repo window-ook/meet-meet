@@ -141,7 +141,7 @@ export default function SignUpForm() {
                     props={{ name, email, companyName, password }}
                 />
                 <FormFooter
-                    route="/signin"
+                    route="/auth/signin"
                     description="이미 계정이 있으신가요?"
                     text="로그인"
                 />

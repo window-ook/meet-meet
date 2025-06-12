@@ -2,6 +2,7 @@
 
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
+import { usePathname, useRouter } from 'next/navigation';
 import { ConfirmDialogState, openConfirmDialog } from '@/components/shared/utils/confirmDialog';
 import { Upload } from 'lucide-react';
 import axios from 'axios';
@@ -24,7 +25,7 @@ const editProfile = async (imageFile: File | null, companyName: string, token: s
     }
 };
 
-/** 마이페이지 프로필 수정 다이얼로그 */
+/** 프로필 수정 다이얼로그 */
 export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setIsProfileEditDialogOpen: (open: boolean) => void }) {
     const { token, userCompanyName, updateUserProfile } = useContext(AuthContext);
 
@@ -34,6 +35,9 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState>({ isOpen: false, text: '' });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const router = useRouter();
+    const pathname = usePathname();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -76,6 +80,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
                 setImageFile(null);
                 setCompanyName('');
                 openConfirmDialog(setConfirmDialog, '프로필 수정 완료', () => setIsProfileEditDialogOpen(false));
+                if (pathname === '/auth/profile') router.replace('/');
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -92,6 +97,8 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
         setCompanyName('');
         setError(null);
     }
+
+    const handleExit = () => router.replace('/');
 
     return (
         <section className="dialog-background">
@@ -130,8 +137,8 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
                 <div className='flex gap-4'>
                     <Button
                         variant='default'
-                        text='취소'
-                        onClick={handleCancel}
+                        text={pathname === '/auth/profile' ? '다음에 변경' : '취소'}
+                        onClick={pathname === '/auth/profile' ? handleExit : handleCancel}
                         customClassName='w-full padding-button hover-button rounded-lg bg-button-categories text-button-text font-semibold'
                     />
                     <Button

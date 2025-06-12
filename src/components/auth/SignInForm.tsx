@@ -88,7 +88,7 @@ export default function SignInForm() {
                     props={{ email, password }}
                 />
                 <FormFooter
-                    route="/signup"
+                    route="/auth/signup"
                     description="MeetMeet이 처음이신가요?"
                     text="회원가입"
                 />
