@@ -31,8 +31,8 @@ async function getActiveGatheringsWithSkip(searchParams: {
 
         let currentOffset = 0;
         let activeStartIndex = -1; // 첫 번째 진행중 모임의 전체 인덱스
-        let activeGatherings: Gathering[] = [];
-        let noMoreData = false;
+        const activeGatherings: Gathering[] = [];
+        let noMoreData = false; // 더 이상 데이터가 없는지 여부
 
         // 마감된 모임들을 건너뛰면서 첫 번째 진행중 모임 찾기
         while (activeStartIndex === -1 && !noMoreData) {
