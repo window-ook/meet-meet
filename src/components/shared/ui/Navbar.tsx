@@ -5,10 +5,9 @@ import { usePathname } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
-import { useQuery } from '@tanstack/react-query';
-import { getSavedGatherings } from '@/components/gatherings/shared/utils/savedGatherings';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useToggleSavedGatherings } from '@/hooks/api/saved/useToggleSavedGatherings';
 
 
 export default function Navbar() {
@@ -17,12 +16,7 @@ export default function Navbar() {
     const pathname = usePathname();
 
     // 찜한 모임 개수
-    const { data: savedIds = [] } = useQuery({
-        queryKey: ['savedGatherings'],
-        queryFn: () => getSavedGatherings(),
-        refetchOnWindowFocus: false,
-    });
-
+    const { savedIds } = useToggleSavedGatherings();
     const savedCounts = savedIds.length;
 
     const navLinks = [

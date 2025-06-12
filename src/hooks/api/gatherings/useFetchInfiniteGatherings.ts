@@ -4,18 +4,18 @@ import { useState, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPaginatedGatherings } from '@/components/gatherings/shared/utils/fetchPaginatedGatherings';
 import { Gathering } from '@/types/gatherings';
-
+import { filterActiveGatherings, GATHERING_CONSTANTS } from '@/components/gatherings/shared/utils/gatheringsUtils';
 
 /**
- * 무한 스크롤 모임 목록 조회
- * @param enabled 조회 가능 여부
+ * 무한 스크롤 데이터 쿼리 프로퍼티
+ * @param enabled 무한 스크롤 활성화 여부
  * @param mainType 모임 주제
  * @param location 위치
  * @param date 날짜
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
  * @param filterSavedIds 찜목록 필터링
- * @param startPage 시작 페이지
+ * @param startIndex 시작 인덱스
  */
 interface UseFetchInfiniteGatheringsProps {
     enabled: boolean;
@@ -25,7 +25,7 @@ interface UseFetchInfiniteGatheringsProps {
     sortBy?: string;
     sortOrder?: string;
     filterSavedIds?: string[];
-    startPage?: number;
+    startIndex?: number;
 }
 
 export function useFetchInfiniteGatherings({
@@ -34,17 +34,16 @@ export function useFetchInfiniteGatherings({
     location = '',
     date = '',
     sortBy = 'registrationEnd',
-    sortOrder = 'desc',
+    sortOrder = 'asc',
     filterSavedIds,
-    startPage = 0,
+    startIndex = 0,
 }: UseFetchInfiniteGatheringsProps) {
     const [infiniteScrollEnabled] = useState(true);
     const [hasTriggeredFirstFetch, setHasTriggeredFirstFetch] = useState(false);
 
-    const normalizedLocation = location?.trim() || '';
-    const normalizedDate = date?.trim() || '';
+    const normalizedLocation = location?.trim() || ''; // 위치 정규화
+    const normalizedDate = date?.trim() || ''; // 날짜 정규화
 
-    // 쿼리키
     const queryKey = [
         'gatherings',
         'infinite',
@@ -54,11 +53,12 @@ export function useFetchInfiniteGatherings({
             date: normalizedDate,
             sortBy,
             sortOrder,
-            startPage,
+            startIndex,
             filterSavedIds: filterSavedIds?.sort().join(',') || ''
         }
     ];
 
+    // 무한 스크롤 데이터 쿼리
     const {
         data,
         fetchNextPage,
@@ -67,41 +67,75 @@ export function useFetchInfiniteGatherings({
         status,
         isLoading,
         isError,
-    } = useInfiniteQuery<Gathering[]>({
+    } = useInfiniteQuery<{gatherings: Gathering[], nextPage: number | null}>({
         queryKey,
-        queryFn: ({ pageParam }) => {
-            return fetchPaginatedGatherings(
-                Number(pageParam),
-                mainType,
-                normalizedLocation || undefined,
-                normalizedDate || undefined,
-                filterSavedIds,
-                sortBy,
-                sortOrder,
+        queryFn: async ({ pageParam }) => {
+            const csrPage = Number(pageParam);
+            
+            // 전체 데이터에서 충분히 많은 데이터를 가져와서
+            // 진행중 모임만 필터링한 후 CSR에 해당하는 부분만 추출
+            let allActiveGatherings: Gathering[] = [];
+            let currentOffset = 0; // 현재 오프셋
+            let noMoreData = false; // 더 이상 데이터가 없는지 확인
+            
+            // 처음부터 끝까지 모든 데이터를 가져와서 진행중 모임만 필터링
+            while (!noMoreData && allActiveGatherings.length < GATHERING_CONSTANTS.MAX_ACTIVE_GATHERINGS) {
+                const allGatherings = await fetchPaginatedGatherings(
+                    Math.floor(currentOffset / GATHERING_CONSTANTS.CSR_PAGE_SIZE),
+                    mainType,
+                    normalizedLocation || undefined,
+                    normalizedDate || undefined,
+                    filterSavedIds,
+                    sortBy,
+                    sortOrder,
+                    GATHERING_CONSTANTS.BATCH_SIZE
+                );
+
+                // 더 이상 데이터가 없으면 종료
+                if (allGatherings.length === 0) {
+                    noMoreData = true;
+                    break;
+                }
+
+                // 진행중 모임만 필터링해서 누적
+                const newActiveGatherings = filterActiveGatherings(allGatherings);
                 
-            );
-        },
-        getNextPageParam: (lastPage, allPages) => {
-            const lastPageLength = lastPage?.length || 0;
-            const totalPages = allPages.length;
-            const nextPage = startPage + totalPages;
-            
-            // 10개 미만이면 마지막 페이지
-            if (lastPageLength < 10) {
-                return undefined;
+                // 중복 제거 후 추가
+                const uniqueNewGatherings = newActiveGatherings.filter(gathering => 
+                    !allActiveGatherings.some(existing => existing.id === gathering.id)
+                );
+
+                allActiveGatherings = allActiveGatherings.concat(uniqueNewGatherings);
+                
+                currentOffset += GATHERING_CONSTANTS.BATCH_SIZE;
             }
-            
-            return nextPage;
+
+            // CSR 페이지에 해당하는 10개 추출
+            const csrPageStart = GATHERING_CONSTANTS.SSR_COUNT + (csrPage * GATHERING_CONSTANTS.CSR_PAGE_SIZE); // CSR 페이지 시작점
+            const csrPageEnd = csrPageStart + GATHERING_CONSTANTS.CSR_PAGE_SIZE; // CSR 페이지 끝부분
+            const csrGatherings = allActiveGatherings.slice(csrPageStart, csrPageEnd);
+
+            // 다음 페이지가 있는지 확인
+            const hasMore = csrPageEnd < allActiveGatherings.length;
+            const nextPage = hasMore ? csrPage + 1 : null;
+
+            return {
+                gatherings: csrGatherings,
+                nextPage
+            };
         },
-        initialPageParam: startPage,
-        // 스크롤 기반 지연 로딩
+        getNextPageParam: (lastPage) => {
+            return lastPage.nextPage;
+        },
+        initialPageParam: 0, // CSR은 항상 0페이지부터 시작(SSR은 페이지 X)
         enabled: enabled && infiniteScrollEnabled && hasTriggeredFirstFetch,
         retry: 2,
         refetchOnWindowFocus: false,
         refetchOnMount: false,
     });
 
-    const infiniteGatherings = data?.pages.flat() || [];
+    // 모든 페이지의 gatherings만 추출
+    const infiniteGatherings = data?.pages.flatMap(page => page.gatherings) || [];
 
     const observer = useRef<IntersectionObserver | null>(null);
 
@@ -113,15 +147,16 @@ export function useFetchInfiniteGatherings({
 
             observer.current = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
-                    // 첫 번째 스크롤 감지 시 무한스크롤 시작
                     if (!hasTriggeredFirstFetch) {
+                        // 첫 번째 페이지 요청 트리거
                         setHasTriggeredFirstFetch(true);
                     } else if (hasNextPage) {
+                        // 다음 10개 모임 요청 트리거
                         fetchNextPage();
                     }
                 }
             }, {
-                rootMargin: '0px',
+                rootMargin: '100px',
             });
 
             if (node) {

@@ -9,17 +9,17 @@ import GatheringsList from '@/components/gatherings/GatheringsList';
 import dynamic from 'next/dynamic';
 import GatheringsHeader from './shared/ui/GatheringsHeader';
 
-// 모달 컴포넌트 동적 import
 const CreateGatheringDialog = dynamic(() => import('@/components/gatherings/CreateGatheringDialog'), { ssr: false });
 
 /**
  * 모임 검색 페이지 컴포넌트
  * @param ssrGatherings 서버 렌더링 모임 목록
+ * @param activeStartIndex 첫 진행중 모임의 전체 인덱스
  * @param initialFilters 초기 필터 상태
- * @returns 모임 검색 페이지 컴포넌트
  */
 interface GatheringsProps {
     ssrGatherings: Gathering[];
+    activeStartIndex: number;
     initialFilters: {
         mainType: string;
         location: string;
@@ -29,7 +29,11 @@ interface GatheringsProps {
     };
 }
 
-export default function Gatherings({ ssrGatherings, initialFilters }: GatheringsProps) {
+export default function Gatherings({ 
+    ssrGatherings, 
+    activeStartIndex,
+    initialFilters 
+}: GatheringsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     
@@ -45,8 +49,6 @@ export default function Gatherings({ ssrGatherings, initialFilters }: Gatherings
     });
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    
-    // 필터 변경 감지를 위한 키 
     const [filterChangeKey, setFilterChangeKey] = useState(0);
 
     // URL 업데이트 함수
@@ -61,10 +63,7 @@ export default function Gatherings({ ssrGatherings, initialFilters }: Gatherings
             }
         });
 
-        // 필터 변경 감지를 위한 키 업데이트
         setFilterChangeKey(prev => prev + 1);
-
-        // URL 업데이트 (SSR 트리거)
         router.push(`/gatherings?${params.toString()}`);
     }, [router, searchParams]);
 
@@ -117,7 +116,6 @@ export default function Gatherings({ ssrGatherings, initialFilters }: Gatherings
     const handleCloseModal = useCallback((shouldRefresh = false) => {
         setIsCreateModalOpen(false);
         
-        // 모임 생성이 성공한 경우 페이지 새로고침으로 SSR 다시 실행
         if (shouldRefresh) {
             router.refresh();
         }
@@ -126,10 +124,8 @@ export default function Gatherings({ ssrGatherings, initialFilters }: Gatherings
     return (
         <>
             <div className="flex flex-col">
-                {/* 모임 헤더 */}
                 <GatheringsHeader type="search"/>
 
-                {/* 필터 컴포넌트들 */}
                 <GatheringFilters
                     onTypeChange={handleTypeChange}
                     showCreateButton={true}
@@ -147,20 +143,19 @@ export default function Gatherings({ ssrGatherings, initialFilters }: Gatherings
                     initialSort={`${currentSort.sortBy}_${currentSort.sortOrder}`}
                 />
 
-                {/* 모임 목록 */}
                 <GatheringsList
-                    key={filterChangeKey}
-                    ssrGatherings={ssrGatherings}
-                    selectedMainType={selectedMainType}
-                    selectedSubType={selectedSubType}
-                    filters={currentFilters}
-                    sort={currentSort}
-                    enableInfiniteScroll={true}
-                    savedGatheringIds={[]}
+                    key={filterChangeKey} // 필터 변경 감지를 위한 키
+                    ssrGatherings={ssrGatherings} // 서버 렌더링 모임 목록
+                    activeStartIndex={activeStartIndex} // 첫 진행중 모임의 전체 인덱스
+                    selectedMainType={selectedMainType} // 선택된 메인 타입
+                    selectedSubType={selectedSubType} // 선택된 서브 타입
+                    filters={currentFilters} // 현재 필터 상태
+                    sort={currentSort} // 현재 정렬 상태
+                    enableInfiniteScroll={true} // 무한 스크롤 활성화
+                    savedGatheringIds={[]} // 저장된 모임 ID 목록
                 />
             </div>
 
-            {/* 모임 만들기 모달 */}
             {isCreateModalOpen && (
                 <CreateGatheringDialog 
                     onClose={handleCloseModal}
