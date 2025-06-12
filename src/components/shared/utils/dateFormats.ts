@@ -248,43 +248,37 @@ export const getTimeRemaining = (registrationEnd: string | DateTimeValue): strin
     if (!registrationEnd) return '마감됨';
     
     try {
-        let endDateTimeValue: DateTimeValue;
+        let endDate: Date;
         
-        // string인 경우 Date로 변환 후 DateTimeValue로 변환
+        // string인 경우 Date로 직접 변환 (더 간단하고 정확)
         if (typeof registrationEnd === 'string') {
-            const endDate = new Date(registrationEnd);
+            endDate = new Date(registrationEnd);
             if (isNaN(endDate.getTime())) return '마감됨';
-            
-            // 한국 시간으로 변환
-            const koreanEndDate = toKoreanTime(endDate);
-            endDateTimeValue = dateToDateTimeValue(koreanEndDate);
         } else {
-            // 이미 DateTimeValue인 경우
-            endDateTimeValue = registrationEnd;
+            // DateTimeValue인 경우 Date로 변환
+            endDate = dateTimeValueToDate(registrationEnd);
         }
         
-        // 현재 시간을 DateTimeValue로 변환
         const now = new Date();
-        const koreanNow = toKoreanTime(now);
-        const nowDateTimeValue = dateToDateTimeValue(koreanNow);
         
-        // isBefore 함수를 사용해서 마감일이 현재보다 이전인지 확인
-        if (isBefore(endDateTimeValue, nowDateTimeValue) || !isAfterNow(endDateTimeValue)) {
+        // 정확히 마감시간에 마감 처리
+        if (endDate <= now) {
             return '마감됨';
         }
         
-        // 시간 차이 계산을 위해 Date 객체로 변환
-        const endDate = dateTimeValueToDate(endDateTimeValue);
-        const nowDate = dateTimeValueToDate(nowDateTimeValue);
-        const diff = endDate.getTime() - nowDate.getTime();
+        const diff = endDate.getTime() - now.getTime();
         
-        // 날짜 차이 계산 (같은 날인지 확인)
-        const endDateOnly = new Date(endDateTimeValue.year, endDateTimeValue.month - 1, endDateTimeValue.day);
-        const nowDateOnly = new Date(nowDateTimeValue.year, nowDateTimeValue.month - 1, nowDateTimeValue.day);
+        // 한국 시간 기준으로 날짜 차이 계산
+        const koreanEndDate = toKoreanTime(endDate);
+        const koreanNow = toKoreanTime(now);
+        
+        const endDateOnly = new Date(koreanEndDate.getFullYear(), koreanEndDate.getMonth(), koreanEndDate.getDate());
+        const nowDateOnly = new Date(koreanNow.getFullYear(), koreanNow.getMonth(), koreanNow.getDate());
         const daysDiff = Math.ceil((endDateOnly.getTime() - nowDateOnly.getTime()) / (1000 * 60 * 60 * 24));
         
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
         // 1일 이상 남은 경우
         if (daysDiff > 0) {
@@ -296,11 +290,17 @@ export const getTimeRemaining = (registrationEnd: string | DateTimeValue): strin
             return `${hours}시간 후 마감`;
         }
         
+        // 1초라도 남으면 올림 처리
         if (minutes > 0) {
-            return `${minutes}분 후 마감`;
+            const displayMinutes = seconds > 0 ? minutes + 1 : minutes;
+            return `${displayMinutes}분 후 마감`;
         }
         
-        return '곧 마감';
+        if (seconds > 0) {
+            return '1분 후 마감'; // 1초라도 남으면 1분으로 표시
+        }
+        
+        return '마감됨';
     } catch (error) {
         console.error('getTimeRemaining error:', error);
         return '마감됨';
