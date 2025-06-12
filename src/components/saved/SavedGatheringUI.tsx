@@ -75,6 +75,7 @@ export default function SavedGatheringsClient() {
             
             <GatheringsList
                 ssrGatherings={allSavedGatherings}
+                activeStartIndex={0} // 찜 페이지에서는 csr 무한스크롤 자체를 사용하지 않으니 0으로 설정
                 selectedMainType={selectedMainType}
                 selectedSubType={selectedSubType}
                 filters={{ location: '', date: '' }}

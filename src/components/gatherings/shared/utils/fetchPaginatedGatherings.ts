@@ -2,6 +2,7 @@ import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { Gathering } from "@/types/gatherings";
 import { isSameDateForFilter } from '@/components/shared/utils/dateFormats';
+import { buildGatheringParams, normalizeGatheringsResponse, handleGatheringsError, filterGatheringsByMainType } from '@/components/gatherings/shared/utils/gatheringsUtils';
 
 /**
  * 페이지네이션된 모임 목록 조회
@@ -12,6 +13,7 @@ import { isSameDateForFilter } from '@/components/shared/utils/dateFormats';
  * @param filterSavedIds 찜목록 필터링
  * @param sortBy 정렬 기준
  * @param sortOrder 정렬 순서
+ * @param limit 가져올 개수 (기본값 10)
  */
 export async function fetchPaginatedGatherings(
     page: number,
@@ -21,86 +23,51 @@ export async function fetchPaginatedGatherings(
     filterSavedIds?: string[],
     sortBy: string = 'registrationEnd',
     sortOrder: string = 'desc',
+    limit: number = 10
 ): Promise<Gathering[]> {
     try {
-        // mainType에 따른 type 파라미터 설정
-        let type: string;
-        if (mainType === 'DORANDORAN') {
-            type = 'WORKATION';
-        } else {
-            type = 'DALLAEMFIT';
-        }
-
-        // 서버 요청 파라미터 (날짜 필터 제외)
-        const params: Record<string, string | number> = {
-            offset: page * 10,
-            limit: 10,
-            type,
+        // 파라미터 생성
+        const params = buildGatheringParams({
+            limit,
+            offset: page * limit,
+            mainType,
+            location,
             sortBy,
             sortOrder
-        };
-
-        // 위치 필터
-        if (location && location.trim() !== '') {
-            params.location = location.trim();
-        }
-
-        // 모임 목록 조회
-        const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
-            params,
+            // date는 별도 처리
         });
 
-        let gatherings = response.data || [];
+        // API 요청
+        const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
+            params: Object.fromEntries(params)
+        });
 
-        // 응답 구조 확인 및 정규화
-        if (!Array.isArray(gatherings)) {
-            if (response.data?.data) {
-                gatherings = response.data.data;
-            } else if (response.data?.gatherings) {
-                gatherings = response.data.gatherings;
-            } else if (response.data?.items) {
-                gatherings = response.data.items;
-            } else {
-                console.error('응답 데이터 형식 오류:', response.data);
-                return [];
-            }
-        }
+        // 응답 정규화
+        const gatherings = normalizeGatheringsResponse(response);
 
-        // 한국 시간 기준 날짜 필터링
+        // 날짜 필터링
+        let dateFilteredGatherings = gatherings;
         if (date && date.trim() !== '') {
             const targetDate = date.trim();
-            
-            gatherings = gatherings.filter((gathering: Gathering) => {
+            dateFilteredGatherings = gatherings.filter((gathering: Gathering) => {
                 if (!gathering.dateTime) return false;
-                
                 return isSameDateForFilter(gathering.dateTime, targetDate);
             });
         }
 
-        // DALLAEMFIT 서브타입 필터링
-        let filteredGatherings = gatherings;
-        if (mainType === 'DALLAEMFIT') {
-            filteredGatherings = gatherings.filter((gathering: Gathering) =>
-                gathering.type === 'OFFICE_STRETCHING' ||
-                gathering.type === 'MINDFULNESS'
-            );
-        }
+        // 메인타입 필터링
+        const typeFilteredGatherings = filterGatheringsByMainType(dateFilteredGatherings, mainType);
 
         // 찜한 모임 필터링
+        let finalGatherings = typeFilteredGatherings;
         if (filterSavedIds && filterSavedIds.length > 0) {
-            filteredGatherings = filteredGatherings.filter((gathering: Gathering) =>
+            finalGatherings = typeFilteredGatherings.filter((gathering: Gathering) =>
                 filterSavedIds.includes(gathering.id.toString())
             );
         }
 
-        return filteredGatherings;
+        return finalGatherings;
     } catch (error) {
-        console.error('모임 목록 조회 에러:', error);
-        
-        // 에러 상세 정보
-        if (error instanceof Error) {
-            console.error('에러 메시지:', error.message);
-        }
-        return [];
+        return handleGatheringsError(error, 'fetchPaginatedGatherings');
     }
 }
