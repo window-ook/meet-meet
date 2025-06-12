@@ -62,7 +62,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const signUp = async (email: string, password: string, name: string, companyName: string) => {
         try {
             const result = await internalClient.post(INTERNAL_PATHS.SIGN_UP, { email, password, name, companyName })
-            if (result.status === 200 || result.status === 201) setSignUpDialogOpen(true);
+            if (result.status === 200 || result.status === 201) {
+                const signInResult = await internalClient.post(INTERNAL_PATHS.SIGN_IN, { email, password });
+                if (signInResult.status === 200) {
+                    localStorage.setItem('token', signInResult.data.token);
+                    setToken(signInResult.data.token);
+                    await fetchUser();
+                    setSignUpDialogOpen(true);
+                }
+            }
         } catch (error) {
             throw error;
         }
@@ -172,7 +180,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const handleSignUpModalConfirm = () => {
         setSignUpDialogOpen(false);
-        router.replace('/auth/signin');
+        router.replace('/auth/profile');
     };
 
     if (isLoading) return null;

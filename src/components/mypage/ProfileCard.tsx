@@ -5,7 +5,7 @@ import { AuthContext } from '@/providers/AuthProvider';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
-const ProfileEditDialog = dynamic(() => import('@/components/mypage/ProfileEditDialog'), { ssr: false });
+const ProfileEditDialog = dynamic(() => import('@/components/shared/ui/ProfileEditDialog'), { ssr: false });
 
 /** 마이페이지 프로필 카드 */
 export default function ProfileCard() {
