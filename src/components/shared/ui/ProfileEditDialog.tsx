@@ -3,6 +3,9 @@
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { usePathname, useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmDialogState, openConfirmDialog } from '@/components/shared/utils/confirmDialog';
 import { Upload } from 'lucide-react';
 import axios from 'axios';
@@ -10,6 +13,12 @@ import dynamic from 'next/dynamic';
 
 const Button = dynamic(() => import('@/components/shared/ui/Button'), { ssr: false });
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+
+const profileEditFormSchema = z.object({
+    companyName: z.string().min(1),
+})
+
+type ProfileEditFormSchemaType = z.infer<typeof profileEditFormSchema>;
 
 const editProfile = async (imageFile: File | null, companyName: string, token: string) => {
     try {
@@ -30,10 +39,15 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
     const { token, userCompanyName, updateUserProfile } = useContext(AuthContext);
 
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [companyName, setCompanyName] = useState<string>(userCompanyName);
     const [error, setError] = useState<string | null>(null);
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState>({ isOpen: false, text: '' });
 
+    const { register, handleSubmit } = useForm<ProfileEditFormSchemaType>({
+        resolver: zodResolver(profileEditFormSchema),
+        defaultValues: {
+            companyName: userCompanyName,
+        },
+    });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const router = useRouter();
@@ -64,21 +78,18 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
 
     const handleFileClick = () => fileInputRef.current?.click();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const onSubmit = async (data: ProfileEditFormSchemaType) => {
         if (!imageFile) {
             setError("이미지를 첨부해주세요.");
             return;
         }
 
         try {
-            const response = await editProfile(imageFile, companyName, token!);
+            const response = await editProfile(imageFile, data.companyName.replaceAll('<', '&lt;').replaceAll('>', '&gt;'), token!);
             if (response.status === 200) {
                 updateUserProfile(response.data);
                 setError(null);
                 setImageFile(null);
-                setCompanyName('');
                 openConfirmDialog(setConfirmDialog, '프로필 수정 완료', () => setIsProfileEditDialogOpen(false));
                 if (pathname === '/auth/profile') router.replace('/');
             }
@@ -94,7 +105,6 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
     const handleCancel = () => {
         setIsProfileEditDialogOpen(false);
         setImageFile(null);
-        setCompanyName('');
         setError(null);
     }
 
@@ -105,7 +115,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
             <h1 className='text-2xl font-semibold text-white'>PROFILE EDIT</h1>
             <form
                 className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4"
-                onSubmit={handleSubmit}>
+                onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-3 items-center gap-y-6 gap-x-4 w-full mb-2">
                     <label className="col-span-1 text-left font-semibold">IMAGE</label>
                     <div className="col-span-2 flex items-center gap-4">
@@ -128,8 +138,7 @@ export default function ProfileEditDialog({ setIsProfileEditDialogOpen }: { setI
                     <label className="col-span-1 text-left font-semibold">COMPANY</label>
                     <input
                         type="text"
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
+                        {...register('companyName')}
                         className="col-span-2 w-full border-2 border-gray-300 rounded-lg p-2"
                     />
                 </div>

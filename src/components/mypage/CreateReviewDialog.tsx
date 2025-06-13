@@ -3,11 +3,21 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { useCreateReview } from '@/hooks/api/mypage/useCreateReview';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Heart } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Button from '@/components/shared/ui/Button';
 
 const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+
+const reviewFormSchema = z.object({
+  score: z.number().min(1).max(5),
+  comment: z.string().min(1),
+});
+
+type ReviewFormSchemaType = z.infer<typeof reviewFormSchema>;
 
 interface ReviewDialogProps {
   reviewFormData: {
@@ -24,8 +34,14 @@ export default function CreateReviewDialog({
 }: ReviewDialogProps) {
   const { token } = useContext(AuthContext);
 
-  const [score, setScore] = useState(5);
-  const [comment, setComment] = useState('');
+  const { register, handleSubmit, watch, setValue } = useForm<ReviewFormSchemaType>({
+    resolver: zodResolver(reviewFormSchema),
+    defaultValues: {
+      score: 5,
+      comment: '',
+    },
+  });
+
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     text: string;
@@ -40,25 +56,26 @@ export default function CreateReviewDialog({
     onCallback: (message) => openConfirmDialog(message)
   });
 
+  const score = watch('score')
+
   const openConfirmDialog = (text: string, onConfirm?: () => void) => setConfirmDialog({ open: true, text, onConfirm });
 
-  const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    createReview({ gatheringId: reviewFormData.gatheringId, score, comment });
+  const onSubmit = (data: ReviewFormSchemaType) => {
+    createReview({ gatheringId: reviewFormData.gatheringId, score: data.score, comment: data.comment.replaceAll('<', '&lt;').replaceAll('>', '&gt;') });
   };
 
   return (
     <section className="dialog-background">
       <div className="w-full max-w-md p-6 rounded-md bg-white shadow-md flex flex-col gap-4">
         <h2 className="text-xl font-semibold">리뷰 남기기</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <label className="block">만족스러운 경험이었나요?</label>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((val) => (
               <button
                 key={val}
                 type="button"
-                onClick={() => setScore(val)}
+                onClick={() => setValue('score', val)}
                 className="focus:outline-none cursor-pointer"
                 aria-label={`${val}점`}
               >
@@ -70,8 +87,7 @@ export default function CreateReviewDialog({
           </div>
           <label className="block">다른 사람들에게 알려주세요😄</label>
           <textarea
-            value={comment}
-            onChange={e => setComment(e.target.value)}
+            {...register('comment')}
             className="w-full border p-2"
             required={true}
           />
