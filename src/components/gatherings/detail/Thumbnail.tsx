@@ -1,8 +1,8 @@
 'use client';
 
 import { Gathering } from '@/types/gatherings'
-import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
 
 const SaveToggleButton = dynamic(() => import('@/components/gatherings/shared/ui/SaveToggleButton'), { ssr: false });
 const DateReminder = dynamic(() => import('@/components/shared/ui/DateReminder'), { ssr: false });
@@ -12,7 +12,9 @@ export default function Thumbnail({ detail, id }: { detail: Gathering, id: strin
     return (
         <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] relative'>
             <DateReminder registrationEnd={detail?.registrationEnd} />
-            <Image src={detail?.image}
+            <ImageWithFallback
+                src={detail?.image}
+                fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749802823/fallback_otg1es.avif'
                 alt='모임 이미지'
                 width={1000}
                 height={1000}

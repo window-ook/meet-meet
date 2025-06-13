@@ -13,6 +13,8 @@ interface DetailReviewLoadingProps {
  * @prop {string} height h-2, h-full, h-[10rem]
  */
 export default function DetailReviewLoading({ width = 'w-1/4', height = 'h-32' }: DetailReviewLoadingProps) {
+    const DIV_STYLE = 'h-2 bg-gray-300 shadow-md rounded';
+
     return (
         <div className={`${width} ${height} m-auto flex flex-col gap-4 animate-pulse`} >
             {/* 하트 */}
@@ -20,12 +22,12 @@ export default function DetailReviewLoading({ width = 'w-1/4', height = 'h-32' }
                 <Heart key={index} className="w-4 h-4 fill-gray-300 text-gray-300" />
             ))}</div>
             {/* 본문 */}
-            <div className='w-20 h-2 bg-gray-300 shadow-md rounded' />
+            <div className={`w-20 ${DIV_STYLE}`} />
             {/* 닉네임 | 날짜 */}
             <div className='flex items-center gap-1'>
-                <div className='w-12 h-2 bg-gray-300 shadow-md rounded' />
+                <div className={`w-12 ${DIV_STYLE}`} />
                 <span className='text-gray-300'>|</span>
-                <div className='w-12 h-2 bg-gray-300 shadow-md rounded' />
+                <div className={`w-12 ${DIV_STYLE}`} />
             </div>
         </div>
     );
