@@ -1,12 +1,15 @@
 "use client"
 
-import Image from 'next/image';
+import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
 import HeartRating from '@/components/reviews/HeartRating';
 import { ReviewItem } from '@/types/reviews';
 import { useFetchInfiniteReviews } from '@/hooks/api/reviews/useFetchInfiniteReviews';
 import { isSameDateForFilter } from '@/components/shared/utils/dateFormats';
 import ReviewStats from './ReviewStats';
 import { useMemo } from 'react';
+
+// 스타일 상수
+const TEXT_GRAY_XS_STYLES = "text-xs text-gray-400";
 
 /**
  * 리뷰 목록 프로퍼티
@@ -186,13 +189,13 @@ export default function ReviewsList({
                         >
                             {/* 이미지 영역 */}
                             <div className="w-full md:w-80 h-48 md:h-40 relative flex-shrink-0">
-                                <Image
-                                    src={review.Gathering.image || '/images/placeholder.jpg'}
+                                <ImageWithFallback
+                                    src={review.Gathering.image || ''}
+                                    fallbackSrc={'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
                                     alt="review image"
-                                    fill
+                                    width={320}
+                                    height={180}
                                     className="rounded-t-lg md:rounded-l-lg md:rounded-t-none object-cover pointer-events-none"
-                                    priority={index === 0}
-                                    sizes="(max-width: 768px) 100vw, 320px"
                                 />
                             </div>
 
@@ -205,13 +208,13 @@ export default function ReviewsList({
                                     <p className="text-sm text-gray-700 mt-2 mb-3">{review.comment}</p>
                                     {/* 모임 정보 */}
                                     <div className="space-y-1">
-                                        <p className="text-xs text-gray-400">
+                                        <p className={TEXT_GRAY_XS_STYLES}>
                                             {review.Gathering.name} · {review.Gathering.location}
                                         </p>
-                                        <p className="text-xs text-gray-400">
+                                        <p className={TEXT_GRAY_XS_STYLES}>
                                             {review.User.name} | 리뷰작성: {new Date(review.createdAt).toLocaleDateString()}
                                         </p>
-                                        <p className="text-xs text-gray-400">
+                                        <p className={TEXT_GRAY_XS_STYLES}>
                                             모임개최: {new Date(review.Gathering.dateTime).toLocaleDateString()}
                                         </p>
                                     </div>
