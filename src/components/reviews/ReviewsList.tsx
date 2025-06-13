@@ -190,8 +190,8 @@ export default function ReviewsList({
                             {/* 이미지 영역 */}
                             <div className="w-full md:w-80 h-48 md:h-40 relative flex-shrink-0">
                                 <ImageWithFallback
-                                    src={review.Gathering.image || 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
-                                    fallbackSrc={review.Gathering.image || 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
+                                    src={review.Gathering.image || ''}
+                                    fallbackSrc={'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
                                     alt="review image"
                                     width={320}
                                     height={180}

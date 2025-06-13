@@ -21,7 +21,7 @@ export default function Review({ review }: { review: ReviewItem }) {
             <p className='text-sm'>{review.comment}</p>
             <div className='flex items-center gap-1 text-xs'>
                 <ImageWithFallback 
-                    src={review.User?.image || 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
+                    src={review.User?.image}
                     fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'
                     alt='프로필 이미지'
                     width={32}

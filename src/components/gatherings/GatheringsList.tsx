@@ -118,7 +118,7 @@ export default function GatheringsList({
                         <div className="w-full md:w-80 h-48 md:h-40 relative flex-shrink-0">
                             <DateReminder registrationEnd={gathering.registrationEnd} />
                             <ImageWithFallback
-                                src={gathering.image || 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749779026/fallback_thumbnail_ssf66o.avif'}
+                                src={gathering.image}
                                 fallbackSrc={gathering.image}
                                 alt="모임 이미지"
                                 className="rounded-t-lg md:rounded-l-lg md:rounded-t-none object-cover pointer-events-none"
