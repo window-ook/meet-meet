@@ -11,7 +11,10 @@ export default function SignInPage() {
     return (
         <div className='w-full h-full py-20 flex flex-col lg:flex-row items-center justify-center gap-0 lg:gap-20'>
             <AuthPoster />
-            <SignInForm />
+            <section className='w-[24rem] md:w-[31rem] h-[26.5rem] py-4 bg-white rounded-lg shadow-md flex flex-col items-center justify-center'>
+                <h1 className='text-2xl font-bold text-center'>로그인</h1>
+                <SignInForm />
+            </section>
         </div>
     );
 }
