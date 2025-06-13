@@ -3,8 +3,8 @@
 import { useContext, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { SquarePen } from 'lucide-react';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
 
 const ProfileEditDialog = dynamic(() => import('@/components/shared/ui/ProfileEditDialog'), { ssr: false });
 
@@ -30,8 +30,9 @@ export default function ProfileCard() {
       <section className="h-full flex items-center gap-4 bg-white p-4">
         {/* 이미지 */}
         <div className="size-12 sm:size-18 z-1 -mt-20 rounded-full border border-gray-400">
-          <Image
-            src={userImage || 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'}
+          <ImageWithFallback
+            src={userImage}
+            fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
             alt="프로필"
             width={1000}
             height={1000}
