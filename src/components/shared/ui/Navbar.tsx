@@ -2,12 +2,13 @@
 
 import { useContext } from 'react';
 import { usePathname } from 'next/navigation';
-import { useToggleSavedGatherings } from '@/hooks/api/saved/useToggleSavedGatherings';
 import { AuthContext } from '@/providers/AuthProvider';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
 import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
 import Link from 'next/link';
+import { useToggleSavedGatherings } from '@/hooks/api/saved/useToggleSavedGatherings';
+import DarkModeToggle from '@/components/shared/ui/DarkModeToggle';
 
 const FALLBACK_IMAGE_URL = "https://res.cloudinary.com/dbvzbdffi/image/upload/v1749802823/fallback_otg1es.avif";
 const HOVER_TRANSITION_STYLES = "hover:opacity-50 duration-300 ease-in-out";
@@ -28,7 +29,7 @@ export default function Navbar() {
     ]
 
     return (
-        <nav className="sticky z-50 top-0 w-full bg-white border-b-2 border-gray-300 text-xs md:text-base font-bold">
+        <nav className="sticky z-50 top-0 w-full bg-white dark:bg-dark border-b-2 border-gray-300 dark:border-gray-700 text-xs md:text-base font-bold transition-colors duration-200">
             <div className="max-w-screen-lg mx-auto h-[3.75rem] py-8 px-5 flex justify-between items-center">
                 <section className='flex gap-2 sm:gap-4 items-center'>
                     <ImageWithFallback
@@ -44,7 +45,7 @@ export default function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`flex items-center gap-1 ${pathname.includes(link.href) ? 'text-main-600' : ''} ${HOVER_TRANSITION_STYLES}`}
+                                className={`flex items-center gap-1 text-gray-800 dark:text-gray-200 ${pathname.includes(link.href) ? 'text-main-600 dark:text-main-400' : ''} ${HOVER_TRANSITION_STYLES}`}
                             >
                                 <span>{link.label}</span>
                                 {link.href === '/saved' && <span className='bg-main-600 px-2 rounded-md text-xs text-button-text'>{savedCounts}</span>}
@@ -52,12 +53,12 @@ export default function Navbar() {
                         )
                     })}
                 </section>
-                <section className='flex items-center'>
+                <section className='flex items-center gap-3'>                    
                     {token && (
                         <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <div className='size-8 rounded-full border border-gray-300 overflow-hidden cursor-pointer'>
-                                    <ImageWithFallback
+                                <div className='w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 overflow-hidden cursor-pointer'>
+                                    <ImageWithFallback  
                                         src={userImage && userImage !== 'null' && userImage !== '' ? userImage : FALLBACK_IMAGE_URL}
                                         fallbackSrc={FALLBACK_IMAGE_URL}
                                         alt='네비게이션바 프로필 이미지'
@@ -67,16 +68,31 @@ export default function Navbar() {
                                     />
                                 </div>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className='w-[9rem] mt-2 p-2 border-2 border-gray-300 rounded-md bg-white flex flex-col gap-2'>
-                                <DropdownMenuLabel className='text-main-500'>{userName}</DropdownMenuLabel>
-                                <DropdownMenuSeparator className='h-[0.1rem] bg-gray-300' />
-                                <DropdownMenuItem><Link href='/mypage'>마이페이지</Link></DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => signOut()} className='cursor-pointer'>로그아웃</DropdownMenuItem>
+                            <DropdownMenuContent className='w-[9rem] mt-2 border-2 border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-dark-2 flex flex-col text-center'>
+                                <DropdownMenuLabel className='text-main-500 dark:text-main-400 p-1'>{userName}</DropdownMenuLabel>
+                                {/* <DropdownMenuSeparator className='h-[0.1rem] bg-gray-300' /> */}
+                                <DropdownMenuItem className='text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 p-1 transition-colors duration-200'>
+                                    <Link href='/mypage'>마이페이지</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                    onClick={() => signOut()} 
+                                    className='cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 p-1 transition-colors duration-200'
+                                >
+                                    로그아웃
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    {!token && <Link href='/auth/signin' className={HOVER_TRANSITION_STYLES}>로그인</Link>}
+                    {!token && (
+                        <Link 
+                            href='/auth/signin' 
+                            className={`text-gray-800 dark:text-gray-200 ${HOVER_TRANSITION_STYLES}`}
+                        >
+                            로그인
+                        </Link>
+                    )}
                 </section>
+                <DarkModeToggle />
             </div>
         </nav>
     );

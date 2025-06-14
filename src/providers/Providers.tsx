@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from "react";
 import AuthProvider from '@/providers/AuthProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 import Navbar from '@/components/shared/ui/Navbar';
 
 /** 클라이언트 사이드 Providers
@@ -25,10 +26,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-                <Navbar />
-                {children}
-            </AuthProvider>
+            <ThemeProvider>
+                <AuthProvider>
+                    <Navbar />
+                    {children}
+                </AuthProvider>
+            </ThemeProvider>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     );
