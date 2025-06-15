@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { cleanXSS } from '@/utils/shared/excapeForXSS';
 import { Heart } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import Button from '@/components/shared/ui/Button';
+import Button from '@/components/shared/Button';
 
-const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 
 const reviewFormSchema = z.object({
   score: z.number().min(1).max(5),

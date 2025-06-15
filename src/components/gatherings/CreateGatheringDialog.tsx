@@ -14,9 +14,9 @@ import { X } from "lucide-react";
 import axios, { AxiosError } from 'axios';
 import dynamic from 'next/dynamic';
 import SelectionService from '@/components/gatherings/SelectionService';
-import InputField from '@/components/auth/shared/ui/InputField';
+import InputField from '@/components/auth/shared/InputField';
 
-const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePick'), { ssr: false });
 
 interface CreateGatheringDialogProps {

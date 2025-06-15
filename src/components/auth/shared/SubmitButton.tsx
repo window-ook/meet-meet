@@ -1,4 +1,4 @@
-import Button from '@/components/shared/ui/Button';
+import Button from '@/components/shared/Button';
 
 interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isSubmitting: boolean;

@@ -11,9 +11,9 @@ import { ConfirmDialogState, openConfirmDialog } from '@/utils/shared/confirmDia
 import { Upload } from 'lucide-react';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import Button from './Button';
+import Button from '@/components/shared/Button';
 
-const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 
 const profileEditFormSchema = z.object({
     companyName: z.string().min(1),

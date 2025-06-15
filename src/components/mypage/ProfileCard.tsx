@@ -5,9 +5,9 @@ import { AuthContext } from '@/providers/AuthProvider';
 import { shortenName } from '@/utils/shared/shortenName';
 import { SquarePen } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 
-const ProfileEditDialog = dynamic(() => import('@/components/shared/ui/ProfileEditDialog'), { ssr: false });
+const ProfileEditDialog = dynamic(() => import('@/components/shared/ProfileEditDialog'), { ssr: false });
 
 /** 마이페이지 프로필 카드 */
 export default function ProfileCard() {

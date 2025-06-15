@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from "@/providers/AuthProvider";
-import Button from '@/components/shared/ui/Button';
+import Button from '@/components/shared/Button';
 
 // 스타일 상수
 const MAIN_TYPE_BUTTON_STYLES = "text-lg font-semibold py-1 cursor-pointer";

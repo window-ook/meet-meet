@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import AuthPoster from '@/components/auth/shared/ui/AuthPoster';
+import AuthPoster from '@/components/auth/shared/AuthPoster';
 import SignInForm from '@/components/auth/SignInForm';
 
 export const metadata: Metadata = {

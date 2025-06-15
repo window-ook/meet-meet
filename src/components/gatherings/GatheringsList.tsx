@@ -7,10 +7,10 @@ import { formatDate, formatTime } from '@/utils/shared/date';
 import { Gathering } from "@/types/gatherings";
 import { UserRoundCheck } from "lucide-react";
 import { filterGatheringsByType, getUniqueGatherings } from '@/utils/gatherings/gatheringsUtils';
-import ImageWithFallback from "@/components/shared/ui/ImageWithFallback";
-import JoinedCountsProgressBar from "@/components/gatherings/shared/ui/JoinedCountsProgressBar";
-import SaveToggleButton from '@/components/gatherings/shared/ui/SaveToggleButton';
-import DateReminder from '@/components/shared/ui/DateReminder';
+import ImageWithFallback from "@/components/shared/ImageWithFallback";
+import JoinedCountsProgressBar from "@/components/gatherings/shared/JoinedCountsProgressBar";
+import SaveToggleButton from '@/components/gatherings/shared/SaveToggleButton';
+import DateReminder from '@/components/shared/DateReminder';
 
 // 스타일 상수
 const BADGE_BASE_STYLES = "inline-flex items-center px-3 py-1 text-sm font-medium rounded-md";

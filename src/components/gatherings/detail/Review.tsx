@@ -1,7 +1,7 @@
 import { formatDate } from '@/utils/shared/date';
 import { ReviewItem } from '@/types/reviews';
 import { Heart } from 'lucide-react';
-import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 
 const MAX_RATING = 5;
 

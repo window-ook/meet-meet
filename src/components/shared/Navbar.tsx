@@ -6,9 +6,9 @@ import { useContext } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { shortenName } from '@/utils/shared/shortenName';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn-ui/dropdown-menu';
-import DarkModeToggleButton from '@/components/shared/ui/DarkModeToggleButton';
-import TokenCountdown from '@/components/shared/ui/TokenCountDown';
-import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
+import DarkModeToggleButton from '@/components/shared/DarkModeToggleButton';
+import TokenCountdown from '@/components/shared/TokenCountDown';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 import Link from 'next/link';
 
 const HOVER_TRANSITION_STYLES = "hover:text-main-400 duration-300 ease-in-out";
