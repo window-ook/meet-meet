@@ -22,7 +22,7 @@ import Footer from '@/components/gatherings/detail/Footer';
 const InformationLoading = dynamic(() => import('@/components/gatherings/detail/loading/InformationLoading'), { ssr: false });
 const ThumbnailLoading = dynamic(() => import('@/components/gatherings/detail/loading/ThumbnailLoading'), { ssr: false });
 const ReviewLoading = dynamic(() => import('@/components/gatherings/detail/loading/ReviewLoading'), { ssr: false });
-const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 
 const handleCopyUrl = () => {
     const currentUrl = window.location.href;

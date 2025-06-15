@@ -8,7 +8,7 @@ import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 
-const ConfirmDialog = dynamic(() => import('@/components/shared/ui/ConfirmDialog'), { ssr: false });
+const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 
 type AuthContextType = {
     token: string | null;

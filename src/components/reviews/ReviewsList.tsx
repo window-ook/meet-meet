@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 import { ReviewItem } from '@/types/reviews';
 import { useFetchInfiniteReviews } from '@/hooks/api/reviews/useFetchInfiniteReviews';
 import { isSameDateForFilter } from '@/utils/shared/date';
-import ReviewStats from './ReviewStats';
-import ImageWithFallback from '@/components/shared/ui/ImageWithFallback';
+import ReviewStats from '@/components/reviews/ReviewStats';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 import HeartRating from '@/components/reviews/HeartRating';
 
 // 스타일 상수

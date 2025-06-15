@@ -3,11 +3,11 @@
 import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Gathering } from "@/types/gatherings";
-import GatheringFilters from '@/components/gatherings/shared/ui/GatheringsFilters';
-import LocationDateFilter from '@/components/gatherings/shared/ui/LocationDateFilter';
+import GatheringFilters from '@/components/gatherings/shared/GatheringsFilters';
+import LocationDateFilter from '@/components/gatherings/shared/LocationDateFilter';
 import GatheringsList from '@/components/gatherings/GatheringsList';
 import dynamic from 'next/dynamic';
-import GatheringsHeader from '@/components/gatherings/shared/ui/GatheringsHeader';
+import GatheringsHeader from '@/components/gatherings/shared/GatheringsHeader';
 
 const CreateGatheringDialog = dynamic(() => import('@/components/gatherings/CreateGatheringDialog'), { ssr: false });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { Gathering } from '@/types/gatherings';
-import Button from '@/components/shared/ui/Button';
+import Button from '@/components/shared/Button';
 
 interface FooterProps {
     userId: number;

@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from "react";
 import AuthProvider from '@/providers/AuthProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
-import Navbar from '@/components/shared/ui/Navbar';
+import Navbar from '@/components/shared/Navbar';
 
 /** 클라이언트 사이드 Providers
  * @param {React.ReactNode} children 자식 컴포넌트

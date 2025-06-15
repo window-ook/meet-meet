@@ -8,7 +8,7 @@ import { JoinedGathering } from '@/types/gatherings';
 import { ReviewItem } from '@/types/reviews';
 import CreatedReview from '@/components/mypage/CreatedReview';
 import CreatableReview from '@/components/mypage/CreatableReview';
-import Button from '@/components/shared/ui/Button';
+import Button from '@/components/shared/Button';
 
 
 interface MyReviewsProps {

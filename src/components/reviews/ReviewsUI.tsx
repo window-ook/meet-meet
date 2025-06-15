@@ -4,9 +4,9 @@ import { useState, useCallback } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ReviewItem } from "@/types/reviews";
 import ReviewsList from "@/components/reviews/ReviewsList";
-import GatheringFilters from "@/components/gatherings/shared/ui/GatheringsFilters";
-import GatheringsHeader from "@/components/gatherings/shared/ui/GatheringsHeader";
-import LocationDateFilter from "@/components/gatherings/shared/ui/LocationDateFilter";
+import GatheringFilters from "@/components/gatherings/shared/GatheringsFilters";
+import GatheringsHeader from "@/components/gatherings/shared/GatheringsHeader";
+import LocationDateFilter from "@/components/gatherings/shared/LocationDateFilter";
 
 // 페이지 컴포넌트 props 타입 정의
 interface PageProps {
@@ -39,7 +39,7 @@ interface Sort {
 export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+
     const [selectedMainType, setSelectedMainType] = useState(initialFilters.mainType);
     const [selectedSubType, setSelectedSubType] = useState('ALL');
     const [currentFilters, setCurrentFilters] = useState({
@@ -50,14 +50,14 @@ export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
         sortBy: initialFilters.sortBy,
         sortOrder: initialFilters.sortOrder
     });
-    
+
     // 필터 변경 감지를 위한 키
     const [filterChangeKey, setFilterChangeKey] = useState(0);
 
     // URL 업데이트 함수
     const updateURL = useCallback((newParams: Record<string, string>) => {
         const params = new URLSearchParams(searchParams);
-        
+
         Object.entries(newParams).forEach(([key, value]) => {
             if (value && value.trim()) {
                 params.set(key, value);
@@ -77,7 +77,7 @@ export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
     const handleTypeChange = useCallback((mainType: string, subType: string) => {
         setSelectedMainType(mainType);
         setSelectedSubType(subType);
-        
+
         updateURL({
             mainType,
             location: currentFilters.location,
@@ -90,7 +90,7 @@ export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
     // 필터 변경 핸들러
     const handleFilterChange = useCallback((filters: Filters) => {
         setCurrentFilters(filters);
-        
+
         updateURL({
             mainType: selectedMainType,
             location: filters.location,
@@ -103,7 +103,7 @@ export default function ReviewsUI({ ssrReviews, initialFilters }: PageProps) {
     // 정렬 변경 핸들러
     const handleSortChange = useCallback((sort: Sort) => {
         setCurrentSort(sort);
-        
+
         updateURL({
             mainType: selectedMainType,
             location: currentFilters.location,

@@ -1,7 +1,7 @@
 import { ReviewItem } from '@/types/reviews';
 import { formatDate, formatTime } from '@/utils/shared/date';
 import { Heart } from 'lucide-react';
-import ImageWithFallback from '../shared/ui/ImageWithFallback';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 
 /** 나의 리뷰 - 작성한 리뷰 */
 export default function CreatedReview({ review }: { review: ReviewItem }) {
