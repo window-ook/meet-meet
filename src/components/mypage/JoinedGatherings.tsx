@@ -142,7 +142,7 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
                     // 리뷰 작성 미완료 
                     <Button
                       variant='default'
-                      text='리뷰 작성하기'
+                      text='리뷰 남기기'
                       onClick={() => onOpenReviewDialog({ userId, gatheringId: Number(data.id) })}
                       customClassName='w-28 sm:w-32'
                     />
