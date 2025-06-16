@@ -2,6 +2,7 @@
 
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
+import { myPageQuery } from '@/queries/mypage.query';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -15,7 +16,7 @@ import axios from 'axios';
 export const useFetchMyCreatedReviews = (token: string, gatheringIds: number[], userId: number) => {
     const fetchGatheringReviews = async () => {
         try {
-            // axios는 배열을 gatheringId=1&gatheringId=2&gatheringId=3 형태로 보냄
+            // axios는 배열을 gatheringId=1&gatheringId=2&gatheringId=3 형태로 전송함
             const response = await Promise.all(
                 gatheringIds.map(id =>
                     internalClient.get(INTERNAL_PATHS.REVIEWS, { params: { gatheringId: id, userId } })
@@ -34,7 +35,7 @@ export const useFetchMyCreatedReviews = (token: string, gatheringIds: number[], 
 
     const { data, isLoading, isError } = useQuery({
         enabled: !!token && gatheringIds.length > 0,
-        queryKey: ["myReviews", token],
+        queryKey: myPageQuery.myReviews(token),
         queryFn: fetchGatheringReviews,
     })
 

@@ -6,6 +6,7 @@ import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { isErrorResponse } from '@/lib/api/handleApiError';
 import { AxiosError } from 'axios';
+import { gatheringDetailQuery } from '@/queries/gatherings.query';
 
 /** 
  * 모임 참여 확인 훅
@@ -23,7 +24,7 @@ export const useCheckJoined = (
 
     const { data, isLoading, isError, error } = useQuery({
         enabled: !!id && !!token,
-        queryKey: ['checkGatheringJoined', id],
+        queryKey: gatheringDetailQuery.checkJoined(id),
         queryFn: () => checkJoined(),
     })
 

@@ -7,7 +7,7 @@ import { AuthContext } from '@/providers/AuthProvider';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ConfirmDialogState, openConfirmDialog } from '@/utils/shared/confirmDialog';
-import { cleanXSS } from '@/utils/shared/excapeForXSS';
+import { excapeForXSS } from '@/utils/shared/excapeForXSS';
 import { formatDateToISO, DateTimeValue, dateTimeValueToDate, formatDateTimeValue } from '@/utils/shared/date';
 import { CreateGatheringFormSchemaType, createGatheringFormSchema } from '@/utils/gatherings/createGatheringSchema';
 import { X } from "lucide-react";
@@ -15,6 +15,7 @@ import axios, { AxiosError } from 'axios';
 import dynamic from 'next/dynamic';
 import SelectionService from '@/components/gatherings/SelectionService';
 import InputField from '@/components/auth/InputField';
+import { gatheringsQuery } from '@/queries/gatherings.query';
 
 const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePick'), { ssr: false });
@@ -84,7 +85,6 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
             deadlineDateTime: null,
             imageFile: null,
         },
-        mode: 'onChange', // 실시간 유효성 검사
     });
 
     // 📌 watch로 폼 값들 관찰
@@ -150,10 +150,10 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
     const createApiFormData = (data: CreateGatheringFormSchemaType): FormData => {
         const apiFormData = new FormData();
 
-        apiFormData.append('name', cleanXSS(data.name));
-        apiFormData.append('location', cleanXSS(data.location));
-        apiFormData.append('type', cleanXSS(data.type));
-        apiFormData.append('capacity', cleanXSS(data.capacity.toString()));
+        apiFormData.append('name', excapeForXSS(data.name));
+        apiFormData.append('location', excapeForXSS(data.location));
+        apiFormData.append('type', excapeForXSS(data.type));
+        apiFormData.append('capacity', excapeForXSS(data.capacity.toString()));
 
         if (data.meetingDateTime) {
             const finalGatheringDateTime = dateTimeValueToDate(data.meetingDateTime);
@@ -187,7 +187,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
 
             await createGathering(apiFormData, {
                 onSuccess: async () => {
-                    await queryClient.invalidateQueries({ queryKey: ['gatherings'] });
+                    await queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
                     openConfirmDialog(setConfirmDialog, '모임 생성 완료', () => {
                         setIsSubmitting(false);
                         onClose(true);
@@ -403,22 +403,22 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
             {/* 모임 일정 선택 모달 */}
             {showGatheringPicker && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-                    <div 
-                        className="absolute inset-0 bg-black opacity-50" 
+                    <div
+                        className="absolute inset-0 bg-black opacity-50"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowGatheringPicker(false);
                         }}
                     ></div>
-                    <div 
+                    <div
                         className="relative bg-white rounded-lg p-6 max-w-md w-full"
                         onClick={(e) => e.stopPropagation()} // 📌 모달 내부 클릭 시 이벤트 버블링 방지
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">모임 일정 선택</h2>
-                            <button 
-                                type="button" 
-                                className='cursor-pointer' 
+                            <button
+                                type="button"
+                                className='cursor-pointer'
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -440,22 +440,22 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
             {/* 마감 일정 선택 모달 */}
             {showDeadlinePicker && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-                    <div 
-                        className="absolute inset-0 bg-black opacity-50" 
+                    <div
+                        className="absolute inset-0 bg-black opacity-50"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowDeadlinePicker(false);
                         }}
                     ></div>
-                    <div 
+                    <div
                         className="relative bg-white rounded-lg p-6 max-w-md w-full"
                         onClick={(e) => e.stopPropagation()} // 📌 모달 내부 클릭 시 이벤트 버블링 방지
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">마감 일정 선택</h2>
-                            <button 
-                                type="button" 
-                                className='cursor-pointer' 
+                            <button
+                                type="button"
+                                className='cursor-pointer'
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
