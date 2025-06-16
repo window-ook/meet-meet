@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchReviewsPaginated } from '@/utils/reviews/fetch';
 import { ReviewItem } from '@/types/reviews';
+import { reviewsQuery } from '@/queries/review.query';
 
 /**
  * 리뷰 무한스크롤 훅 프로퍼티
@@ -47,18 +48,7 @@ export function useFetchInfiniteReviews({
     const normalizedDate = date?.trim() || '';
 
     // 쿼리 키
-    const queryKey = [
-        'reviews',
-        'infinite',
-        {
-            mainType,
-            location: normalizedLocation,
-            date: normalizedDate,
-            sortBy,
-            sortOrder,
-            startPage,
-        }
-    ];
+    const queryKey = [...reviewsQuery.infinite()];
 
     // 리뷰 무한스크롤 데이터
     const {

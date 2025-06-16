@@ -6,6 +6,8 @@ import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { AxiosError } from 'axios';
 import { isErrorResponse } from '@/lib/api/handleApiError';
+import { gatheringsQuery } from '@/queries/gatherings.query';
+import { myPageQuery } from '@/queries/mypage.query';
 
 /**
  * 모임 생성 훅
@@ -23,8 +25,8 @@ export const useCreateGathering = ({ token, onCallback }: GatheringApiParams) =>
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['gatherings', 'infinite'] });
-            queryClient.invalidateQueries({ queryKey: ["createdGatherings", token] });
+            queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
+            queryClient.invalidateQueries({ queryKey: myPageQuery.createdGatherings(token!) });
             onCallback?.('모임을 생성했습니다');
         },
         onError: (error) => {

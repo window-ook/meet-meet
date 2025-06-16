@@ -5,6 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPaginatedGatherings } from '@/utils/gatherings/fetchPaginatedGatherings';
 import { Gathering } from '@/types/gatherings';
 import { filterActiveGatherings, GATHERING_CONSTANTS } from '@/utils/gatherings/gatheringsUtils';
+import { gatheringsQuery } from '@/queries/gatherings.query';
 
 /**
  * 무한 스크롤 데이터 쿼리 프로퍼티
@@ -35,8 +36,8 @@ export function useFetchInfiniteGatherings({
     date = '',
     sortBy = 'registrationEnd',
     sortOrder = 'asc',
-    filterSavedIds,
     startIndex = 0,
+    filterSavedIds,
 }: UseFetchInfiniteGatheringsProps) {
     const [infiniteScrollEnabled] = useState(true);
     const [hasTriggeredFirstFetch, setHasTriggeredFirstFetch] = useState(false);
@@ -45,17 +46,15 @@ export function useFetchInfiniteGatherings({
     const normalizedDate = date?.trim() || ''; // 날짜 정규화
 
     const queryKey = [
-        'gatherings',
-        'infinite',
-        {
+        ...gatheringsQuery.infinite(
             mainType,
-            location: normalizedLocation,
-            date: normalizedDate,
+            normalizedLocation,
+            normalizedDate,
             sortBy,
             sortOrder,
             startIndex,
-            filterSavedIds: filterSavedIds?.sort().join(',') || ''
-        }
+            filterSavedIds?.sort().join(',') || ''
+        )
     ];
 
     // 무한 스크롤 데이터 쿼리

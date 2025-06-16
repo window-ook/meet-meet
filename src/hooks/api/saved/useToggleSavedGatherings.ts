@@ -1,7 +1,8 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { allSavedQueries, savedQueries } from '@/queries/saved.query';
 import { getSavedGatherings, setSavedGatherings } from '@/utils/gatherings/savedGatherings';
 import { getTimeRemaining } from '@/utils/shared/date';
 import { internalClient } from '@/lib/api/clientFetchers';
@@ -13,7 +14,6 @@ const CLEANUP_INTERVAL = 30000; // 마감된 모임 정리 주기
 const REFETCH_INTERVAL = 60000; // 찜 목록 재조회 주기
 const API_LIMIT = 1000; // 모임 조회 제한
 
-
 export const useToggleSavedGatherings = () => {
   const queryClient = useQueryClient();
 
@@ -22,9 +22,7 @@ export const useToggleSavedGatherings = () => {
     if (currentIds.length === 0) return currentIds;
 
     try {
-      const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, {
-        params: { limit: API_LIMIT }
-      });
+      const response = await internalClient.get(INTERNAL_PATHS.GATHERINGS, { params: { limit: API_LIMIT } });
 
       const gatherings = response.data as Gathering[];
       const gatheringsMap = new Map(
@@ -40,20 +38,20 @@ export const useToggleSavedGatherings = () => {
 
       if (validIds.length !== currentIds.length) {
         setSavedGatherings(validIds);
-        queryClient.setQueryData(["savedGatherings"], validIds);
+        queryClient.setQueryData(savedQueries.all(), validIds);
 
-        const currentSavedData = queryClient.getQueryData<Gathering[]>(["allSavedGatherings", currentIds]);
+        const currentSavedData = queryClient.getQueryData<Gathering[]>(allSavedQueries.idsByFilter(currentIds));
         if (currentSavedData) {
           const updatedSavedData = currentSavedData.filter(gathering =>
             validIds.includes(gathering.id.toString())
           );
-          queryClient.setQueryData(["allSavedGatherings", validIds], updatedSavedData);
+          queryClient.setQueryData(allSavedQueries.idsByFilter(validIds), updatedSavedData);
         }
       }
 
       return validIds;
     } catch (error) {
-      console.error('localStorage 정리 중 오류:', error);
+      console.error('찜하기 중 localStorage 필터 에러 발생:', error);
       return currentIds;
     }
   }, [queryClient]);
@@ -79,7 +77,7 @@ export const useToggleSavedGatherings = () => {
   }, [cleanupExpiredGatherings]);
 
   const { data: savedIds = [] } = useQuery({
-    queryKey: ["savedGatherings"],
+    queryKey: savedQueries.all(),
     queryFn: cleanupExpiredGatherings,
     refetchInterval: REFETCH_INTERVAL,
     refetchOnWindowFocus: true,
@@ -99,8 +97,8 @@ export const useToggleSavedGatherings = () => {
     },
 
     onMutate: async (gatheringId: string) => {
-      await queryClient.cancelQueries({ queryKey: ["savedGatherings"] });
-      await queryClient.cancelQueries({ queryKey: ["allSavedGatherings"], exact: false });
+      await queryClient.cancelQueries({ queryKey: savedQueries.all() });
+      await queryClient.cancelQueries({ queryKey: allSavedQueries.all(), exact: false });
 
       const currentSaved = getSavedGatherings();
       const isCurrentlySaved = currentSaved.includes(gatheringId);
@@ -108,17 +106,17 @@ export const useToggleSavedGatherings = () => {
         ? currentSaved.filter(id => id !== gatheringId)
         : [gatheringId, ...currentSaved];
 
-      const previousSavedIds = queryClient.getQueryData<string[]>(["savedGatherings"]) || [];
-      const previousAllSavedData = queryClient.getQueryData<Gathering[]>(["allSavedGatherings", currentSaved]) || [];
+      const previousSavedIds = queryClient.getQueryData<string[]>(savedQueries.all()) || [];
+      const previousAllSavedData = queryClient.getQueryData<Gathering[]>(allSavedQueries.idsByFilter(currentSaved)) || [];
 
-      queryClient.setQueryData(["savedGatherings"], newSaved);
+      queryClient.setQueryData(savedQueries.all(), newSaved);
 
       if (previousAllSavedData.length > 0) {
         if (isCurrentlySaved) {
           const updatedData = previousAllSavedData.filter(
             gathering => gathering.id.toString() !== gatheringId
           );
-          queryClient.setQueryData(["allSavedGatherings", newSaved], updatedData);
+          queryClient.setQueryData(allSavedQueries.idsByFilter(newSaved), updatedData);
         }
       }
 
@@ -130,19 +128,16 @@ export const useToggleSavedGatherings = () => {
       };
     },
 
-    onSuccess: () => {
-    },
-
     onError: (error, _gatheringId, context) => {
-      console.error('찜 토글 실패:', error);
+      console.error('찜하기 실패:', error);
 
       if (context?.previousSavedIds) {
-        queryClient.setQueryData(["savedGatherings"], context.previousSavedIds);
+        queryClient.setQueryData(savedQueries.all(), context.previousSavedIds);
         setSavedGatherings(context.previousSavedIds);
       }
 
       if (context?.previousAllSavedData && context?.currentSaved) {
-        queryClient.setQueryData(["allSavedGatherings", context.currentSaved], context.previousAllSavedData);
+        queryClient.setQueryData(allSavedQueries.idsByFilter(context.currentSaved), context.previousAllSavedData);
       }
     },
   });

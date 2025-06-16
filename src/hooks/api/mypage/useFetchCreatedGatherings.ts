@@ -2,6 +2,7 @@
 
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
+import { myPageQuery } from '@/queries/mypage.query';
 import { Gathering } from '@/types/gatherings';
 import { useQuery } from '@tanstack/react-query';
 
@@ -21,7 +22,7 @@ export const useFetchCreatedGatherings = (
 
     const { data, isLoading, error } = useQuery({
         enabled: !!token,
-        queryKey: ["createdGatherings", token],
+        queryKey: myPageQuery.createdGatherings(token),
         queryFn: async () => {
             return await fetchCreatedGatherings()
         },

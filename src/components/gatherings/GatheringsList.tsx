@@ -118,7 +118,7 @@ export default function GatheringsList({
                             <DateReminder registrationEnd={gathering.registrationEnd} />
                             <ImageWithFallback
                                 src={gathering.image}
-                                fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749802823/fallback_otg1es.avif'
+                                fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1750048546/error_fallback_icbngz.avif'
                                 alt="모임 썸네일"
                                 width={320}
                                 height={180}

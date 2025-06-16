@@ -2,12 +2,14 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useGatheringsStore } from '@/store/gatheringsStore';
-import { GatheringApiParams } from '@/types/gatheringApi';
 import { useRouter } from 'next/navigation';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
-import { AxiosError } from 'axios';
 import { isErrorResponse } from '@/lib/api/handleApiError';
+import { GatheringApiParams } from '@/types/gatheringApi';
+import { AxiosError } from 'axios';
+import { myPageQuery } from '@/queries/mypage.query';
+import { gatheringsQuery } from '@/queries/gatherings.query';
 
 /** 모임 삭제 훅
 * @param token 토큰
@@ -29,8 +31,8 @@ export const useCancelGathering = ({ token, onCallback }: GatheringApiParams) =>
         },
         onSuccess: (id) => {
             removeGathering(id);
-            queryClient.invalidateQueries({ queryKey: ["gatherings", "infinite"] });
-            queryClient.invalidateQueries({ queryKey: ["createdGatherings", token] });
+            queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
+            queryClient.invalidateQueries({ queryKey: myPageQuery.createdGatherings(token!) });
             onCallback?.('모임을 삭제했습니다', () => router.replace('/gatherings'));
         },
         onError: (error) => {
