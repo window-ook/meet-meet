@@ -6,6 +6,8 @@ import { GatheringApiParams } from '@/types/gatheringApi';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { AxiosError } from 'axios';
 import { isErrorResponse } from '@/lib/api/handleApiError';
+import { gatheringDetailQuery, gatheringsQuery } from '@/queries/gatherings.query';
+import { myPageQuery } from '@/queries/mypage.query';
 
 /** 모임 참여 훅
 * @param token 토큰
@@ -22,10 +24,10 @@ export const useJoinGathering = ({ token, onCallback }: GatheringApiParams) => {
             return response.data;
         },
         onSuccess: (_, id) => {
-            queryClient.invalidateQueries({ queryKey: ["gatheringDetail", id] });
-            queryClient.invalidateQueries({ queryKey: ["gatherings", "infinite"] });
-            queryClient.invalidateQueries({ queryKey: ["checkGatheringJoined"] });
-            queryClient.invalidateQueries({ queryKey: ["joinedGatherings", token] });
+            queryClient.invalidateQueries({ queryKey: gatheringDetailQuery.detail(id) });
+            queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
+            queryClient.invalidateQueries({ queryKey: gatheringDetailQuery.checkJoined(id) });
+            queryClient.invalidateQueries({ queryKey: myPageQuery.joinedGatherings(token!) });
             onCallback?.('참여 완료했습니다');
         },
         onError: (error) => {

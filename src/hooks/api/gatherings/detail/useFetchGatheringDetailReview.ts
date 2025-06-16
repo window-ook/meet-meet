@@ -2,6 +2,7 @@
 
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
+import { gatheringDetailQuery } from '@/queries/gatherings.query';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -33,7 +34,7 @@ export const useFetchGatheringDetailReview = (
 
     const { data, isLoading, isError } = useQuery({
         enabled: !!gatheringId && enabled,
-        queryKey: ["gatheringReviews", gatheringId],
+        queryKey: gatheringDetailQuery.reviews(gatheringId),
         queryFn: fetchGatheringDetailReviews,
     })
 

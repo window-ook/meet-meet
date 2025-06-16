@@ -117,7 +117,7 @@ export default async function ReviewsPage({
     const ssrReviews = await getFilteredReviews(params);
 
     return (
-        <div className="contents-container dark:bg-dark dark:text-white">
+        <div className="contents-container">
             <ReviewsUI
                 ssrReviews={ssrReviews}
                 initialFilters={{

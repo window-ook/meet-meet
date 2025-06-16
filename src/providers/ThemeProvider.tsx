@@ -22,6 +22,32 @@ export function useTheme() {
     return context;
 }
 
+// 모든 transition을 일시적으로 비활성화
+const disableTransitions = () => {
+    const css = document.createElement('style');
+    css.type = 'text/css';
+    css.appendChild(document.createTextNode(
+        `* {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            -ms-transition: none !important;
+            transition: none !important;
+        }`
+    ));
+    document.head.appendChild(css);
+    
+    return css;
+};
+
+// transition을 다시 활성화하는 함수
+const enableTransitions = (styleElement: HTMLStyleElement) => {
+    // 다음 frame에서 실행하여 DOM 업데이트가 완료된 후 transition 복원
+    requestAnimationFrame(() => {
+        document.head.removeChild(styleElement);
+    });
+};
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
     // 1. 테마 상태 관리
     const [isDark, setIsDark] = useState<boolean>(() => {
@@ -43,6 +69,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     });
 
     const toggleDarkMode = (newTheme: "light" | "dark" | "system") => {
+        // 테마 변경 전에 모든 transition 비활성화
+        const disableStyleElement = disableTransitions();
+
         // 시스템 모드 선택 시
         if (newTheme === "system") {
             // 시스템 모드 선택 시 로컬스토리지에서 theme 값 제거
@@ -58,6 +87,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
             localStorage.setItem("theme", newTheme);
             setIsDark(newTheme === "dark");
         }
+
+        // 테마 변경 후 transition 다시 활성화
+        enableTransitions(disableStyleElement);
     };
 
     // theme 변경 시 루트 태그(html)에 dark 클래스 추가
@@ -72,8 +104,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
         const handleChange = (e: MediaQueryListEvent) => {
             if (!("theme" in localStorage)) {
+                // 시스템 모드 변경 시에도 transition 비활성화
+                const disableStyleElement = disableTransitions();
+                
                 // 다크 모드 사용 시 e.matches 값이 true, 라이트 모드 사용 시 false
                 setIsDark(e.matches);
+                
+                // transition 다시 활성화
+                enableTransitions(disableStyleElement);
             }
         };
 

@@ -10,7 +10,6 @@ import CreatedReview from '@/components/mypage/CreatedReview';
 import CreatableReview from '@/components/mypage/CreatableReview';
 import Button from '@/components/shared/Button';
 
-
 interface MyReviewsProps {
   myReviewsTab: number;
   setMyReviewsTab: (tab: number) => void;
@@ -72,11 +71,11 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
           !createdReviews || createdReviews?.length === 0 ?
             <span className="text-gray-500 text-center">아직 작성한 리뷰가 없어요</span>
             :
-            <div
-              className="relative min-h-[100px] w-full p-4 rounded-xl flex flex-col gap-4 border-1 hover:border-main-200 hover:shadow-md transition-gathering-item"
-            >
+            <div className='flex flex-col gap-4'>
               {createdReviews?.map((review: ReviewItem) => (
-                <div key={`${review?.Gathering?.id}-${review?.id}`}><CreatedReview review={review} /></div>
+                <div key={`${review?.Gathering?.id}-${review?.id}`}
+                  className={`relative w-full p-4 rounded-xl border-1 hover:border-main-200 hover:shadow-md transition-gathering-item ${myReviewsTab === 0 ? 'bg-main-apricot' : 'dark:bg-gray-700 dark:text-white'}`}
+                ><CreatedReview review={review} /></div>
               ))}
             </div>
         )

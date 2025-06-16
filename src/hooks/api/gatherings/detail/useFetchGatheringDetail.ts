@@ -2,6 +2,7 @@
 
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
+import { gatheringDetailQuery } from '@/queries/gatherings.query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
@@ -41,7 +42,7 @@ export const useFetchGatheringDetail = (
 
     const { data, isLoading, isError } = useQuery({
         enabled: !!id,
-        queryKey: ['gatheringDetail', id],
+        queryKey: [gatheringDetailQuery.detail(id)],
         queryFn: async () => {
             const detail = await fetchGatheringDetail(id)
             const participants = await fetchGatheringParticipants(id)
@@ -50,7 +51,7 @@ export const useFetchGatheringDetail = (
     })
 
     const retchIsSaved = useMutation({
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gatheringDetail', id] })
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: gatheringDetailQuery.detail(id) })
     });
 
     return { detail: data?.detail, participants: data?.participants, isLoading, isError, retchIsSaved }

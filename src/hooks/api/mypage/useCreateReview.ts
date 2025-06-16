@@ -7,6 +7,8 @@ import { GatheringApiParams } from '@/types/gatheringApi';
 import { useGatheringsStore } from '@/store/gatheringsStore';
 import { AxiosError } from 'axios';
 import { isErrorResponse } from '@/lib/api/handleApiError';
+import { myPageQuery } from '@/queries/mypage.query';
+import { gatheringDetailQuery } from '@/queries/gatherings.query';
 
 interface CreateReviewParams {
     gatheringId: number;
@@ -31,9 +33,9 @@ export const useCreateReview = ({ token, onCallback }: GatheringApiParams) => {
             return response.data;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["myReviews", token] });
-            queryClient.invalidateQueries({ queryKey: ["joinedGatherings", token] });
-            queryClient.invalidateQueries({ queryKey: ["gatheringReviews", currentGatheringId] });
+            queryClient.invalidateQueries({ queryKey: myPageQuery.myReviews(token!) });
+            queryClient.invalidateQueries({ queryKey: myPageQuery.joinedGatherings(token!) });
+            queryClient.invalidateQueries({ queryKey: gatheringDetailQuery.reviews(currentGatheringId!) });
             onCallback?.('리뷰가 성공적으로 등록되었습니다');
         },
         onError: (error) => {

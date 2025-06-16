@@ -6,6 +6,7 @@ import { JoinedGathering } from '@/types/gatherings';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { isErrorResponse } from '@/lib/api/handleApiError';
+import { myPageQuery } from '@/queries/mypage.query';
 
 /** 
  * 참여한 모임 목록 조회 훅
@@ -20,7 +21,7 @@ export const useFetchJoinedGatherings = (token: string) => {
 
     const { data, isLoading, error } = useQuery({
         enabled: !!token,
-        queryKey: ["joinedGatherings", token],
+        queryKey: myPageQuery.joinedGatherings(token),
         queryFn: async () => {
             const response = await fetchJoinedGatherings()
             return response
