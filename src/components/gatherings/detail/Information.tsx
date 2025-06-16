@@ -11,7 +11,7 @@ import JoinedCountsProgressBar from '@/components/gatherings/shared/JoinedCounts
 /** 모임 상세 페이지 상단 우측 정보 */
 export default function Information({ detail, id, participants }: { detail: Gathering, id: string, participants: Participant[] }) {
     return (
-        <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] px-6 py-5 border-2 border-gray-300 bg-white rounded-lg flex flex-col justify-between gap-4 overflow-hidden'
+        <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] px-6 py-5 border-2 border-gray-300 bg-white rounded-lg flex flex-col justify-between gap-4 overflow-hidden dark:bg-dark-2 dark:text-white dark:border-gray-600'
         >
             {/* 상단 */}
             <section className='flex justify-between gap-8'>
@@ -26,10 +26,10 @@ export default function Information({ detail, id, participants }: { detail: Gath
                                     : detail.name
                                 : ''}
                         </h2>
-                        <span className="text-gray-500">{detail?.location || '장소'}</span>
+                        <span className="text-gray-500 dark:text-gray-400">{detail?.location || '장소'}</span>
                     </div>
                     {/* 날짜 시간 */}
-                    <div className="flex sm:hidden md:flex items-center gap-1 text-sm text-gray-500">
+                    <div className="flex sm:hidden md:flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                         <span>{formatDate(detail?.dateTime || 'OOOO-OO-OO')}</span>
                         <span>·</span>
                         <span>{formatTime(detail?.dateTime || 'OO:OO')}</span>
@@ -69,7 +69,7 @@ export default function Information({ detail, id, participants }: { detail: Gath
                                 ))}
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <div className="size-8 bg-gray-50 rounded-full flex items-center justify-center cursor-pointer">
+                                        <div className="size-8 bg-gray-50 rounded-full flex items-center justify-center cursor-pointer dark:bg-gray-600">
                                             <span className='text-sm font-semibold'>
                                                 {participants?.length - 4 > 0 ? `+${participants?.length - 4}` : '+0'}
                                             </span>
