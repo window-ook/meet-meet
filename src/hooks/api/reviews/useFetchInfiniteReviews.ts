@@ -67,7 +67,6 @@ export function useFetchInfiniteReviews({
         hasNextPage,
         isFetchingNextPage,
         status,
-        isLoading,
         isError,
     } = useInfiniteQuery<ReviewItem[]>({
         queryKey,
@@ -140,7 +139,6 @@ export function useFetchInfiniteReviews({
         isFetchingNextPage,
         infiniteScrollEnabled,
         status,
-        isLoading,
         isError,
         hasNextPage,
     };
