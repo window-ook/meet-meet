@@ -25,7 +25,7 @@ interface GatheringCardProps {
 
 /** 피처 카드 */
 const FeatureCard = ({ icon, title, description, gradient }: FeatureCardProps) => (
-  <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-all group dark:bg-dark-2 dark:text-white">
+  <div className="bg-white p-8 rounded-3xl shadow-sm hover:shadow-lg transition-all group dark:bg-dark-2 dark:text-white">
     <div className="space-y-6">
       <div className={`w-16 h-16 ${gradient} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
         <span className="text-2xl text-white">{icon}</span>
@@ -67,8 +67,9 @@ const GatheringCard = ({
 
 export default async function MainPage() {
   return (
-    <div className="min-h-screen dark:bg-dark ">
-      <div className="bg-white contents-container dark:bg-dark dark:text-white">
+    // 색상 경계를 없애기 위해 
+    <div className="min-h-screen dark:bg-dark"> 
+      <div className="contents-container">
         {/* Hero Section */}
         <section className="flex-1 flex flex-col lg:flex-row items-center gap-12 px-6 py-12">
           <div className="flex-1 space-y-8">

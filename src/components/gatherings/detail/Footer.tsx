@@ -19,7 +19,7 @@ interface FooterProps {
 /** 모임 상세 페이지 Footer */
 export default function Footer({ userId, token, id, detail, isParticipated, leaveGathering, joinGathering, setDialogOpen, handleCopyUrl, setSignInDialogOpen }: FooterProps) {
     return (
-        <footer className='sticky bottom-0 w-full h-16 border-t border-gray-300 bg-white' >
+        <footer className='sticky bottom-0 w-full h-16 border-t border-gray-300 bg-white dark:bg-dark-2 dark:text-white dark:border-gray-600'>
             <div className='max-w-screen-lg h-full mx-auto px-4 md:px-20 flex justify-between items-center'>
                 <div className='hidden sm:flex flex-col gap-1'>
                     <span className='font-semibold'>Meet Meet Together</span>

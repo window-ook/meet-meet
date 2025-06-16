@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react';
 const ServiceItem = ({ id, title, subtitle, isSelected, onSelect }: { id: string, title: string, subtitle: string, isSelected: boolean, onSelect: (id: string) => void }) => {
     return (
         <div
-            className={`w-full border-2 rounded-lg px-5 py-3 sm:px-3 sm:py-2 cursor-pointer ${isSelected ? 'border-main-500 bg-main-50' : 'border-gray-200'
+            className={`w-full border-2 rounded-lg px-5 py-3 sm:px-3 sm:py-2 cursor-pointer ${isSelected ? 'border-main-500 bg-main-50' : 'border-gray-200 dark:border-gray-700 dark:text-white'
                 }`}
             onClick={() => onSelect(id)}
         >
-            <div className="flex flex-col justify-start gap-4">
+            <div className="flex flex-col justify-start gap-4 ">
                 <div className="flex flex-row items-center gap-2">
                     <input
                         type="checkbox"
@@ -19,9 +19,9 @@ const ServiceItem = ({ id, title, subtitle, isSelected, onSelect }: { id: string
                         onChange={() => onSelect(id)}
                         className="accent-main-500 rounded-lg w-[18px] h-[18px]"
                     />
-                    <h1 className='text-gray-800 font-semibold text-sm md:text-base'>{title}</h1>
+                    <h1 className='font-semibold text-sm md:text-base'>{title}</h1>
                 </div>
-                {subtitle && <label htmlFor={id} className='text-gray-800 cursor-pointer text-xs font-medium flex'>{subtitle}</label>}
+                {subtitle && <label htmlFor={id} className='cursor-pointer text-xs font-medium flex'>{subtitle}</label>}
             </div>
         </div>
     );

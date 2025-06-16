@@ -29,7 +29,7 @@ export default function Navbar() {
     ]
 
     return (
-        <nav className="sticky z-50 top-0 w-full bg-white dark:bg-dark border-b-2 border-gray-300 dark:border-gray-700 text-xs md:text-base font-bold transition-colors duration-200">
+        <nav className="sticky z-50 top-0 w-full bg-white dark:bg-dark border-b-2 border-gray-300 dark:border-gray-700 text-xs md:text-base font-bold">
             <main className="relative max-w-screen-lg mx-auto h-[3.75rem] py-8 px-5 flex justify-between items-center overflow-hidden">
                 <section className='flex gap-2 sm:gap-4 items-center'>
                     <Link href='/' className='p-0 hover:scale-105 transition-transform duration-200 ease-in-out'>
