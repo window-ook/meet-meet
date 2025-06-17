@@ -1,6 +1,7 @@
 'use client';
 
 import { formatDate, formatTime } from '@/utils/shared/date';
+import { shortenName } from '@/utils/shared/shortenName';
 import { Gathering, Participant } from '@/types/gatherings';
 import { Check, UserRoundCheck } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/shadcn-ui/tooltip";
@@ -8,8 +9,14 @@ import ImageWithFallback from '@/components/shared/ImageWithFallback';
 import SaveToggleButton from '@/components/shared/SaveToggleButton';
 import JoinedCountsProgressBar from '@/components/gatherings/shared/JoinedCountsProgressBar';
 
+interface InformationProps {
+    detail: Gathering,
+    id: string,
+    participants: Participant[],
+}
+
 /** 모임 상세 페이지 상단 우측 정보 */
-export default function Information({ detail, id, participants }: { detail: Gathering, id: string, participants: Participant[] }) {
+export default function Information({ detail, id, participants }: InformationProps) {
     return (
         <article className='max-w-screen-lg sm:w-[30rem] h-[14rem] px-6 py-5 border-2 border-gray-300 bg-white rounded-lg flex flex-col justify-between gap-4 overflow-hidden dark:bg-dark-2 dark:text-white dark:border-gray-600'
         >
@@ -26,7 +33,11 @@ export default function Information({ detail, id, participants }: { detail: Gath
                                     : detail.name
                                 : ''}
                         </h2>
-                        <span className="text-gray-500 dark:text-gray-400">{detail?.location || '장소'}</span>
+                        <div className='flex items-center gap-1'>
+                            <span className="text-gray-500 dark:text-gray-400">{detail?.location || '장소'}</span>
+                            <span className="text-gray-500 dark:text-gray-400">·</span>
+                            <span className="text-gray-500 dark:text-gray-400">{detail?.createdBy}님 게시</span>
+                        </div>
                     </div>
                     {/* 날짜 시간 */}
                     <div className="flex sm:hidden md:flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
@@ -57,15 +68,23 @@ export default function Information({ detail, id, participants }: { detail: Gath
                         <TooltipProvider>
                             <div className="flex items-center">
                                 {participants?.slice(0, 4).map((participant: Participant, i: number) => (
-                                    <ImageWithFallback
+                                    <Tooltip
                                         key={participant?.User?.id}
-                                        src={!participant?.User?.image || participant?.User?.image === 'null' || participant?.User?.image.trim() === '' ? 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg' : participant?.User?.image}
-                                        fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
-                                        alt="프로필 이미지"
-                                        width={100}
-                                        height={100}
-                                        className={`size-8 rounded-full border border-gray-300 object-cover object-center ${i === 0 ? 'ml-0' : '-ml-2'}`}
-                                    />
+                                    >
+                                        <TooltipTrigger asChild>
+                                            <ImageWithFallback
+                                                src={!participant?.User?.image || participant?.User?.image === 'null' || participant?.User?.image.trim() === '' ? 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg' : participant?.User?.image}
+                                                fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
+                                                alt="프로필 이미지"
+                                                width={100}
+                                                height={100}
+                                                className={`size-8 rounded-full border border-gray-300 object-cover object-center ${i === 0 ? 'ml-0' : '-ml-2'}`}
+                                            />
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" align="center" className="flex gap-1 rounded-lg p-2 shadow-lg">
+                                            <span className='font-medium text-white'>{shortenName(participant?.User?.name, 15)}</span>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 ))}
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -75,18 +94,22 @@ export default function Information({ detail, id, participants }: { detail: Gath
                                             </span>
                                         </div>
                                     </TooltipTrigger>
-                                    <TooltipContent side="top" align="center" className="flex gap-1 bg-white border border-button rounded-lg p-2 shadow-lg">
+                                    <TooltipContent side="top" align="center" className="flex flex-col gap-1 rounded-lg p-2 shadow-lg">
                                         {participants?.slice(4)?.length > 0 ? (
                                             participants.slice(4).map((participant: Participant) => (
-                                                <ImageWithFallback
+                                                <div
                                                     key={participant?.User?.id}
-                                                    src={participant?.User?.image}
-                                                    fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
-                                                    alt="프로필 이미지"
-                                                    width={100}
-                                                    height={100}
-                                                    className="size-8 rounded-full border-2 border-white"
-                                                />
+                                                    className='flex items-center gap-1'>
+                                                    <ImageWithFallback
+                                                        src={participant?.User?.image}
+                                                        fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
+                                                        alt="프로필 이미지"
+                                                        width={100}
+                                                        height={100}
+                                                        className="size-8 rounded-full border-2 border-white"
+                                                    />
+                                                    <span className='font-medium text-white'>{shortenName(participant?.User?.name, 15)}</span>
+                                                </div>
                                             ))
                                         ) : (
                                             <span className="text-xs text-gray-400">아직 없습니다</span>

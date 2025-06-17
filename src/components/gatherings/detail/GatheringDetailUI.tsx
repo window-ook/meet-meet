@@ -10,6 +10,7 @@ import { useCancelGathering } from '@/hooks/api/gatherings/detail/useCancelGathe
 import { useLeaveGathering } from '@/hooks/api/gatherings/detail/useLeaveGathering';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/providers/AuthProvider';
+import { gatheringsQuery } from '@/queries/gatherings.query';
 import { ConfirmDialogState, openConfirmDialog } from '@/utils/shared/confirmDialog';
 import { ReviewItem, Reviews } from '@/types/reviews';
 import dynamic from 'next/dynamic';
@@ -85,7 +86,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
 
     const handleDeleteConfirm = () => {
         cancelGathering(Number(id));
-        queryClient.invalidateQueries({ queryKey: ['gatherings'] });
+        queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
         setDialog((prev) => ({ ...prev, isOpen: false }));
     };
 

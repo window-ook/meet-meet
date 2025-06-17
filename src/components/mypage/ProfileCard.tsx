@@ -11,7 +11,7 @@ const ProfileEditDialog = dynamic(() => import('@/components/shared/ProfileEditD
 
 /** 마이페이지 프로필 카드 */
 export default function ProfileCard() {
-  const { userName, userCompanyName, userEmail, userImage } = useContext(AuthContext)
+  const { userName, userCompanyName, userEmail, userImage, userId } = useContext(AuthContext)
   const [isProfileEditDialogOpen, setIsProfileEditDialogOpen] = useState(false);
 
   return (
@@ -41,6 +41,11 @@ export default function ProfileCard() {
       {/* 프로필 정보 */}
       <div className="flex flex-col items-center gap-2 mt-4">
         <span className="text-xl sm:text-2xl font-bold text-main-500 dark:text-main-300">{shortenName(userName, 20)}</span>
+
+        <div className="flex items-center gap-2 text-gray-700 dark:text-white text-sm sm:text-base">
+          <span className="px-2 py-0.5 rounded flex-shrink-0 bg-main-100 dark:bg-main-400/20 font-semibold">ID</span>
+          <span>{userId}</span>
+        </div>
         <div className="flex items-center gap-2 text-gray-700 dark:text-white text-sm sm:text-base">
           <span className="px-2 py-0.5 rounded flex-shrink-0 bg-main-100 dark:bg-main-400/20 font-semibold">크루</span>
           <span>{shortenName(userCompanyName, 20)}</span>
