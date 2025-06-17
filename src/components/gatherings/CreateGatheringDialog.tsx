@@ -11,12 +11,13 @@ import { excapeForXSS } from '@/utils/shared/excapeForXSS';
 import { formatDateToISO, DateTimeValue, dateTimeValueToDate, formatDateTimeValue } from '@/utils/shared/date';
 import { CreateGatheringFormSchemaType, createGatheringFormSchema } from '@/utils/gatherings/createGatheringSchema';
 import { X } from "lucide-react";
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import SelectionService from '@/components/gatherings/SelectionService';
 import InputField from '@/components/auth/InputField';
 import { gatheringsQuery } from '@/queries/gatherings.query';
+import type { CreateGatheringResponse, CreateGatheringError, FormErrors } from '@/types/gatherings';
 
 const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePicker'), { ssr: false });
@@ -188,23 +189,23 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         try {
             const apiFormData = createApiFormData(data);
 
-            // 📌 Promise로 래핑하여 응답을 받을 수 있도록 수정
-            const response = await new Promise((resolve, reject) => {
+            // 모임 생성 API 호출
+            const response = await new Promise<CreateGatheringResponse>((resolve, reject) => {
                 createGathering(apiFormData, {
-                    onSuccess: (data: any) => {
+                    onSuccess: (data: CreateGatheringResponse) => {
                         resolve(data);
                     },
-                    onError: (error: any) => {
+                    onError: (error: CreateGatheringError) => {
                         reject(error);
                     }
                 });
             });
 
-            // 📌 성공 처리
+            // 성공 처리
             await queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
             
-            // 📌 생성된 모임 ID 추출 후 상세페이지로 이동
-            const createdGatheringId = (response as any)?.id || (response as any)?.data?.id;
+            // 생성된 모임 ID 추출 후 상세페이지로 이동
+            const createdGatheringId = response?.id || response?.data?.id;
             
             if (createdGatheringId) {
                 openConfirmDialog(setConfirmDialog, '모임 생성 완료', () => {
@@ -223,9 +224,9 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         }
     };
 
-    // 📍 폼 제출 에러 핸들러
-    const onError = (errors: unknown) => {
-        const firstError = Object.values(errors as Record<string, unknown>)[0] as AxiosError;
+    // 📍 폼 제출 에러 핸들러 (import된 타입 사용)
+    const onError = (errors: FormErrors) => {
+        const firstError = Object.values(errors)[0];
         if (firstError?.message) setError(firstError.message);
     };
 
