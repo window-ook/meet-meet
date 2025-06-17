@@ -137,6 +137,7 @@ export default function ReviewsList({
         infiniteReviews,
         lastItemRef,
         isFetchingNextPage,
+        status,
     } = useFetchInfiniteReviews({
         enabled: enableInfiniteScroll,
         mainType: selectedMainType,
@@ -171,6 +172,10 @@ export default function ReviewsList({
 
         return deduplicated;
     }, [filteredSSRReviews, filteredCSRReviews]);
+
+    // 로딩 상태 계산
+    const isLoading = isFilterChanged || (enableInfiniteScroll && status === 'pending');
+    const isEmpty = allReviews.length === 0 && !isLoading;
 
     return (
         <section className="w-full flex flex-col">
@@ -235,19 +240,22 @@ export default function ReviewsList({
                     </div>
                 )}
 
-                {/* 빈 목록 메시지 */}
-                {allReviews.length === 0 && !isFilterChanged && (
-                    <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 font-medium text-sm">
-                        <>
-                            <p>선택한 조건에 맞는 리뷰가 없어요,</p>
-                            <p>다른 조건으로 검색해보세요</p>
-                        </>
+                {/* 로딩 상태 */}
+                {isLoading && (
+                    <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="size-6 border-3 border-main-500 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-lg font-semibold">로딩 중...</p>
+                        </div>
+                        <p>리뷰를 불러오고 있어요</p>
                     </div>
                 )}
 
-                {isFilterChanged && (
-                    <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 font-medium text-sm">
-                        <p>로딩 중...</p>
+                {/* 빈 목록 메시지 */}
+                {isEmpty && (
+                    <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
+                        <p className="text-lg font-semibold mb-2">선택한 조건에 맞는 리뷰가 없어요</p>
+                        <p>다른 조건으로 검색해보세요</p>
                     </div>
                 )}
             </div>
