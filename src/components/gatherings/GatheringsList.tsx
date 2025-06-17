@@ -68,6 +68,7 @@ export default function GatheringsList({
         infiniteGatherings,
         lastItemRef,
         isFetchingNextPage,
+        status,
     } = useFetchInfiniteGatherings({
         enabled: enableInfiniteScroll && !isSavedPage,
         mainType: selectedMainType,
@@ -98,6 +99,10 @@ export default function GatheringsList({
         const uniqueCSRGatherings = getUniqueGatherings(filteredCSRGatherings, filteredSSRGatherings);
         return filteredSSRGatherings.concat(uniqueCSRGatherings);
     }, [filteredSSRGatherings, filteredCSRGatherings, isSavedPage]);
+
+    // 로딩 상태 계산
+    const isLoading = isFilterChanged || (enableInfiniteScroll && !isSavedPage && status === 'pending');
+    const isEmpty = allGatherings.length === 0 && !isLoading;
 
     return (
         <section
@@ -188,21 +193,24 @@ export default function GatheringsList({
                 </div>
             )}
 
+            {/* 통합된 로딩 상태 */}
+            {isLoading && (
+                <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="size-6 border-3 border-main-400 dark:border-main-400 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-lg font-semibold">로딩 중...</p>
+                    </div>
+                    <p>모임을 불러오고 있어요</p>
+                </div>
+            )}
+
             {/* 모임 없음 */}
-            {allGatherings.length === 0 && !isFilterChanged && (
+            {isEmpty && (
                 <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
                     <p className="text-lg font-semibold mb-2">아직 모임이 없어요</p>
                     <p>곧 새로운 모임이 열릴 예정이에요</p>
                 </div>
             )}
-
-            {/* 필터 변경*/}
-            {isFilterChanged && (
-                <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
-                    <p>로딩 중...</p>
-                </div>
-            )}
-
         </section>
     );
 }

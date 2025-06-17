@@ -110,3 +110,45 @@ export interface GatheringsFiltersProps {
     onSortClick?: () => void;
     sortDisabled?: boolean;
 }
+
+/**
+ * 모임 생성 API 응답 타입
+ * @type {number} id 생성된 모임 ID
+ * @type {object} data 응답 데이터 객체
+ * @type {boolean} success 성공 여부
+ * @type {string} message 응답 메시지
+ */
+export interface CreateGatheringResponse {
+    id?: number;
+    data?: {
+        id: number;
+    };
+    success?: boolean;
+    message?: string;
+}
+
+/**
+ * 모임 생성 에러 타입
+ * @type {string} message 에러 메시지
+ * @type {object} response 에러 응답 객체
+ */
+export interface CreateGatheringError {
+    message?: string;
+    response?: {
+        data?: {
+            error?: {
+                message?: string;
+            };
+        };
+    };
+}
+
+/**
+ * 폼 에러 타입
+ * @type {object} 각 필드별 에러 메시지
+ */
+export interface FormErrors {
+    [key: string]: {
+        message?: string;
+    };
+}
