@@ -5,7 +5,7 @@ import { GatheringApiParams } from '@/types/gatheringApi';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { AxiosError } from 'axios';
-import { isErrorResponse } from '@/lib/api/handleApiError';
+import { isErrorResponse } from '@/lib/api/surfGuard';
 import { gatheringsQuery } from '@/queries/gatherings.query';
 import { myPageQuery } from '@/queries/mypage.query';
 

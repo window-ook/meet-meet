@@ -5,7 +5,7 @@ import { internalClient } from '@/lib/api/clientFetchers';
 import { JoinedGathering } from '@/types/gatherings';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { isErrorResponse } from '@/lib/api/handleApiError';
+import { isErrorResponse } from '@/lib/api/surfGuard';
 import { myPageQuery } from '@/queries/mypage.query';
 
 /** 

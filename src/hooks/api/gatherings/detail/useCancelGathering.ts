@@ -5,7 +5,7 @@ import { useGatheringsStore } from '@/store/gatheringsStore';
 import { useRouter } from 'next/navigation';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
-import { isErrorResponse } from '@/lib/api/handleApiError';
+import { isErrorResponse } from '@/lib/api/surfGuard';
 import { GatheringApiParams } from '@/types/gatheringApi';
 import { AxiosError } from 'axios';
 import { myPageQuery } from '@/queries/mypage.query';
