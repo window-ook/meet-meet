@@ -10,12 +10,13 @@ import { ConfirmDialogState, openConfirmDialog } from '@/utils/shared/confirmDia
 import { excapeForXSS } from '@/utils/shared/excapeForXSS';
 import { formatDateToISO, DateTimeValue, dateTimeValueToDate, formatDateTimeValue } from '@/utils/shared/date';
 import { CreateGatheringFormSchemaType, createGatheringFormSchema } from '@/utils/gatherings/createGatheringSchema';
-import { gatheringsQuery } from '@/queries/gatherings.query';
 import { X } from "lucide-react";
 import axios, { AxiosError } from 'axios';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import SelectionService from '@/components/gatherings/SelectionService';
 import InputField from '@/components/auth/InputField';
+import { gatheringsQuery } from '@/queries/gatherings.query';
 
 const ConfirmDialog = dynamic(() => import('@/components/shared/ConfirmDialog'), { ssr: false });
 const DateTimePicker = dynamic(() => import('@/components/gatherings/DateTimePicker'), { ssr: false });
@@ -63,8 +64,9 @@ const handleAxiosError = (error: unknown): string => {
 export default function CreateGatheringDialog({ onClose }: CreateGatheringDialogProps) {
     const { token } = useContext(AuthContext);
     const queryClient = useQueryClient();
+    const router = useRouter();
 
-    // 📌 React Hook Form으로 모든 상태 통합 관리
+    // React Hook Form으로 모든 상태 통합 관리
     const {
         register,
         handleSubmit,
@@ -87,12 +89,12 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         },
     });
 
-    // 📌 watch로 폼 값들 관찰
+    // watch로 폼 값들 관찰
     const watchedValues = watch();
     const meetingDateTime = watch('meetingDateTime');
     const deadlineDateTime = watch('deadlineDateTime');
 
-    // 📌 UI 상태만 별도 관리
+    // UI 상태만 별도 관리
     const [fileName, setFileName] = useState("");
     const [showGatheringPicker, setShowGatheringPicker] = useState(false);
     const [showDeadlinePicker, setShowDeadlinePicker] = useState(false);
@@ -102,6 +104,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // 성공 후 직접 라우팅 처리
     const { createGathering } = useCreateGathering({
         token,
         onCallback: (message) => openConfirmDialog(setConfirmDialog, message),
@@ -114,7 +117,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
     // 📌 서비스 타입 선택 핸들러 - Hook Form과 연동
     const handleServiceTypeSelect = (type: string) => {
         setValue('type', type as string);
-        trigger('type'); // 유효성 검사 트리거
+        trigger('type');
     };
 
     // 📌 파일 첨부 핸들러 - Hook Form과 연동
@@ -127,8 +130,8 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         if (files?.length) {
             const file = files[0];
             setFileName(file.name);
-            setValue('imageFile', file); // Hook Form에 등록
-            trigger('imageFile'); // 유효성 검사 트리거
+            setValue('imageFile', file);
+            trigger('imageFile');
             setError(null);
         }
     };
@@ -172,7 +175,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         return apiFormData;
     };
 
-    // 📌 폼 제출 핸들러
+    // 폼 제출 핸들러
     const onSubmit = async (data: CreateGatheringFormSchemaType) => {
         if (!token) {
             setError('로그인이 필요합니다');
@@ -185,46 +188,50 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
         try {
             const apiFormData = createApiFormData(data);
 
-            await createGathering(apiFormData, {
-                onSuccess: async () => {
-                    await queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
-                    openConfirmDialog(setConfirmDialog, '모임 생성 완료', () => {
-                        setIsSubmitting(false);
-                        onClose(true);
-                        reset();
-                        setFileName("");
-                    });
-                },
-                onError: (error: unknown) => {
-                    setIsSubmitting(false);
-                    const errorMessage = handleAxiosError(error);
-                    openConfirmDialog(setConfirmDialog, errorMessage);
-                }
+            // 📌 Promise로 래핑하여 응답을 받을 수 있도록 수정
+            const response = await new Promise((resolve, reject) => {
+                createGathering(apiFormData, {
+                    onSuccess: (data: any) => {
+                        resolve(data);
+                    },
+                    onError: (error: any) => {
+                        reject(error);
+                    }
+                });
             });
+
+            // 📌 성공 처리
+            await queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
+            
+            // 📌 생성된 모임 ID 추출 후 상세페이지로 이동
+            const createdGatheringId = (response as any)?.id || (response as any)?.data?.id;
+            
+            if (createdGatheringId) {
+                openConfirmDialog(setConfirmDialog, '모임 생성 완료', () => {
+                    setIsSubmitting(false);
+                    onClose(false);
+                    reset();
+                    setFileName("");
+                    router.push(`/gatherings/detail/${createdGatheringId}`);
+                });
+            }
         } catch (error) {
             console.error('모임 생성 실패:', error);
             setIsSubmitting(false);
-            setError('예상치 못한 오류가 발생했습니다');
+            const errorMessage = handleAxiosError(error);
+            openConfirmDialog(setConfirmDialog, errorMessage);
         }
     };
 
     // 📍 폼 제출 에러 핸들러
     const onError = (errors: unknown) => {
-        // 첫 번째 에러 메시지 표시
         const firstError = Object.values(errors as Record<string, unknown>)[0] as AxiosError;
         if (firstError?.message) setError(firstError.message);
     };
 
     return (
-        <dialog
-            open
-            className="dialog-background w-full h-full"
-            onClick={handleNormalClose}
-        >
-            <div
-                className="relative w-full h-full flex items-center justify-center md:p-4"
-                onClick={(e) => e.stopPropagation()}
-            >
+        <div className="dialog-background text-gray-900">
+            <div className="relative w-full h-full flex items-center justify-center md:p-4">
                 <div className="w-full max-w-2xl max-h-full flex flex-col">
                     <form
                         className="flex flex-col w-full h-full bg-white dark:bg-dark-2 md:rounded-lg shadow-xl overflow-hidden"
@@ -419,7 +426,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
                     ></div>
                     <div
                         className="relative bg-white rounded-lg p-6 max-w-md w-full"
-                        onClick={(e) => e.stopPropagation()} // 📌 모달 내부 클릭 시 이벤트 버블링 방지
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">모임 일정 선택</h2>
@@ -456,7 +463,7 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
                     ></div>
                     <div
                         className="relative bg-white rounded-lg p-6 max-w-md w-full"
-                        onClick={(e) => e.stopPropagation()} // 📌 모달 내부 클릭 시 이벤트 버블링 방지
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-bold">마감 일정 선택</h2>
@@ -480,6 +487,6 @@ export default function CreateGatheringDialog({ onClose }: CreateGatheringDialog
                     </div>
                 </div>
             )}
-        </dialog>
+        </div>
     );
 }

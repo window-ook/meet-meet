@@ -46,7 +46,7 @@ export default function Footer({ userId, token, id, detail, isParticipated, leav
                                 variant='cancel'
                                 text='삭제하기'
                                 onClick={() => { setDialogOpen(true) }}
-                                customClassName='w-24 h-[60%]'
+                                customClassName='w-24 h-[40px]'
                             />
                         </div>
                         :
