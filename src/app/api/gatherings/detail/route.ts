@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EXTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { externalClient } from '@/lib/api/clientFetchers';
-import { handleApiError } from '@/lib/api/handleApiError';
+import { handleApiError } from '@/lib/api/surfGuard';
 
 /**
  * 모임 상세 조회

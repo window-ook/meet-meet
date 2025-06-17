@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { JoinedGathering } from '@/types/gatherings';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
-import { isErrorResponse } from '@/lib/api/handleApiError';
+import { isErrorResponse } from '@/lib/api/surfGuard';
 import { AxiosError } from 'axios';
 import { gatheringDetailQuery } from '@/queries/gatherings.query';
 
