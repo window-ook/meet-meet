@@ -26,7 +26,7 @@ export default function Review({ review }: { review: ReviewItem }) {
                     alt='프로필 이미지'
                     width={32}
                     height={32}
-                    className='size-6 rounded-full'
+                    className='size-6 rounded-full pointer-events-none'
                 />
                 <span>{review.User?.name}</span>
                 <span>|</span>
