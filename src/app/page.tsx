@@ -1,10 +1,10 @@
-import ImageWithFallback from '@/components/shared/ImageWithFallback';
 import { EXTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { serverFetcher } from '@/lib/api/serverFetcher';
 import { Gathering } from '@/types/gatherings';
 import { getTimeRemaining, toKoreanTime } from '@/utils/shared/date';
 import { Metadata } from 'next';
 import Image from 'next/image';
+import ImageWithFallback from '@/components/shared/ImageWithFallback';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
