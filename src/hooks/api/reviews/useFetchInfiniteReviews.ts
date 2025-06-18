@@ -90,7 +90,6 @@ export function useFetchInfiniteReviews({
             return nextPage;
         },
         initialPageParam: startPage,
-        // 스크롤 기반 지연 로딩
         enabled: enabled && infiniteScrollEnabled && hasTriggeredFirstFetch,
         retry: 2,
         refetchOnWindowFocus: false,
