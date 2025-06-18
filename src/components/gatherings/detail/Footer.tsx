@@ -33,22 +33,23 @@ export default function Footer({ userId, token, id, detail, isParticipated, leav
 
     return (
         <footer className='sticky bottom-0 w-full h-16 border-t border-gray-300 bg-white dark:bg-dark-2 dark:text-white dark:border-gray-600'>
-            <div className='max-w-screen-lg h-full mx-auto px-4 md:px-20 flex justify-between items-center'>
+            <div className='max-w-screen-lg h-full mx-auto px-4 md:px-20 flex justify-center sm:justify-between items-center'>
+                {/* 좌 */}
                 <section className='hidden sm:flex flex-col gap-1'>
-                    <span className='font-semibold'>Meet Meet Together</span>
-                    <span className='text-xs font-medium'>모임은 여러분을 기다리고 있어요!</span>
+                    <span className='text-sm md:text-base font-semibold'>Meet Meet Together</span>
+                    <span className='text-xs font-medium'>모임은 여러분을 기다리고 있어요</span>
                 </section>
+
+                {/* 우 */}
                 <section className='flex gap-2'>
                     {/* 모임 생성자 권한 확인 */}
                     {userId === detail?.createdBy ?
-                        <div className='flex justify-between sm:justify-end gap-2'>
-                            <Button
-                                variant='cancel'
-                                text='삭제하기'
-                                onClick={() => { setDialogOpen(true) }}
-                                customClassName='w-24 h-[40px]'
-                            />
-                        </div>
+                        <Button
+                            variant='cancel'
+                            text='삭제하기'
+                            onClick={() => { setDialogOpen(true) }}
+                            customClassName='w-28 h-[60%] text-sm md:text-base'
+                        />
                         :
                         // 모임 참가 여부 확인 (생성자가 아닌 경우)
                         isParticipated ? (
@@ -56,7 +57,7 @@ export default function Footer({ userId, token, id, detail, isParticipated, leav
                                 variant='cancel'
                                 text='참여 취소하기'
                                 onClick={() => leaveGathering(Number(id))}
-                                customClassName='max-w-36 h-[60%]'
+                                customClassName='max-w-36 h-[60%] text-sm md:text-base '
                             />
                         ) : (
                             <Button
@@ -66,7 +67,7 @@ export default function Footer({ userId, token, id, detail, isParticipated, leav
                                     if (!token) setSignInDialogOpen(true);
                                     else joinGathering(Number(id))
                                 }}
-                                customClassName='w-28 h-[60%]'
+                                customClassName='w-28 h-[60%] text-sm md:text-base'
                             />
                         )
                     }
@@ -77,7 +78,7 @@ export default function Footer({ userId, token, id, detail, isParticipated, leav
                                 ref={triggerRef}
                                 role="button"
                                 onClick={handleCopy}
-                                className="w-28 h-[60%] flex items-center justify-center padding-button rounded-lg font-semibold bg-button hover:bg-button-hover text-button-text hover-button"
+                                className="w-28 h-[60%] padding-button rounded-lg flex items-center justify-center text-sm md:text-base font-semibold bg-button hover:bg-button-hover text-button-text hover-button"
                             >
                                 공유하기
                             </div>

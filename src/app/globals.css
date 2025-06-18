@@ -10,6 +10,7 @@ html {
 @theme {
   /* 브레이크 포인트 */
   --breakpoint-sm: 401px;
+  --breakpoint-s-md: 580px;
   --breakpoint-md: 801px;
   --breakpoint-lg: 1101px;
 

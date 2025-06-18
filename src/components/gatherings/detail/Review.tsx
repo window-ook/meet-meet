@@ -1,5 +1,6 @@
 import { formatDate } from '@/utils/shared/date';
 import { validateProfileImage } from '@/utils/shared/validateProfileImage';
+import { decodeHtmlEntities } from '@/utils/shared/decodeHtmlEntities';
 import { ReviewItem } from '@/types/reviews';
 import { Heart } from 'lucide-react';
 import ImageWithFallback from '@/components/shared/ImageWithFallback';
@@ -18,7 +19,7 @@ export default function Review({ review }: { review: ReviewItem }) {
                     <Heart key={index} className="size-4 fill-gray-300 text-gray-300" />
                 ))}
             </div>
-            <p className='text-sm'>{review.comment}</p>
+            <p className='text-sm'>{decodeHtmlEntities(review.comment)}</p>
             <div className='flex items-center gap-1 text-xs'>
                 <ImageWithFallback
                     src={validateProfileImage(review.User?.image)}
