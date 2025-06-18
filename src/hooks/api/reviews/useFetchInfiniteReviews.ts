@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchReviewsPaginated } from '@/utils/reviews/fetch';
+import { fetchReviewsPaginated } from '@/utils/reviews/fetchPaginatedReviews';
 import { ReviewItem } from '@/types/reviews';
 import { reviewsQuery } from '@/queries/review.query';
 
