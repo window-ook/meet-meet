@@ -15,7 +15,8 @@ interface InformationProps {
     participants: Participant[],
 }
 
-const LOCATION_POSTER_STYLE = 'text-gray-500 dark:text-gray-400';
+const LOCATION_POSTER_STYLE = 'text-sm md:text-base text-gray-500 dark:text-gray-400';
+const BOTTOM_SECTION_TEXT_STYLE = 'text-xs md:text-sm';
 
 /** 모임 상세 페이지 상단 우측 정보 */
 export default function Information({ detail, id, participants }: InformationProps) {
@@ -24,10 +25,10 @@ export default function Information({ detail, id, participants }: InformationPro
             {/* 상단 */}
             <section className='flex justify-between gap-8'>
                 {/* LEFT */}
-                <div className='flex flex-col'>
+                <div className='flex flex-col gap-1'>
                     {/* 제목, 주소 */}
                     <div className="flex flex-col min-w-0">
-                        <h2 className="text-xl font-bold max-w-full" title={detail?.name}>
+                        <h2 className="text-base md:text-xl font-bold max-w-full" title={detail?.name}>
                             {detail?.name
                                 ? detail.name.length > 20
                                     ? detail.name.slice(0, 20) + '...'
@@ -35,13 +36,13 @@ export default function Information({ detail, id, participants }: InformationPro
                                 : ''}
                         </h2>
                         <div className='flex items-center gap-1'>
-                            <span className={LOCATION_POSTER_STYLE}>{detail?.location || '장소'}</span>
+                            <span className={LOCATION_POSTER_STYLE}>{detail?.location || '-'}</span>
                             <span className={LOCATION_POSTER_STYLE}>·</span>
                             <span className={LOCATION_POSTER_STYLE}>{detail?.createdBy}님 게시</span>
                         </div>
                     </div>
                     {/* 날짜 시간 */}
-                    <div className="flex sm:hidden md:flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-1 text-xs md:text-sm text-gray-500 dark:text-gray-400">
                         <span>{formatDate(detail?.dateTime || 'OOOO-OO-OO')}</span>
                         <span>·</span>
                         <span>{formatTime(detail?.dateTime || 'OO:OO')}</span>
@@ -63,23 +64,23 @@ export default function Information({ detail, id, participants }: InformationPro
                     <div className="flex items-center gap-2">
                         <div className='flex items-center gap-1'>
                             <UserRoundCheck className='size-4 text-main-500' />
-                            <span>{detail?.participantCount}명 참여 중</span>
+                            <span className={BOTTOM_SECTION_TEXT_STYLE}>{detail?.participantCount}명 참여 중</span>
                         </div>
                         {/* 참여자들의 프로필 이미지 */}
                         <TooltipProvider>
-                            <div className="flex items-center">
-                                {participants?.slice(0, 4).map((participant: Participant, i: number) => (
+                            <div className="flex flex-shrink-0 items-center -space-x-2">
+                                {participants?.slice(0, 4).map((participant: Participant) => (
                                     <Tooltip
                                         key={participant?.User?.id}
                                     >
-                                        <TooltipTrigger asChild>
+                                        <TooltipTrigger>
                                             <ImageWithFallback
                                                 src={!participant?.User?.image || participant?.User?.image === 'null' || participant?.User?.image.trim() === '' ? 'https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg' : participant?.User?.image}
                                                 fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1749717219/profile_image_tlr92v.svg'
                                                 alt="프로필 이미지"
                                                 width={100}
                                                 height={100}
-                                                className={`size-8 rounded-full border border-gray-300 object-cover object-center ${i === 0 ? 'ml-0' : '-ml-2'} pointer-events-none`}
+                                                className={`size-6 md:size-8 rounded-full border border-gray-300 object-cover object-center pointer-events-none`}
                                             />
                                         </TooltipTrigger>
                                         <TooltipContent side="top" align="center" className="flex gap-1 rounded-lg p-2 shadow-lg">
@@ -89,8 +90,8 @@ export default function Information({ detail, id, participants }: InformationPro
                                 ))}
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <div className="size-8 bg-gray-50 rounded-full flex items-center justify-center cursor-pointer dark:bg-gray-600">
-                                            <span className='text-sm font-semibold'>
+                                        <div className="size-6 md:size-8 bg-gray-50 rounded-full flex items-center justify-center cursor-pointer dark:bg-gray-600">
+                                            <span className='text-xs md:text-sm font-semibold'>
                                                 {participants?.length - 4 > 0 ? `+${participants?.length - 4}` : '+0'}
                                             </span>
                                         </div>
@@ -107,7 +108,7 @@ export default function Information({ detail, id, participants }: InformationPro
                                                         alt="프로필 이미지"
                                                         width={100}
                                                         height={100}
-                                                        className="size-8 rounded-full border-2 border-white pointer-events-none"
+                                                        className="size-6 md:size-8 rounded-full border-2 border-white pointer-events-none"
                                                     />
                                                     <span className='font-medium text-white'>{shortenName(participant?.User?.name, 15)}</span>
                                                 </div>
@@ -123,9 +124,9 @@ export default function Information({ detail, id, participants }: InformationPro
                     {detail && detail?.participantCount >= 5 ? (
                         <div className='flex items-center gap-2'>
                             <div className='p-1 bg-main-300 rounded-full'>
-                                <Check className='text-white size-3' />
+                                <Check className='text-white size-2 md:size-3' />
                             </div>
-                            <span>개설확정</span>
+                            <span className={BOTTOM_SECTION_TEXT_STYLE}>개설확정</span>
                         </div>
                     ) : null}
                 </div>
@@ -133,8 +134,8 @@ export default function Information({ detail, id, participants }: InformationPro
                 <JoinedCountsProgressBar participantCount={detail?.participantCount} capacity={detail?.capacity} />
                 {/* 최소인원, 최대인원 */}
                 <div className="flex justify-between text-sm">
-                    <span>최소 5명</span>
-                    <span>최대 {detail?.capacity}명</span>
+                    <span className={BOTTOM_SECTION_TEXT_STYLE}>최소 5명</span>
+                    <span className={BOTTOM_SECTION_TEXT_STYLE}>최대 {detail?.capacity}명</span>
                 </div>
             </section>
         </article>

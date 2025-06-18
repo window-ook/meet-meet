@@ -92,8 +92,8 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
     };
 
     return (
-        <>
-            <main className='contents-container'>
+        <main className='pt-4'>
+            <section className='contents-container'>
                 {/* 모임 썸네일과 정보 */}
                 {detailLoading ? (
                     <section className={UPPER_SECTIONS_STYLE}>
@@ -121,7 +121,7 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
                         <PageConverter page={page} setPage={setPage} totalPages={detailReviews?.totalPages} />
                     ) : (<p className='p-4 sm:p-20 mx-auto text-sm text-gray-500'>아직 리뷰가 없습니다.</p>)}
                 </section>
-            </main >
+            </section >
 
             {/* 모임 참가 Footer */}
             <Footer
@@ -152,6 +152,6 @@ export default function GatheringsDetailUI({ id, detailReviews }: { id: string, 
                 onClose={() => setDialog((prev) => ({ ...prev, isOpen: false }))}
                 onConfirm={dialog.onConfirm}
             />
-        </>
+        </main>
     );
 }

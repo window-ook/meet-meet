@@ -7,7 +7,7 @@ import Button from '@/components/shared/Button';
 
 // 스타일 상수
 const MAIN_TYPE_BUTTON_STYLES = "text-lg font-semibold py-1 cursor-pointer";
-const SUB_TYPE_BUTTON_STYLES = "shadow-sm text-sm font-medium px-3 py-2 rounded-lg cursor-pointer";
+const SUB_TYPE_BUTTON_STYLES = "shadow-sm text-xs sm:text-sm font-medium px-3 py-2 rounded-lg cursor-pointer";
 
 /**
  * 모임 필터 속성
@@ -125,7 +125,7 @@ export default function GatheringFilters({
                         variant="default"
                         text="모임 만들기"
                         onClick={onCreateClick}
-                        customClassName="h-[55%] items-center shadow-md"
+                        customClassName="text-xs sm:text-base sm:h-[55%] items-center shadow-md"
                     />
                 )}
             </section>

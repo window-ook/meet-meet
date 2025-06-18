@@ -13,7 +13,7 @@ import SaveToggleButton from '@/components/shared/SaveToggleButton';
 import DateReminder from '@/components/shared/DateReminder';
 
 // 스타일 상수
-const BADGE_BASE_STYLES = "inline-flex items-center px-3 py-1 text-sm font-medium rounded-md";
+const BADGE_BASE_STYLES = "inline-flex items-center px-3 py-1 text-xs sm:text-sm font-medium rounded-md";
 
 // 매직넘버 상수
 const DEFAULT_TITLE_MAX_LENGTH = 20; // 제목 최대 길이
@@ -139,7 +139,7 @@ export default function GatheringsList({
                             <div className="flex-1 w-full">
                                 <div className="flex flex-row md:justify-between gap-3">
                                     <div className="flex-1 flex flex-row gap-2 items-center">
-                                        <h2 className="text-lg font-semibold -mt-6 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                                        <h2 className="text-sm sm:text-lg font-semibold -mt-6 text-gray-900 dark:text-gray-100 transition-colors duration-200">
                                             {truncateTitle(gathering.name)}
                                         </h2>
                                         <div className="hidden md:block w-[2px] h-[16px] -mt-6 bg-gray-900 dark:bg-gray-300"></div>
