@@ -93,14 +93,12 @@ const GatheringItem = memo(({
     gathering, 
     index, 
     isLastItem,
-    isFirstItem,
     lastItemRef,
     onGatheringClick 
 }: {
     gathering: Gathering;
     index: number;
     isLastItem: boolean;
-    isFirstItem: boolean;
     lastItemRef?: (node: HTMLElement | null) => void;
     onGatheringClick: (id: number) => void;
 }) => (
@@ -123,10 +121,6 @@ const GatheringItem = memo(({
                 width={320}
                 height={180}
                 className="w-full h-full rounded-t-2xl md:rounded-l-2xl md:rounded-t-none object-cover pointer-events-none"
-                priority={isFirstItem}
-                loading={isFirstItem ? 'eager' : 'lazy'}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 320px, 280px"
-                quality={75}
             />
         </div>
 
@@ -243,7 +237,6 @@ export default function GatheringsList({
         >
             {allGatherings.map((gathering: Gathering, index: number) => {
                 const isLastItem = index === allGatherings.length - 1;
-                const isFirstItem = index === 0;
                 const shouldAttachRef = isLastItem && !isFetchingNextPage && enableInfiniteScroll && !isSavedPage;
 
                 return (
@@ -252,7 +245,6 @@ export default function GatheringsList({
                         gathering={gathering}
                         index={index}
                         isLastItem={isLastItem}
-                        isFirstItem={isFirstItem}
                         lastItemRef={shouldAttachRef ? lastItemRef : undefined}
                         onGatheringClick={handleGatheringClick}
                     />
