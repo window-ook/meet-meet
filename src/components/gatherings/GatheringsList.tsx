@@ -116,9 +116,12 @@ const GatheringItem = memo(({
                 src={gathering.image}
                 fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1750048546/error_fallback_icbngz.avif'
                 alt={`${gathering.name} 모임 썸네일`}
-                width={280}
-                height={160}
+                width={240}
+                height={135}
                 priority={index === 0}
+                sizes="240px"
+                fetchPriority={index === 0 ? 'high' : 'auto'}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 className="w-full h-full rounded-t-2xl md:rounded-l-2xl md:rounded-t-none object-cover pointer-events-none"
             />
         </div>
