@@ -171,6 +171,7 @@ export default async function MainPage() {
               width={317}
               height={317}
               priority
+              fetchPriority='high'
               className="w-2/3 mx-auto pointer-events-none" />
           </div>
           {/* Floating Elements */}
@@ -271,8 +272,8 @@ export default async function MainPage() {
                 <Image
                   src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1750301404/logo_hero_zeiiec.avif"
                   alt="로고 이미지"
-                  width={1000}
-                  height={1000}
+                  width={42.5}
+                  height={42.5}
                   className="size-full object-cover object-center pointer-events-none" />
               </div>
               <span className="text-xl font-bold">Meet Meet</span>
