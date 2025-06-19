@@ -166,12 +166,12 @@ export default async function MainPage() {
         <div className="flex-1 relative">
           {/* 메인 히어로 이미지 */}
           <div className="w-full max-w-md mx-auto h-96 bg-gradient-to-br from-main-100 to-pink-200 rounded-3xl shadow-2xl flex items-center justify-center">
-            <Image src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1749713054/logo_hero_lp6zw5.avif"
+            <Image src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1750301404/logo_hero_zeiiec.avif"
               alt="메인 히어로 이미지"
-              width={1000}
-              height={1000}
-              sizes="(max-width: 401px) 300px, (max-width: 801px) 500px, 1000px"
+              width={317}
+              height={317}
               priority
+              fetchPriority='high'
               className="w-2/3 mx-auto pointer-events-none" />
           </div>
           {/* Floating Elements */}
@@ -270,10 +270,10 @@ export default async function MainPage() {
               {/* 로고 이미지 위치 */}
               <div className='size-10 bg-gray-50 rounded-lg hover:scale-110 transition-transform cursor-pointer'>
                 <Image
-                  src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1749713054/logo_hero_lp6zw5.avif"
+                  src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1750301404/logo_hero_zeiiec.avif"
                   alt="로고 이미지"
-                  width={1000}
-                  height={1000}
+                  width={42.5}
+                  height={42.5}
                   className="size-full object-cover object-center pointer-events-none" />
               </div>
               <span className="text-xl font-bold">Meet Meet</span>
