@@ -99,6 +99,7 @@ const GatheringCard = ({
         alt={title}
         width={148}
         height={136}
+        quality={60}
         className="w-full h-32 object-cover rounded-xl pointer-events-none" />
       <div className="space-y-2">
         <h3 className="font-semibold group-hover:text-main-500 dark:text-white dark:group-hover:text-main-500 transition-all">{title}</h3>
