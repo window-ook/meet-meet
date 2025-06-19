@@ -1,4 +1,3 @@
-// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -14,6 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  compress: true,
   webpack(config, { isServer: _isServer }) {
     // SVGR 로더 추가: .svg 파일을 React 컴포넌트로 사용할 수 있게 처리
     config.module.rules.push({
