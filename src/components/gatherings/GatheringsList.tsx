@@ -57,6 +57,7 @@ const GatheringBadges = memo(({ dateTime }: { dateTime: string }) => (
         </span>
     </div>
 ));
+GatheringBadges.displayName = 'GatheringBadges';
 
 const LoadingState = memo(() => (
     <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
@@ -67,6 +68,7 @@ const LoadingState = memo(() => (
         <p>모임을 불러오고 있어요</p>
     </div>
 ));
+LoadingState.displayName = 'LoadingState';
 
 const EmptyState = memo(() => (
     <div className="w-full h-[300px] flex flex-col justify-center items-center text-gray-500 dark:text-gray-400 font-medium text-sm transition-colors duration-200">
@@ -74,6 +76,7 @@ const EmptyState = memo(() => (
         <p>곧 새로운 모임이 열릴 예정이에요</p>
     </div>
 ));
+EmptyState.displayName = 'EmptyState';
 
 const InfiniteScrollLoader = memo(() => (
     <div className="w-full h-[80px] flex justify-center items-center">
@@ -83,6 +86,7 @@ const InfiniteScrollLoader = memo(() => (
         </div>
     </div>
 ));
+InfiniteScrollLoader.displayName = 'InfiniteScrollLoader';
 
 // 개별 모임 아이템 컴포넌트 memo로 최적화
 const GatheringItem = memo(({ 
