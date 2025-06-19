@@ -176,15 +176,15 @@ export default function ReviewsList({
                                     src={review.Gathering.image!}
                                     fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1750048546/error_fallback_icbngz.avif'
                                     alt="리뷰 썸네일"
-                                    width={200}
-                                    height={120}
-                                    priority={index === 0}
-                                    sizes="200px"
-                                    fetchPriority={index === 0 ? 'high' : 'auto'}
-                                    loading={index === 0 ? 'eager' : 'lazy'}
+                                    width={320}
+                                    height={192}
+                                    priority={index < 2}
+                                    sizes="(max-width: 768px) 100vw, 320px"
+                                    fetchPriority={index < 2 ? 'high' : 'auto'}
+                                    loading={index < 2 ? 'eager' : 'lazy'}
                                     className="w-full h-full rounded-t-2xl md:rounded-l-2xl md:rounded-t-none object-cover pointer-events-none"
                                     crossOrigin=""
-                                    decoding={index === 0 ? 'sync' : 'async'}
+                                    decoding={index < 2 ? 'sync' : 'async'}
                                 />
                             </div>
 
