@@ -10,10 +10,11 @@ interface ImageWithFallbackProps extends Omit<ImageProps, 'src'> {
     width: number;
     height: number;
     className?: string;
+    priority?: boolean;
 }
 
 export default function ImageWithFallback(props: ImageWithFallbackProps) {
-    const { src, fallbackSrc, alt, width, height, className, ...rest } = props;
+    const { src, fallbackSrc, alt, width, height, className, priority = false, ...rest } = props;
 
     const [imgSrc, setImgSrc] = useState(src);
 
@@ -30,6 +31,8 @@ export default function ImageWithFallback(props: ImageWithFallbackProps) {
                 width={width}
                 height={height}
                 className={className}
+                priority={priority}
+                sizes="(max-width: 401px) 280px, (max-width: 580px) 280px, (max-width: 801px) 280px, 280px"
             />
         </>
     );

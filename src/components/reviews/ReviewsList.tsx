@@ -176,8 +176,9 @@ export default function ReviewsList({
                                     src={review.Gathering.image!}
                                     fallbackSrc='https://res.cloudinary.com/dbvzbdffi/image/upload/v1750048546/error_fallback_icbngz.avif'
                                     alt="리뷰 썸네일"
-                                    width={320}
-                                    height={180}
+                                    width={280}
+                                    height={160}
+                                    priority={index === 0}
                                     className="w-full h-full rounded-t-2xl md:rounded-l-2xl md:rounded-t-none object-cover pointer-events-none"
                                 />
                             </div>
