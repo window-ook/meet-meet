@@ -168,8 +168,8 @@ export default async function MainPage() {
           <div className="w-full max-w-md mx-auto h-96 bg-gradient-to-br from-main-100 to-pink-200 rounded-3xl shadow-2xl flex items-center justify-center">
             <Image src="https://res.cloudinary.com/dbvzbdffi/image/upload/v1749713054/logo_hero_lp6zw5.avif"
               alt="메인 히어로 이미지"
-              width={1000}
-              height={1000}
+              width={317}
+              height={317}
               sizes="(max-width: 401px) 300px, (max-width: 801px) 500px, 1000px"
               priority
               className="w-2/3 mx-auto pointer-events-none" />
