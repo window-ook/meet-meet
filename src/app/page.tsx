@@ -1,6 +1,6 @@
 import { getTimeRemaining } from '@/utils/shared/date';
 import { Metadata } from 'next';
-import { getPopularGatherings } from '@/actions/getPopularGatherings';
+import { getPopularGatherings } from '@/actions/index/getPopularGatherings';
 import * as m from "motion/react-m";
 import Image from 'next/image';
 import ImageWithFallback from '@/components/shared/ImageWithFallback';
