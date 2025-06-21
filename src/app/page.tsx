@@ -91,9 +91,9 @@ const GatheringCard = ({
       <div className="space-y-2">
         <h3 className="font-semibold group-hover:text-main-500 dark:text-white dark:group-hover:text-main-500 transition-all">{title}</h3>
         <div className='flex items-center gap-1'>
-          <span className="text-sm text-gray-500 dark:text-white">{schedule}</span>
-          <span className='text-gray-500 dark:text-white'>|</span>
-          <span className="text-sm text-gray-500 dark:text-white">
+          <span className="text-xs text-gray-500 dark:text-white">{schedule}</span>
+          <span className='text-xs text-gray-500 dark:text-white'>•</span>
+          <span className="text-xs text-gray-500 dark:text-white">
             <RollingNumber value={participants} duration={1000} interval={250} />
             명 참여
           </span>
