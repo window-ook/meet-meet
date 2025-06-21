@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { dateToDateTimeValue, isBefore } from '@/utils/shared/date';
-import { getPopularGatherings } from '@/actions/getPopularGatherings';
+import { getPopularGatherings } from '@/actions/index/getPopularGatherings';
 
 describe('서버 액션 getPopularGatherings 검증', () => {
     test('인기 모임 4개를 성공적으로 반환해야 한다.', async () => {
