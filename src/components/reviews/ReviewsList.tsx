@@ -106,7 +106,6 @@ export default function ReviewsList({
         infiniteReviews,
         lastItemRef,
         isFetchingNextPage,
-        status,
     } = useFetchInfiniteReviews({
         enabled: enableInfiniteScroll,
         mainType: selectedMainType,
@@ -132,28 +131,12 @@ export default function ReviewsList({
 
     // 더 명확한 로딩 상태 계산
     const hasData = allReviews.length > 0;
-    const isApiLoading = enableInfiniteScroll && status === 'pending';
     const isFilterLoading = isFilterChanged;
-    
+
     // 서버에서 데이터를 받았다면 (빈 데이터라도) 로딩 표시하지 않음
     // 오직 초기 로드 시에만 로딩 표시
     const shouldShowLoading = isFilterLoading && !hasData;
     const shouldShowEmpty = !hasData && !shouldShowLoading;
-
-    // 디버깅 로그 (개발 환경에서만)
-    console.log('🔍 ReviewsList Debug:', {
-        ssrReviewsLength: ssrReviews.length,
-        infiniteReviewsLength: infiniteReviews.length,
-        allReviewsLength: allReviews.length,
-        status,
-        isFilterChanged,
-        hasData,
-        isApiLoading,
-        isFilterLoading,
-        shouldShowLoading,
-        shouldShowEmpty,
-        filters
-    });
 
     return (
         <section className="w-full flex flex-col">
@@ -170,10 +153,10 @@ export default function ReviewsList({
                             key={`${review.id}-${index}`}
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
-                            transition={{ 
-                                duration: 0.4, 
+                            transition={{
+                                duration: 0.4,
                                 delay: Math.min(index * 0.02, 0.1),
-                                ease: "easeOut" 
+                                ease: "easeOut"
                             }}
                             viewport={{ amount: 0.1, once: true }}
                             className="w-full flex flex-col md:flex-row justify-start border border-gray-200 rounded-2xl bg-white hover:border-main-300 hover:shadow-lg transition-all duration-300 overflow-hidden relative dark:border-gray-700 dark:bg-dark-2 dark:text-white"

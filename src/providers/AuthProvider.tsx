@@ -95,7 +95,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             const response = await internalClient.get(INTERNAL_PATHS.USER);
             if (response.status === 200) {
-                console.log('유저 정보:', response.data);
                 setUserName(response.data.name);
                 setUserId(response.data.id);
                 setUserEmail(response.data.email);
