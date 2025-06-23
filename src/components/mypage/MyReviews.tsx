@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
+import { myPageQuery } from '@/queries/mypage.query';
 import { AuthContext } from '@/providers/AuthProvider';
 import { useFetchMyCreatedReviews } from '@/hooks/api/mypage/useFetchMyCreatedReviews';
 import { JoinedGathering } from '@/types/gatherings';
@@ -21,7 +22,7 @@ export default function MyReviews({ myReviewsTab, setMyReviewsTab, onOpenReviewD
   const { token, userId } = useContext(AuthContext);
 
   const queryClient = useQueryClient();
-  const gatherings = queryClient.getQueryData<JoinedGathering[]>(["joinedGatherings", token]) ?? [];
+  const gatherings = queryClient.getQueryData<JoinedGathering[]>(myPageQuery.joinedGatherings(token!)) ?? [];
 
   // 작성 가능한 모임: 개설 확정 (5명 이상) && 작성하지 않은 모임
   const reviewableGatherings = gatherings.filter((gathering: JoinedGathering) => !gathering.isReviewed && gathering.participantCount >= 5);

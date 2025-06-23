@@ -1,4 +1,3 @@
-import { useGatheringsStore } from '@/store/gatheringsStore';
 import { Gathering } from '@/types/gatherings';
 import { THUMBNAIL_CLASSNAME, THUMBNAIL_SIZE } from '@/utils/mypage/constants/thumbnailConstants';
 import * as m from "motion/react-m";
@@ -14,7 +13,6 @@ interface CreatableReviewProps {
 
 /** 나의 리뷰 - 작성 가능한 리뷰 */
 export default function CreatableReview({ gathering, myReviewsTab, userId, onOpenReviewDialog }: CreatableReviewProps) {
-    const setCurrentGatheringId = useGatheringsStore(state => state.setCurrentGatheringId);
 
     return (
         <m.article
@@ -41,10 +39,7 @@ export default function CreatableReview({ gathering, myReviewsTab, userId, onOpe
                     <Button
                         variant='default'
                         text='리뷰 남기기'
-                        onClick={() => {
-                            setCurrentGatheringId(Number(gathering.id))
-                            onOpenReviewDialog({ userId, gatheringId: Number(gathering.id) })
-                        }}
+                        onClick={() => onOpenReviewDialog({ userId, gatheringId: Number(gathering.id) })}
                         customClassName='w-28 sm:w-32 text-xs sm:text-base'
                     />
                 )}

@@ -21,7 +21,7 @@ export const signUpFormSchema = z.object({
     ),
 });
 
-export type SignupFormSchemaType = z.infer<typeof signUpFormSchema>;
+export type SignUpFormSchemaType = z.infer<typeof signUpFormSchema>;
 
 /** 로그인 폼 유효성 검증
  * @target email

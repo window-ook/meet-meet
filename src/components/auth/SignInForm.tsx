@@ -38,8 +38,8 @@ export default function SignInForm() {
             });
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                const serverError = error?.response?.data?.error;
-                if (serverError) setErrorResponseMessage(serverError.message);
+                const serverError = error?.response?.data;
+                if (serverError?.message) setErrorResponseMessage(serverError.message);
                 else setErrorResponseMessage('로그인 처리 중 오류가 발생했습니다.');
             } else {
                 setErrorResponseMessage('알 수 없는 오류가 발생했습니다.');

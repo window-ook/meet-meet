@@ -14,6 +14,7 @@ export default function AuthPoster() {
                 height={480}
                 className='hidden md:block w-auto h-auto pointer-events-none'
                 priority
+                fetchPriority='high'
             />
             <figcaption className='flex flex-col items-center justify-center'>
                 <h2 className='mb-1 text-lg lg:text-2xl font-bold'>미리 계획하지 않아도 괜찮아요.</h2>
