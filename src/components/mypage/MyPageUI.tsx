@@ -31,6 +31,7 @@ export default function MyPageUI() {
             key={value}
             type="button"
             role="tab"
+            aria-label={`마이페이지 ${label} 탭 전환 버튼`}
             aria-selected={selectedTab === value}
             aria-controls={`tab-panel-${value}`}
             id={`tab-${value}`}

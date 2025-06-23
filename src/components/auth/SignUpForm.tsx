@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '@/providers/AuthProvider';
 import { useForm } from 'react-hook-form';
-import { signUpFormSchema, SignupFormSchemaType } from '@/utils/auth/authSchema';
+import { signUpFormSchema, SignUpFormSchemaType } from '@/utils/auth/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { excapeForXSS } from '@/utils/shared/excapeForXSS';
 import Image from 'next/image';
@@ -26,7 +26,7 @@ export default function SignUpForm() {
         handleSubmit,
         watch,
         formState: { errors, isSubmitting, isSubmitted },
-    } = useForm<SignupFormSchemaType>({
+    } = useForm<SignUpFormSchemaType>({
         resolver: zodResolver(signUpFormSchema),
     });
 
@@ -35,7 +35,7 @@ export default function SignUpForm() {
     const companyName = watch('companyName');
     const password = watch('password');
 
-    const onSubmit = async (data: SignupFormSchemaType) => {
+    const onSubmit = async (data: SignUpFormSchemaType) => {
         try {
             await signUp({
                 email: excapeForXSS(data.email),
@@ -45,8 +45,11 @@ export default function SignUpForm() {
             });
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                const serverError = error?.response?.data?.error;
-                setErrorResponseMessage(serverError.message);
+                const serverError = error?.response?.data;
+                if (serverError?.message) setErrorResponseMessage(serverError.message);
+                else setErrorResponseMessage('회원가입 처리 중 오류가 발생했습니다.');
+            } else {
+                setErrorResponseMessage('알 수 없는 오류가 발생했습니다.');
             }
         }
     }

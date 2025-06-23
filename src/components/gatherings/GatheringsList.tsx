@@ -88,9 +88,9 @@ const InfiniteScrollLoader = memo(() => (
 InfiniteScrollLoader.displayName = 'InfiniteScrollLoader';
 
 // 개별 모임 아이템 컴포넌트 memo로 최적화
-const GatheringItem = memo(({ 
-    gathering, 
-    index, 
+const GatheringItem = memo(({
+    gathering,
+    index,
     isLastItem,
     lastItemRef,
     onGatheringClick
@@ -107,10 +107,10 @@ const GatheringItem = memo(({
         key={`${gathering.teamId || 'unknown'}-${gathering.id}-${index}`}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ 
-            duration: 0.4, 
+        transition={{
+            duration: 0.4,
             delay: Math.min(index * 0.1, 0.1),
-            ease: "easeOut" 
+            ease: "easeOut"
         }}
         viewport={{ amount: 0.1, once: true }}
         onClick={() => onGatheringClick(gathering.id)}
@@ -133,9 +133,7 @@ const GatheringItem = memo(({
                 loading={index < 5 ? 'eager' : 'lazy'}
                 className="w-full h-full rounded-t-2xl md:rounded-l-2xl md:rounded-t-none object-cover pointer-events-none"
                 crossOrigin=""
-                decoding={index < 5 ? 'sync' : 'async'}
-                quality={index === 0 ? 90 : 80}
-                placeholder={index === 0 ? 'empty' : 'blur'}
+                quality={80}
             />
         </div>
 

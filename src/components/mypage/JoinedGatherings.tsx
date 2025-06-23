@@ -108,12 +108,12 @@ export default function JoinedGatherings({ setSelectedTab, setMyReviewsTab, onOp
             {/* 모임 정보 */}
             <div className='flex flex-col gap-2 sm:gap-1'>
               <div className='flex items-center gap-1'>
-                {/* 마감 완료 및 5명 이상 모집 및 모임 후 '이용 완료' */}
-                {getTimeRemaining(data?.registrationEnd) === '마감됨' && data?.participantCount >= 5 && data?.isCompleted && (
+                {/* 5명 이상 모집 및 모임 후 '이용 완료' */}
+                {data?.participantCount >= 5 && data?.isCompleted && (
                   <div className={DEACTIVATED_STYLE}>이용 완료</div>)}
 
-                {/* 마감 미완료 및 모임 전 '이용 예정' */}
-                {getTimeRemaining(data?.registrationEnd) !== '마감됨' && !data?.isCompleted && (
+                {/* 모임 전 '이용 예정' */}
+                {!data?.isCompleted && (
                   <div className={`${ACTIVATED_STYLE}`}>이용 예정</div>)}
 
                 {/* 마감 미완료 및 5명 이상 모집 '개설 확정'  */}

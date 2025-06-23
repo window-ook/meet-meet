@@ -1,7 +1,6 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGatheringsStore } from '@/store/gatheringsStore';
 import { useRouter } from 'next/navigation';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
@@ -17,7 +16,6 @@ import { gatheringsQuery } from '@/queries/gatherings.query';
 * @returns {function} cancelGathering - 모임 삭제 함수
 */
 export const useCancelGathering = ({ token, onCallback }: GatheringApiParams) => {
-    const removeGathering = useGatheringsStore((s) => s.removeGathering);
 
     const router = useRouter();
 
@@ -29,8 +27,7 @@ export const useCancelGathering = ({ token, onCallback }: GatheringApiParams) =>
             await internalClient.put(INTERNAL_PATHS.cancelGathering(id));
             return id;
         },
-        onSuccess: (id) => {
-            removeGathering(id);
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: gatheringsQuery.all() });
             queryClient.invalidateQueries({ queryKey: myPageQuery.createdGatherings(token!) });
             onCallback?.('모임을 삭제했습니다', () => router.replace('/gatherings'));

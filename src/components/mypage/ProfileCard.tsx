@@ -32,6 +32,7 @@ export default function ProfileCard() {
 
           {/* 수정 버튼 - 이미지 우측 하단 */}
           <button
+            aria-label="프로필 이미지 수정 버튼"
             type="button"
             onClick={() => setIsProfileEditDialogOpen(true)}
             className="absolute -bottom-2 -right-2 size-9 sm:size-10 rounded-full shadow-lg border-2 border-white dark:border-dark-2 bg-main-500 hover:bg-main-600 flex items-center justify-center text-white cursor-pointer transition-colors duration-200">
