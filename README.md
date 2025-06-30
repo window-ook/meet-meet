@@ -192,7 +192,7 @@
 UI와 클라이언트 로직을 담당하는 컴포넌트들이 위치합니다.
 
 **hooks/api**<br>
-Tanstack Query에서 제공하는 Hook에 기반된 커스텀 Hooks입니다.
+Tanstack Query에서 제공하는 Hook 기반 커스텀 Hooks입니다.
 이는 `Async Surf`의 주요 구성요소로 역할을 하기도 합니다. 자세한 설명은 아키텍처 설명에 있습니다.
 
 **utils**<br>
@@ -204,7 +204,7 @@ Tanstack Query에서 제공하는 Hook에 기반된 커스텀 Hooks입니다.
 `components`, `hook/api`, `utils`에 위한 `shared`는 global, common과 동일한 의미를 가진 디렉토리입니다.
 '전역에서 Feature에 구애받지 않고 참조하여 사용할 수 있는' 재사용 컴포넌트가 위치합니다.
 
-이를 제외한 나머지 디렉토리는 모두 역할 기반의 디렉토리입니다.
+이를 제외한 나머지 디렉토리는 모두 역할 기반 디렉토리입니다.
 이 중 `gatherings`만 내부에 `shared` 디렉토리를 2nd detph로 가지고 있습니다.
 
 <br>
@@ -301,7 +301,7 @@ export const INTERNAL_PATHS = {
 
 **2. Queries Station**
 
-Tanstack Query에서 제공하는 Hook에 기반된 커스텀 Hook의 queryKey를 중앙화하기 위해 정의한 객체의 모임입니다.
+Tanstack Query에서 제공하는 Hook 기반 커스텀 Hook의 queryKey를 중앙화하기 위해 정의한 객체의 모임입니다.
 Feature Based로 파일들이 분할되어있으며, FSD에서 제공하는 `Query Factory` 패턴을 카피했습니다.
 쿼리 팩토리 패턴은 쿼리키를 중앙화하여 queryKey를 사용하는 곳에서 참조하는 방식으로 사용합니다.
 따라서 queryKey를 하드코딩으로 선언하면서 실수로 추가하거나, 파라미터를 다르게 사용하는 등의 문제를 방지하죠.
@@ -337,7 +337,7 @@ export const gatheringDetailQuery = {
 
 **3. API Hooks (based on Tanstack Query)**
 
-Tanstack Query에서 제공하는 Hook에 기반된 커스텀 Hooks입니다.
+Tanstack Query에서 제공하는 Hook 기반 커스텀 Hooks입니다.
 이번 프로젝트에서는 클라이언트 컴포넌트에서 API 라우트를 거쳐 요청을 보내는 비동기 통신이 중심이었습니다.
 따라서 `useQuery`, `useInfiniteQuery`, `useMutation`이 핵심 도구로써 빈번히 사용될 거라 생각했고,
 커스텀 Hook으로 모두 모듈화하는 방법을 설계했습니다.
@@ -395,7 +395,7 @@ export const useCreateReview = ({ token, onCallback }: GatheringApiParams) => {
 
 **5. Server Fetcher (based on Fetch API)**
 
-`Fetch API` 기반 서버 사이드 전용 외부 통신 fetchers입니다.
+`Fetch API` 기반 서버 사이드 전용 외부 통신 fetcher입니다.
 그럼 왜 서버 사이드는 `Fetch API`를 썼을까요?
 
 - Next.js의 `cache` 옵션: 페이지 렌더링 방식을 선택할 수 있습니다. (SSG/ISR/SSR)
@@ -789,7 +789,7 @@ export default InputField;
 - 시간 효율적 & 비용 효율적인 개발에 필요한 아키텍쳐의 중요성을 알 수 있었습니다.
 - 사용자 피드백을 통한 실질적인 서비스 개선 경험이라는 값진 경험을 했습니다.
 - 새로운 기술 스택을 활용하면서 기존에 사용했던 개발 방식보다 더 좋은 성과를 낼 수 있었습니다.
-- 스크럼과 문서화 기반의 협업 관리 방식이 팀의 코드 일관성과 개발 속도에 기여함을 알 수 있었습니다.
+- 스크럼과 문서화 기반 협업 관리 방식이 팀의 코드 일관성과 개발 속도에 기여함을 알 수 있었습니다.
 
 > **아쉬운 점 & 향후 계획**
 
