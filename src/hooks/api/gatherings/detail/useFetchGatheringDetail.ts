@@ -3,18 +3,17 @@
 import { INTERNAL_PATHS } from '@/lib/api/apiPaths';
 import { internalClient } from '@/lib/api/clientFetchers';
 import { gatheringDetailQuery } from '@/queries/gatherings.query';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 /** 
  * 모임 상세 페이지 상세 정보 조회 훅
  * @param id
- * @returns {detail, participants, isLoading, isError, retchIsSaved}
+ * @returns {detail, participants, isLoading, isError}
  */
 export const useFetchGatheringDetail = (
     id: number
 ) => {
-    const queryClient = useQueryClient();
 
     const fetchGatheringDetail = async (id: number) => {
         try {
@@ -50,9 +49,5 @@ export const useFetchGatheringDetail = (
         },
     })
 
-    const retchIsSaved = useMutation({
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: gatheringDetailQuery.detail(id) })
-    });
-
-    return { detail: data?.detail, participants: data?.participants, isLoading, isError, retchIsSaved }
+    return { detail: data?.detail, participants: data?.participants, isLoading, isError }
 }
