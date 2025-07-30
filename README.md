@@ -87,7 +87,7 @@
     <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white"> 
 </div><br>
 
-<img src="https://github.com/user-attachments/assets/ac233649-9881-44f8-b3a6-eef7f7d9dfcb" width="600" height="330" />
+<img src="https://github.com/user-attachments/assets/4b9fc124-9e5a-4d23-aa3a-12789d46353a" width="600" height="330" />
 
 ## 👤 체험 계정
 
@@ -599,7 +599,7 @@ export async function serverFetcher<T = unknown>(
 
 ### 1. React Hook Form & Zod
 
-주요 기능 구현을 위해 <form> 을 활용하는 컴포넌트가 5개 필요했습니다.
+주요 기능 구현을 위해 `<form>`요소를 활용하는 컴포넌트가 5개 필요했습니다.
 초기에 useState와 핸들러를 개별적으로 생성하여 비효율적인 방식으로 먼저 개발 후 React Hook Form과 Zod를 사용하여 리팩토링을 하였습니다. <br>
 
 대표적인 예시로 회원가입 페이지에서 폼 컴포넌트인 `SignUpForm.tsx`의 리팩토링 전과 후 코드를 비교하며 어떤 개선과 결과를 도출했는지 설명해드리겠습니다.
