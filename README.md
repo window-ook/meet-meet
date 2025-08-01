@@ -91,7 +91,7 @@
 
 ## 👤 체험 계정
 
-이메일: test@sample.com
+이메일: test@sample.com <br>
 패스워드: 1567@zcvb
 
 ## ✨ 주요 기능
