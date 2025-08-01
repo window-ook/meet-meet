@@ -87,7 +87,7 @@
     <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white"> 
 </div><br>
 
-<img src="https://github.com/user-attachments/assets/4b9fc124-9e5a-4d23-aa3a-12789d46353a" width="600" height="330" />
+<img src="https://github.com/user-attachments/assets/d1a0686e-bab4-4362-9828-2d6835395fe8" width="600" height="360" />
 
 ## 👤 체험 계정
 
