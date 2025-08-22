@@ -52,7 +52,7 @@ export const INTERNAL_PATHS = {
     USER: '/api/auth/user',
     GATHERINGS: '/api/gatherings',
     REVIEWS: `/api/reviews`,
-    CHECK_JOINED: `/api/gatherings/joined`,
+    CHECK_JOINED: `/api/gatherings/joined?&limit=100`,
     fetchGatheringDetail: (id: number) => `/api/gatherings/detail?id=${id}`,
     fetchGatheringParticipants: (id: number) => `/api/gatherings/participants?id=${id}`,
     joinGathering: (id: number) => `/api/gatherings/join?id=${id}`,

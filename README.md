@@ -1,4 +1,4 @@
-# Meet Meet 1.0 ver
+# Meet Meet
 
 <img src='https://github.com/user-attachments/assets/7dc46ff1-32ea-40e8-8237-3d53cb78d9a4' width='300' height='300' />
 
