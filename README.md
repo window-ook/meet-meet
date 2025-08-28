@@ -4,21 +4,25 @@
 
 ### 🍃 가볍게 시작하는 특별한 만남
 
-서울의 2030이라면 **Meet Meet**에서 모임을 가지고 새로운 친구를 만들어보세요!
-혼자라고 걱정할 필요없어요😊
+서울의 2030이라면 **Meet Meet**에서 모임을 가지고 새로운 친구를 만들어보세요!<br>
+혼자라고 걱정할 필요없어요😊<br><br>
 
 ## 📋 목차
 
 - [👥 팀 소개](#-팀-소개)
 - [🗓️ 개발 기간](#-개발-기간)
+- [👤 체험 계정](#-체험-계정)
+- [🎧 앱 다운로드 및 실행](#-앱-다운로드-및-실행)
 - [🛠 기술 스택](#-기술-스택)
 - [✨ 주요 기능](#-주요-기능)
 - [📁 프로젝트 구조](#-프로젝트-구조)
 - [🌊 Async Surf](#-async-surf)
 - [📝 폼 상태 관리](#-폼-상태-관리)
-- [🧐 프로덕트 엔지니어링](#-프로덕트-엔지니어링)
+- [🏭 프로덕트 엔지니어링](#-프로덕트-엔지니어링)
 - [🎯 프로젝트 회고](#-프로젝트-회고)
 - [🙌 Thanks to](#-thanks-to)
+
+<br>
 
 ## 👥 팀 소개
 
@@ -49,9 +53,40 @@
   </tbody>
 </table>
 
+<br>
+
 ## 📝 개발 기간
 
-2025.05.15 ~ 2025.06.22
+2025.05.15 ~ 2025.06.22<br><br>
+
+## 👤 체험 계정
+
+- test@sample.com
+- 1567@zcvb
+
+<br>
+
+### 접속 링크
+
+https://meet-meet-psi.vercel.app/<br><br>
+
+## 🎧 앱 다운로드 및 실행
+
+### Repository Clone
+
+```
+git clone https://github.com/window-ook/meet-meet.git
+```
+
+### 앱 실행
+
+```
+cd frontend
+pnpm install
+pnpm dev
+```
+
+<br>
 
 ## 🛠 기술 스택
 
@@ -89,16 +124,13 @@
 
 <img src="https://github.com/user-attachments/assets/d1a0686e-bab4-4362-9828-2d6835395fe8" width="600" height="360" />
 
-## 👤 체험 계정
-
-이메일: test@sample.com <br>
-패스워드: 1567@zcvb
+<br>
 
 ## ✨ 주요 기능
 
 ### 1. 모임 찾기
 
-<img src="https://github.com/user-attachments/assets/fd40f96e-ef43-4367-b871-b90d64ff382a" width="470px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/fd40f96e-ef43-4367-b871-b90d64ff382a" width="470px" height='360px'/><br>
 
 다른 사용자들이 게시한 모임을 둘러볼 수 있습니다. 모임은 메인, 서브 카테고리로 분류되어 있습니다. 필터링으로 원하는 조건의 모임을 찾을 수 있습니다.
 
@@ -109,7 +141,7 @@
 
 ### 2. 모임 상세 정보 확인
 
-<img src="https://github.com/user-attachments/assets/b834b8ba-3e45-443a-959c-3949ebb6d8b5" width="480px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/b834b8ba-3e45-443a-959c-3949ebb6d8b5" width="480px" height='360px'/><br>
 
 모임에 누가 참여하고 있는지 확인하고, 다른 사용자가 남긴 리뷰도 확인할 수 있습니다.
 - 모임 이름, 모임 장소, 모임 날짜, 모임 게시자(id) 확인, 모임 참여자 정보 및 참여자 수 확인
@@ -117,34 +149,34 @@
 
 ### 3. 모임 만들기
 
-<img src="https://github.com/user-attachments/assets/bf644220-2804-4625-ae78-d167b7538217" width="440px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/bf644220-2804-4625-ae78-d167b7538217" width="440px" height='360px'/><br>
 
 원하는 조건의 모임을 생성할 수 있습니다.
 - 이름, 모집 장소, 모임 타입, 모임 날짜, 모집 마감 날짜, 모집 정원
 
 ### 4. 찜한 모임 확인
 
-<img src="https://github.com/user-attachments/assets/584dd523-062e-4919-9bb7-1f09400960b9" width="480px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/584dd523-062e-4919-9bb7-1f09400960b9" width="480px" height='360px'/><br>
 
-모임 찾기, 모임 상세 정보 페이지에서 찜한 모임들을 확인할 수 있습니다.
-모임 카테고리 필터링으로 원하는 조건의 모임만 확인할 수 있습니다.
+모임 찾기, 모임 상세 정보 페이지에서 찜한 모임들을 확인할 수 있습니다.<br>
+모임 카테고리 필터링으로 원하는 조건의 모임만 확인할 수 있습니다.<br>
 
 ### 5. 모든 리뷰 확인
 
-<img src="https://github.com/user-attachments/assets/1ed6be74-0d61-4a2c-ba84-f37dc562fc55" width="470px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/1ed6be74-0d61-4a2c-ba84-f37dc562fc55" width="470px" height='360px'/><br>
 
-모든 모임의 리뷰 히스토리를 확인할 수 있습니다.
-날짜, 모임 카테고리 필터링으로 원하는 조건의 모임의 리뷰만 확인할 수 있습니다.
+모든 모임의 리뷰 히스토리를 확인할 수 있습니다.<br>
+날짜, 모임 카테고리 필터링으로 원하는 조건의 모임의 리뷰만 확인할 수 있습니다.<br>
 
 ### 6. 마이페이지
 
 **참여중인 모임**
 
-<img src="https://github.com/user-attachments/assets/9980fb91-bb97-4f14-a909-2fbb0dbf72d4" width="460px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/9980fb91-bb97-4f14-a909-2fbb0dbf72d4" width="460px" height='360px'/><br>
 
-현재 로그인한 계정으로 참여한 모임의 목록을 볼 수 있습니다.
+현재 로그인한 계정으로 참여한 모임의 목록을 볼 수 있습니다.<br>
 
-<img src="https://github.com/user-attachments/assets/2f2f9f6f-be3d-431c-8f9d-9911621871c6" width="520px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/2f2f9f6f-be3d-431c-8f9d-9911621871c6" width="520px" height='360px'/><br>
 
 - 모집 마감 여부 / 이용 여부 / 개설 상태를 확인할 수 있습니다.
 - 리뷰를 남기거나 참여를 취소할 수 있습니다.
@@ -152,15 +184,15 @@
 **나의 리뷰**
 
 <img src="https://github.com/user-attachments/assets/3d61550a-7cab-425f-95ed-367de9bba82c" width="460px" height='360px'/>
-<img src="https://github.com/user-attachments/assets/0589a9be-2d86-4ed2-a0bc-896cde68141d" width="460px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/0589a9be-2d86-4ed2-a0bc-896cde68141d" width="460px" height='360px'/><br>
 
 참여한 모임 중에서 리뷰 작성이 가능한 모임, 이미 작성한 리뷰를 필터링하여 볼 수 있습니다.
 
 **내가 만든 모임**
 
-<img src="https://github.com/user-attachments/assets/26a708d4-8774-4cf5-b284-92440a463a24" width="470px" height='360px'/>
+<img src="https://github.com/user-attachments/assets/26a708d4-8774-4cf5-b284-92440a463a24" width="470px" height='360px'/><br>
 
-내가 만든 모임 중 모집 취소되지 않은 모임을 확인할 수 있습니다.
+내가 만든 모임 중 모집 취소되지 않은 모임을 확인할 수 있습니다.<br><br>
 
 ## 📁 프로젝트 구조
 
@@ -190,6 +222,8 @@
     └── 🌐 shared
 ```
 
+<br>
+
 **components**<br>
 UI와 클라이언트 로직을 담당하는 컴포넌트들이 위치합니다.
 
@@ -203,13 +237,11 @@ Tanstack Query에서 제공하는 Hook 기반 커스텀 Hooks입니다.
 
 ### 특이사항?
 
-`components`, `hook/api`, `utils`에 위한 `shared`는 global, common과 동일한 의미를 가진 디렉토리입니다.
-'전역에서 Feature에 구애받지 않고 참조하여 사용할 수 있는' 재사용 컴포넌트가 위치합니다.
+`components`, `hook/api`, `utils`에 위한 `shared`는 global, common과 동일한 의미를 가진 디렉토리입니다.<br>
+'전역에서 Feature에 구애받지 않고 참조하여 사용할 수 있는' 재사용 컴포넌트가 위치합니다.<br><br>
 
-이를 제외한 나머지 디렉토리는 모두 역할 기반 디렉토리입니다.
-이 중 `gatherings`만 내부에 `shared` 디렉토리를 2nd detph로 가지고 있습니다.
-
-<br>
+이를 제외한 나머지 디렉토리는 모두 역할 기반 디렉토리입니다.<br>
+이 중 `gatherings`만 내부에 `shared` 디렉토리를 2nd detph로 가지고 있습니다.<br><br>
 
 > 왜일까요?
 
@@ -228,22 +260,24 @@ Tanstack Query에서 제공하는 Hook 기반 커스텀 Hooks입니다.
     └── ...
 ```
 
-`gatherings`는 모임 찾기, 모임 상세 페이지를 포함한 Feature입니다.
-페이지 경로 또한 `gatherings/detail`로 gatherings의 하위 엔드포인트입니다.
-따라서 찾기와 상세에서 공통 재사용되는 컴포넌트와 페이지별 따로 쓰는 컴포넌트를 구분하기 위해 내부 `shared`가 하나 존재합니다.
+<br>
+
+`gatherings`는 모임 찾기, 모임 상세 페이지를 포함한 Feature입니다.<br>
+페이지 경로 또한 `gatherings/detail`로 gatherings의 하위 엔드포인트입니다.<br>
+따라서 찾기와 상세에서 공통 재사용되는 컴포넌트와 페이지별 따로 쓰는 컴포넌트를 구분하기 위해 내부 `shared`가 하나 존재합니다.<br>
 
 ### 구조 채택의 근거
 
 > FSD 도입은 글쎄? '**호미로 막을걸 가래로 막는다**'
 
-이번 프로젝트는 시간 제한과 요구사항이 명확한 프로젝트였습니다.
-또한, 전체 경로 수나 앱이 가진 기능이 소~중 규모에 가깝기에 모두 익숙하면서 러닝커브가 낮은 구조가 적절하다고 판단했습니다.
+이번 프로젝트는 시간 제한과 요구사항이 명확한 프로젝트였습니다.<br>
+또한, 전체 경로 수나 앱이 가진 기능이 소~중 규모에 가깝기에 모두 익숙하면서 러닝커브가 낮은 구조가 적절하다고 판단했습니다.<br>
 
 ### 결과
 
-공통적으로 사용되는 컴포넌트를 어디에 위치시켜야 할지 기준이 명확해 혼선이 없었습니다.
-따라서 컴포넌트 모듈화, 유틸리티 함수의 증가에 따른 파일의 확장이 생겨도 배치에 관해서 소모되는 시간이 거의 없었습니다.
-덕분에 협업 기준으로 팀의 DX가 매우 쾌적했고, 제한된 기간에 요구사항을 모두 충족하면서 디테일까지 추가할 수 있었습니다.
+공통적으로 사용되는 컴포넌트를 어디에 위치시켜야 할지 기준이 명확해 혼선이 없었습니다.<br>
+따라서 컴포넌트 모듈화, 유틸리티 함수의 증가에 따른 파일의 확장이 생겨도 배치에 관해서 소모되는 시간이 거의 없었습니다.<br>
+덕분에 협업 기준으로 팀의 DX가 매우 쾌적했고, 제한된 기간에 요구사항을 모두 충족하면서 디테일까지 추가할 수 있었습니다.<br>
 
 ## 🌊 Async Surf
 
@@ -252,22 +286,20 @@ Tanstack Query에서 제공하는 Hook 기반 커스텀 Hooks입니다.
 <img src="https://github.com/user-attachments/assets/1f5ce19b-3113-4c67-b3f6-94267fd04865" width="800px" height='450px'/><br>
 
 Surf는 비동기 통신 흐름을 마치 서프를 타는 것에 비유한 것입니다.<br>
-이는 클라이언트 사이드로부터 출발하는 Surf와 서버 사이드에서 출발하는 Surf로 분리되어있습니다.
+이는 클라이언트 사이드로부터 출발하는 Surf와 서버 사이드에서 출발하는 Surf로 분리되어있습니다.<br>
 
 ### Surf On Client
 
-<img src="https://github.com/user-attachments/assets/983d4898-ba62-44c2-b7c9-0ad7ce42d177" width="800px" height='450px'/>
+<img src="https://github.com/user-attachments/assets/983d4898-ba62-44c2-b7c9-0ad7ce42d177" width="800px" height='450px'/><br>
 
 ### 구성 요소
 
 **1. API Hooks**
 
-이번 프로젝트에서는 클라이언트 컴포넌트에서 API 라우트를 거쳐 요청을 보내는 비동기 통신이 중심이었습니다. 
-`useQuery`, `useInfiniteQuery`, `useMutation`이 핵심 도구로써 빈번히 사용될 거라 생각했고, 커스텀 Hook으로 모두 모듈화하는 방법을 설계했습니다.
-모두 API 라우트를 거쳐 백엔드의 API를 사용하기 때문에 API Hooks로 이름 붙여졌습니다.
-이들을 별도의 커스텀 훅으로 분리한 까닭은, 컴포넌트에서 Tanstack Query Hook의 로직을 관리하는 것은 가독성, 중앙화, 유지보수 모두 좋지 않다고 생각했기 때문입니다.
-
-<br>
+이번 프로젝트에서는 클라이언트 컴포넌트에서 API 라우트를 거쳐 요청을 보내는 비동기 통신이 중심이었습니다.<br>
+`useQuery`, `useInfiniteQuery`, `useMutation`이 핵심 도구로써 빈번히 사용될 거라 생각했고, 커스텀 Hook으로 모두 모듈화하는 방법을 설계했습니다.<br>
+모두 API 라우트를 거쳐 백엔드의 API를 사용하기 때문에 API Hooks로 이름 붙여졌습니다.<br>
+이들을 별도의 커스텀 훅으로 분리한 까닭은, 컴포넌트에서 Tanstack Query Hook의 로직을 관리하는 것은 가독성, 중앙화, 유지보수 모두 좋지 않다고 생각했기 때문입니다.<br>
 
 ex) `src/hooks/api/gatherings/useCreateGathering.ts`
 
@@ -307,9 +339,10 @@ export const useCreateGathering = ({ token, onCallback }: GatheringApiParams) =>
 
 **2. Queries Station**
 
-훅은 모두 queryKey를 사용합니다. queryKey는 하드 코딩으로 관리하지 않고 Queries Station이 중앙화하여 관리합니다. Queries Station은 **FSD**에서 제공하는 **Query Factory Pattern**에서 영감을 얻었습니다.
-Quries Station은 쿼리키를 중앙화하여 queryKey를 사용하는 곳에서 참조하는 방식으로 사용합니다.
-따라서 queryKey를 하드코딩으로 선언하면서 실수로 추가하거나, 파라미터를 다르게 사용하는 등의 문제를 방지하죠.
+훅은 모두 queryKey를 사용합니다. queryKey는 하드 코딩으로 관리하지 않고 Queries Station이 중앙화하여 관리합니다.<br>
+Queries Station은 **FSD**에서 제공하는 **Query Factory Pattern**에서 영감을 얻었습니다.<br>
+Quries Station은 쿼리키를 중앙화하여 queryKey를 사용하는 곳에서 참조하는 방식으로 사용합니다.<br>
+따라서 queryKey를 하드코딩으로 선언하면서 실수로 추가하거나, 파라미터를 다르게 사용하는 등의 문제를 방지하죠.<br>
 
 > 근데 FSD 안 쓴다며?
 네 FSD는 쓰지 않지만 중앙화의 도구로써 Async Surf 패턴에 유지보수 용이성과 확장성에 견고함을 더하기에 Query Factory는 참고했습니다.<br>
@@ -329,7 +362,6 @@ export const gatheringsQuery = {
         filterSavedIds?: string
     ) => [...gatheringsQuery.all(), { mainType, location, date, sortBy, sortOrder, startIndex, filterSavedIds }] as const,
 };
-
 
 export const gatheringDetailQuery = {
   detail: (id: string | number) => ['gatheringDetail', id],
@@ -392,8 +424,8 @@ export const INTERNAL_PATHS = {
 
 **4. Client Fetchers**
 
-`axios` 기반 클라이언트 사이드 전용 내외부 통신 fetchers입니다.
-`axios`를 활용한 이유는 http 상태 코드 기반 자동 에러 처리, 응답 데이터의 자동 직렬화 / 역직렬화 기능이 내장되어있기 때문입니다.
+`axios` 기반 클라이언트 사이드 전용 내외부 통신 fetchers입니다.<br>
+`axios`를 활용한 이유는 http 상태 코드 기반 자동 에러 처리, 응답 데이터의 자동 직렬화 / 역직렬화 기능이 내장되어있기 때문입니다.<br>
 클라이언트 컴포넌트에서 시작하는 비동기 통신이 주를 이루는 프로젝트에서 2명의 팀원만으로 제한된 기간 내에 개발해야 하는 상황에서 가장 이상적인 선택이었습니다. <br>
 
 `internalClient`: 요청 인터셉터, 응답 인터셉터를 적용하였습니다.
@@ -467,8 +499,8 @@ export const externalClient = axios.create({
 
 **5. Surf Guard**
 
-API Hooks와 API 라우트에서 발생하는 에러를 일관되게 처리하기 위한 유틸리티 모듈입니다.
-`isErrorResponse`와 `handleApiError`를 각각 API Hooks와 API 라우트로 지원합니다.
+API Hooks와 API 라우트에서 발생하는 에러를 일관되게 처리하기 위한 유틸리티 모듈입니다.<br>
+`isErrorResponse`와 `handleApiError`를 각각 API Hooks와 API 라우트로 지원합니다.<br><br>
 
 `isErrorResponse`: 에러 응답 데이터가 예상된 형식(`ErrorResponse`)을 따르는지 검증하는 타입 가드 함수입니다.
 
@@ -486,7 +518,8 @@ export function isErrorResponse(data: unknown): data is ErrorResponse {
 
 <br>
 
-`handleApiError`: 외부 통신 중 발생한 에러를 상황별로 적절한 적절히 처리하는 에러 핸들러입니다. 먼저 에러가 존재하는지, 객체 타입인지, 에러에 isAxiosError가 있는지 검증합니다. 만약 검증이 통과한 상황이라면 아래와 같이 처리하는 방법이 나뉩니다.
+`handleApiError`: 외부 통신 중 발생한 에러를 상황별로 적절한 적절히 처리하는 에러 핸들러입니다.<br>
+먼저 에러가 존재하는지, 객체 타입인지, 에러에 isAxiosError가 있는지 검증합니다. 만약 검증이 통과한 상황이라면 아래와 같이 처리하는 방법이 나뉩니다.
 - 응답이 있는 경우
 	- 401 상태 특별 처리: 401 상태 코드와 함께 '유효하지 않은 토큰입니다'라는 메시지가 오면 '로그인이 만료되었습니다'로 변환합니다. (다이얼로그 UI에 나타낼 사용자를 위한 메세지로 변환)
 	- 기본: 원본 에러 데이터 그대로 전달
@@ -531,21 +564,18 @@ export function handleApiError(error: unknown, fallbackMessage = '서버 에러 
 
 <br>
 
-따라서 서버로부터 온 모든 에러를 { code, message } 형식을 따르도록 보장하기 때문에 클라이언트에서는 일관된 에러 포맷을 전달받습니다. 이를 가지고 ConfirmDialog 와 같은 사용자 알림용 다이얼로그에 메세지를 나타내기 쉬웠습니다.
-
-<br> 
+따라서 서버로부터 온 모든 에러를 { code, message } 형식을 따르도록 보장하기 때문에 클라이언트에서는 일관된 에러 포맷을 전달받습니다. 이를 가지고 ConfirmDialog 와 같은 사용자 알림용 다이얼로그에 메세지를 나타내기 쉬웠습니다.<br> 
 
 ### Surf On Server
 
-<img src="https://github.com/user-attachments/assets/101a3a57-1640-4d08-8194-650365f2ce18" width="800px" height='450px'/>
+<img src="https://github.com/user-attachments/assets/101a3a57-1640-4d08-8194-650365f2ce18" width="800px" height='450px'/><br>
 
 ### 구성 요소
 
-**1. Server Fetcher (based on Fetch API)**
+**1. Server Fetcher (based on Fetch API)**<br>
 
-`Fetch API` 기반 서버 사이드 전용 외부 통신 fetcher입니다.
+`Fetch API` 기반 서버 사이드 전용 외부 통신 fetcher입니다.<br>
 그럼 왜 서버 사이드는 `Fetch API`를 썼을까요?
-
 - Next.js의 `cache` 옵션: 페이지 렌더링 방식을 선택할 수 있습니다. (SSG/ISR/SSR)
 - `Request Memoization`: React Component Tree를 렌더링 하는 동안 같은 요청(fetch)이 반복되면, 첫 호출에만 네트워크 요청이 수행되고 이후 호출은 캐시된 결과로 반환합니다.
 
@@ -595,16 +625,15 @@ export async function serverFetcher<T = unknown>(
 }
 ```
 
+<br>
+
 ## 📝 폼 상태 관리
 
 ### 1. React Hook Form & Zod
 
-주요 기능 구현을 위해 `<form>`요소를 활용하는 컴포넌트가 5개 필요했습니다.
-초기에 useState와 핸들러를 개별적으로 생성하여 비효율적인 방식으로 먼저 개발 후 React Hook Form과 Zod를 사용하여 리팩토링을 하였습니다. <br>
-
-대표적인 예시로 회원가입 페이지에서 폼 컴포넌트인 `SignUpForm.tsx`의 리팩토링 전과 후 코드를 비교하며 어떤 개선과 결과를 도출했는지 설명해드리겠습니다.
-
-<br>
+주요 기능 구현을 위해 `<form>`요소를 활용하는 컴포넌트가 5개 필요했습니다.<br>
+초기에 useState와 핸들러를 개별적으로 생성하여 비효율적인 방식으로 먼저 개발 후 React Hook Form과 Zod를 사용하여 리팩토링을 하였습니다.<br>
+대표적인 예시로 회원가입 페이지에서 폼 컴포넌트인 `SignUpForm.tsx`의 리팩토링 전과 후 코드를 비교하며 어떤 개선과 결과를 도출했는지 설명해드리겠습니다.<br>
 
 ### ❗️ 리팩토링 전
 
@@ -683,11 +712,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   ) : null;
 }
 ```
-<br>
-
-→ 상태 관리, 가독성, 유지보수성 모두 나쁨
 
 <br>
+
+→ 상태 관리, 가독성, 유지보수성 모두 나쁨<br>
 
 ### ✅ 리팩토링 후
 
@@ -849,13 +877,13 @@ export default InputField;
 
 <br>
 
-## 🧐 프로덕트 엔지니어링
+## 🏭 프로덕트 엔지니어링
 
 ### 유저 피드백 반영
 
-<img src="https://github.com/user-attachments/assets/1f7ec0f1-1268-4e2c-93dd-585581d0e2ca" width="800px" height='450px'/>
+<img src="https://github.com/user-attachments/assets/1f7ec0f1-1268-4e2c-93dd-585581d0e2ca" width="800px" height='450px'/><br>
 
-`코드잇 FE SI 9기` 중간 발표 이후 타 스프린터들의 평가를 받게 되었습니다. <br>
+`코드잇 FE SI 9기` 중간 발표 이후 타 스프린터들의 평가를 받게 되었습니다.<br>
 
 평가 문항 3개, 각 문항당 1~5점
 
@@ -865,13 +893,11 @@ export default InputField;
 
 총 평균 약 4.173점 <br>
 
-전체 7개 팀 중 몇 위인지는 모릅니다만, 스프린터분들께서 주신 피드백은 매우 건설적이었습니다.
-소중한 유저라고 생각하며 유저의 목소리를 적극 반영하고자 저희 팀은 바로 UI/UX 개선에 들어갔습니다.
-이에 제한적인 API 제공으로 인한 기술적 한계를 제외하고는 거의 `90%`는 수용하여 개선을 하였습니다.
+전체 7개 팀 중 몇 위인지는 모릅니다만, 스프린터분들께서 주신 피드백은 매우 건설적이었습니다.<br>
+소중한 유저라고 생각하며 유저의 목소리를 적극 반영하고자 저희 팀은 바로 UI/UX 개선에 들어갔습니다.<br>
+이에 제한적인 API 제공으로 인한 기술적 한계를 제외하고는 거의 `90%`는 수용하여 개선을 하였습니다.<br>
 
-<img src="https://github.com/user-attachments/assets/183a4f10-240b-4b4f-a836-31e20768c05b" width="800px" height='450px'/>
-
-<br>
+<img src="https://github.com/user-attachments/assets/183a4f10-240b-4b4f-a836-31e20768c05b" width="800px" height='450px'/><br>
 
 ### 성능 최적화
 
@@ -893,8 +919,8 @@ export default InputField;
 
 <br>
 
-아쉬운 점은 좀 더 높은 점수를 얻고 싶었는데 LCP에서 레거시 javascript 폴리필 이슈와, CSS 파일이 렌더링을 차단하는 문제를 해결하지 못했다는 점입니다.
-이 문제도 해결할 수 있는 방법을 좀 더 강구해야 할 거 같습니다.
+아쉬운 점은 좀 더 높은 점수를 얻고 싶었는데 LCP에서 레거시 javascript 폴리필 이슈와, CSS 파일이 렌더링을 차단하는 문제를 해결하지 못했다는 점입니다.<br>
+이 문제도 해결할 수 있는 방법을 좀 더 강구해야 할 거 같습니다.<br><br>
 
 ## 🎯 프로젝트 회고
 
@@ -928,8 +954,8 @@ export default InputField;
 
 ### 4. 총평
 
-기술적 완성도뿐만 아니라, 실제 사용자의 니즈를 파악하고 반영하는 과정의 중요성을 배웠습니다.
-앞으로도 더 나은 DX를 위한 방법론에 대해 고민하며 공부하고, 유저친화적 UX를 제공하는 서비스를 만들어 나갈 것입니다.
+기술적 완성도뿐만 아니라, 실제 사용자의 니즈를 파악하고 반영하는 과정의 중요성을 배웠습니다.<br>
+앞으로도 더 나은 DX를 위한 방법론에 대해 고민하며 공부하고, 유저친화적 UX를 제공하는 서비스를 만들어 나갈 것입니다.<br><br>
 
 ## 🙌 Thanks to
 
